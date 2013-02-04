@@ -71,7 +71,6 @@ double tournament(int N, int* Pop[], int PopSize, int xcoors[], int ycoors[], in
   for(i=0;i<PopSize;i++){
     computeCost(cost,&Pop[i][0],topology,xcoors,ycoors,zcoors,N);
     fit[i]=norm2(cost,N*6); 
-//    printf("Fit[%d]: %f\n",i,fit[i]); 
     ind[i]=&fit[i];
     if(fit[i]<bFit){bFit=fit[i];}
   } 
@@ -157,7 +156,7 @@ double avg_cost(int cost[], int N)
 
 
 double ran3(long *idum)
-
+/* ran3 from Numerical Recipes in C */
 {
   static int inext,inextp;
   static long ma[56];
@@ -223,7 +222,7 @@ void get_subset(FILE *fp, int subset_nodes[], int node_count)
   for (i=0;i<node_count;i++)
   {
     fscanf(fp,"%d",&subset_nodes[i]);
-  //  printf("node[%d] %d\n",i,subset_nodes[i]);
+
   }
 }
 
