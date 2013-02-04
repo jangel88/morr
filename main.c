@@ -21,7 +21,7 @@
 #include<mpi.h>
 #include<time.h>
 int main(int argc, char *argv[]) 
-// devel
+
 {
 
   MPI_Init(&argc,&argv); 
@@ -74,21 +74,12 @@ int main(int argc, char *argv[])
   MPI_Bcast((void *)ycoors,19200,MPI_INT,0,MPI_COMM_WORLD);
   MPI_Bcast((void *)zcoors,19200,MPI_INT,0,MPI_COMM_WORLD); 
   MPI_Bcast((void *)subset_nodes,node_count,MPI_INT,0,MPI_COMM_WORLD);
-//  printf("node_count: %d\n",node_count);
+
   topomat3d(topology,n,m,p);
-//  for(i=0;i<node_count;i++){
-//    printf("node[%d]:%d\n",i,subset_nodes[i]);
-//  }
-  
   
   int *Pop[PopSize]; 
   create_pop(node_count,subset_nodes,PopSize,Pop,id); 
 
-//for(i=0;i<PopSize;i++){
-//  for(j=0;j<node_count;j++){
-//    printf(" %d%c",Pop[i][j],(j==(node_count-1)) ? '\n' : ' ');
-//  }
-//}
   int* bAssign;
   double bFit=INT_MAX,nFit;
   int* mutants[PopSize-NumOfElites];  
@@ -100,7 +91,7 @@ int main(int argc, char *argv[])
  
     nFit=tournament(N,Pop,PopSize,xcoors,ycoors,zcoors,topology,elites,NumOfElites);
     if (nFit<bFit){bFit=nFit;bAssign=&Pop[elites[0]][0];}
-//    printf("Best Fit: %f\n",bFit); 
+
     for(i=0;i<NumOfElites;i++){
       NextGen[i]=&Pop[elites[i]][0];
 //      for(k=0;k<node_count;k++){
@@ -128,17 +119,6 @@ int main(int argc, char *argv[])
     
   } 
   
-
-//for(j=0;j<np;j++){
-//  if (id==j){ 
-//    printf("%d's bFit:%f\n",id,bFit);
-//    for(i=0;i<n;i++){
-//      printf(" %d  %d  %d  %d\n",zcoors[bAssign[12*0+i]],zcoors[bAssign[12*1+i]],zcoors[bAssign[12*2+i]],zcoors[bAssign[12*3+i]]);
-//      printf(" %d  %d  %d  %d\n",bAssign[12*0+i],bAssign[12*1+i],bAssign[12*2+i],bAssign[12*3+i]);
-// 
-//    }
-//  }
-//}
   char out[20];
   sprintf(out,"%d.out",id);
   FILE* outfile=fopen(out,"w");
