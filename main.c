@@ -6,7 +6,7 @@
 #include<stdlib.h>
 #include"utils.c"
 #include<mpi.h>
-#include<time.h>
+
 int main(int argc, char *argv[]) 
 
 {
@@ -73,18 +73,18 @@ int main(int argc, char *argv[])
   int* NextGen[PopSize]; 
   for(j=0;j<MaxGen;j++){
     nFit=tournament(N,Pop,PopSize,xcoors,ycoors,zcoors,topology,elites,NumOfElites);
-    if (nFit<bFit){bFit=nFit;bAssign=&Pop[elites[0]][0];} //New best solution
+    if (nFit<bFit){bFit=nFit;bAssign=&Pop[elites[0]][0];} /*New best solution*/
 
     for(i=0;i<PopSize;i++){
-      if(i<NumOfElites){ NextGen[i]=&Pop[elites[i]][0];} // Elite
-      else {free(&Pop[elites[i]][0]);}                  // Unfit
+      if(i<NumOfElites){ NextGen[i]=&Pop[elites[i]][0];} /* Elite*/
+      else {free(&Pop[elites[i]][0]);}                  /* Unfit*/
     }
     for(i=NumOfElites;i<PopSize;i++){   
-      mutants[i-NumOfElites]=malloc(node_count*sizeof(int)); //Populate 
+      mutants[i-NumOfElites]=malloc(node_count*sizeof(int)); /*Populate */
       double r1=ran3(&idum);
       double r2=ran3(&idum);
       int rn=(int)(r2*NumOfElites);
-      if (r1>.500){ // coin flip 
+      if (r1>.500){ /* coin flip */
         NextGen[i]=mutate_swap(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
       }else{ 
         NextGen[i]=mutate_inject(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
