@@ -1,13 +1,14 @@
 
 
 
+int* mutate_inject(int elite[], int N, int mutant[]);
 int* mutate_swap(int elite[], int N, int mutant[]);
-void create_pop(int N, int nodes[], int PopSize, int initPop[],int id);
-double tournament(int N, int* Pop[], int PopSize, int xcoors[], int ycoors[], int zcoors[],int topology[]);
+void create_pop(int node_count, int nodes[], int PopSize, int* Pop[],int id);
+double tournament(int N, int* Pop[], int PopSize, int xcoors[], int ycoors[], int zcoors[],int topology[],int elites[], int NumOfElites);
 void randperm(int a, int b, int r[],int id);
 double norm2(int cost[], int N);
 
-int compare(const void * a, const void * b)
+int compare(const void * a, const void * b);
 
 double avg_cost(int cost[], int N);
 

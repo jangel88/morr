@@ -1,12 +1,12 @@
-#include<utils.h>
+#include"utils.h"
 #include<math.h>
 #include<limits.h>
-#include<time.h>
+
 #define MBIG 1000000000
 #define MSEED 161803398
 #define MZ 0
 #define FAC (1.0/MBIG)
-#define min(a, b) (((a) < (b)) ? (a) : (b)) // ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!
+#define min(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 
 int* mutate_inject(int elite[], int N, int mutant[])
 {
@@ -41,7 +41,7 @@ int* mutate_swap(int elite[], int N, int mutant[])
   int y=(int)(ran3(&swpidum)*N);
 
   int i,tmp=elite[x];
-//  printf("x: %d y: %d\n",x,y);
+
   for(i=0;i<N;i++){
     if(i==x) {mutant[i]=elite[y];}
     else if (i==y) {mutant[i]=tmp;}
@@ -283,7 +283,7 @@ void get_indices(int id, int indices[], int n, int m, int p)
   indices[0]=i;
   indices[1]=j;
   indices[2]=k;
-//  printf("node: %d had indices: (%d,%d,%d)\n",id,indices[0],indices[1],indices[2]);
+
 }
 
 int get_id(int i, int j, int k, int n, int m, int p) 
@@ -325,7 +325,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,p-1,n,m,p);
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
         }
-        else if(i==0) // Front Face, top row, not corner
+        else if(i==0) /* Front Face, top row, not corner*/
         {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(n-1,j,k,n,m,p);
@@ -334,7 +334,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,p-1,n,m,p);
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
         }
-       else if(i==n-1) // Front face, bottom row, not corner
+       else if(i==n-1) /* Front face, bottom row, not corner*/
        {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -347,7 +347,7 @@ void topomat3d(int topology[], int n, int m, int p)
     }
       else if (j==m-1)
     {
-         if(i!=n-1 && i!=0) //Front face, right column, not corner
+         if(i!=n-1 && i!=0) /*Front face, right column, not corner*/
        {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -356,7 +356,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,p-1,n,m,p);
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
        }
-         else if(i==0) // Front face, top right corner 
+         else if(i==0) /* Front face, top right corner */
        {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(n-1,j,k,n,m,p);
@@ -366,7 +366,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
 
        }  
-        else if(i==n-1) // Front face, bottom right corner 
+        else if(i==n-1) /* Front face, bottom right corner */
         {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -378,7 +378,7 @@ void topomat3d(int topology[], int n, int m, int p)
       }
       else if(j==0)
       {
-        if(i!=n-1 && i!=0) //Front face, left column, not corner
+        if(i!=n-1 && i!=0) /*Front face, left column, not corner*/
         {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -387,7 +387,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,p-1,n,m,p);
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
         }
-        else if(i==0) //Top corner
+        else if(i==0) /*Top corner*/
         {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(n-1,j,k,n,m,p);
@@ -397,7 +397,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
 
         }
-        else if(i==n-1) //Bottom corner
+        else if(i==n-1) /*Bottom corner*/
         {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -422,7 +422,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,k-1,n,m,p);
           topology[5*N+r]=get_id(i,j,0,n,m,p);
         }
-        else if(i==0) // Rear Face, top row, not corner
+        else if(i==0) /* Rear Face, top row, not corner*/
         {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(n-1,j,k,n,m,p);
@@ -431,7 +431,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,k-1,n,m,p);
           topology[5*N+r]=get_id(i,j,0,n,m,p);
         }
-       else if(i==n-1) // Read face, bottom row, not corner
+       else if(i==n-1) /* Read face, bottom row, not corner*/
        {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -444,7 +444,7 @@ void topomat3d(int topology[], int n, int m, int p)
     }
       else if (j==m-1)
     {
-         if(i!=n-1 && i!=0) //Rear face, right column, not corner
+         if(i!=n-1 && i!=0) /*Rear face, right column, not corner*/
        {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -453,7 +453,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,k-1,n,m,p);
           topology[5*N+r]=get_id(i,j,0,n,m,p);
        }
-         else if(i==0) // Rear face, top right corner 
+         else if(i==0) /* Rear face, top right corner */
        {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(n-1,j,k,n,m,p);
@@ -463,7 +463,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[5*N+r]=get_id(i,j,0,n,m,p);
 
        }  
-        else if(i==n-1) // Rear face, bottom right corner 
+        else if(i==n-1) /* Rear face, bottom right corner */
         {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -475,7 +475,7 @@ void topomat3d(int topology[], int n, int m, int p)
       }
       else if(j==0)
       {
-        if(i!=n-1 && i!=0) //Rear face, left column, not corner
+        if(i!=n-1 && i!=0) /*Rear face, left column, not corner*/
         {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -519,7 +519,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,k-1,n,m,p);
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
         }
-        else if(i==0) //
+        else if(i==0) 
         {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(n-1,j,k,n,m,p);
@@ -528,7 +528,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,k-1,n,m,p);
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
         }
-       else if(i==n-1) //
+       else if(i==n-1) 
        {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -541,7 +541,7 @@ void topomat3d(int topology[], int n, int m, int p)
     }
       else if (j==m-1)
     {
-         if(i!=n-1 && i!=0) //Rear face, right column, not corner
+         if(i!=n-1 && i!=0) /*Rear face, right column, not corner*/
        {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -550,7 +550,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[4*N+r]=get_id(i,j,k-1,n,m,p);
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
        }
-         else if(i==0) // Rear face, top right corner 
+         else if(i==0) /* Rear face, top right corner */
        {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(n-1,j,k,n,m,p);
@@ -560,7 +560,7 @@ void topomat3d(int topology[], int n, int m, int p)
           topology[5*N+r]=get_id(i,j,k+1,n,m,p);
 
        }  
-        else if(i==n-1) // Rear face, bottom right corner 
+        else if(i==n-1) /* Rear face, bottom right corner */
         {
           topology[r]=get_id(i,0,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
@@ -572,7 +572,7 @@ void topomat3d(int topology[], int n, int m, int p)
       }
       else if(j==0)
       {
-        if(i!=n-1 && i!=0) //Rear face, left column, not corner
+        if(i!=n-1 && i!=0) /*Rear face, left column, not corner*/
         {
           topology[r]=get_id(i,j+1,k,n,m,p);
           topology[N+r]=get_id(i-1,j,k,n,m,p);
