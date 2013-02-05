@@ -11,20 +11,24 @@
 int* mutate_inject(int elite[], int N, int mutant[])
 {
   double ran3(long *idum);
-  static long ijctidum=11;
+  static long ijctidum=15;
   int x=(int)(ran3(&ijctidum)*N);
   int y=(int)(ran3(&ijctidum)*N);
+  int z=(int)(ran3(&ijctidum)*8)+1;
   int i;
+
   for(i=0;i<N;i++){
     if (x<y){
+      z=min(z,(N-y));
       if (i<x){mutant[i]=elite[i];}
-      else if(i>=x && i<y){mutant[i]=elite[i+1];}
-      else if(i==y){mutant[i]=elite[x];}  
+      else if(i>=x && i<y){mutant[i]=elite[i+z];}
+      else if(i>=y && i<(y+z)){mutant[i]=elite[x+(i-y)];}  
       else {mutant[i]=elite[i];}
    }else {
+      z=min(z,(N-x));
       if (i<y){mutant[i]=elite[i];}
-      else if(i>=y && i<x) {mutant[i]=elite[i+1];}
-      else if(i==x){mutant[i]=elite[y];}
+      else if(i>=y && i<x) {mutant[i]=elite[i+z];}
+      else if(i>=x && i<(x+z)){mutant[i]=elite[y+(i-x)];}
       else {mutant[i]=elite[i];}
    } 
   } 

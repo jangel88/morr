@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   MPI_Init(&argc,&argv); 
   int n,m,p;
   n=12;m=4;p=1;
-  int PopSize=1500;
+  int PopSize=3000;
   int MaxGen=300;
   int N=n*m*p;
   FILE *node_file;
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
 
   int id,np; 
 
+//#if 0
   MPI_Comm_rank(MPI_COMM_WORLD,&id);
   MPI_Comm_size(MPI_COMM_WORLD,&np);
 
@@ -118,7 +119,8 @@ int main(int argc, char *argv[])
 
     
   
- MPI_Finalize();    
+ MPI_Finalize();  
+//#endif  
   return 0; 
 }
 
