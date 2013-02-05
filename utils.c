@@ -66,7 +66,8 @@ double tournament(int N, int* Pop[], int PopSize, int xcoors[], int ycoors[], in
 
   double fit[PopSize],tmp;
   double *ind[PopSize]; 
-  int i,j,k,cost[N*6];;
+  int i,j,k;
+  int* cost=malloc(sizeof(int)*N*6);
   double bFit=INT_MAX; 
   for(i=0;i<PopSize;i++){
     computeCost(cost,&Pop[i][0],topology,xcoors,ycoors,zcoors,N);
@@ -74,8 +75,9 @@ double tournament(int N, int* Pop[], int PopSize, int xcoors[], int ycoors[], in
     ind[i]=&fit[i];
     if(fit[i]<bFit){bFit=fit[i];}
   } 
+  free(cost);
   qsort(ind,PopSize,sizeof(double *),compare);
-  for(i=0;i<NumOfElites;i++){
+  for(i=0;i<PopSize;i++){
     elites[i]=ind[i]-fit;
   }
 
