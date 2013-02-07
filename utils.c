@@ -11,7 +11,7 @@
 int* mutate_inject(int elite[], int N, int mutant[])
 {
   double ran3(long *idum);
-  static long ijctidum=15;
+  static long ijctidum=25;
   int x=(int)(ran3(&ijctidum)*N);
   int y=(int)(ran3(&ijctidum)*N);
   int z=(int)(ran3(&ijctidum)*8)+1;
@@ -103,7 +103,6 @@ void create_pop(int node_count, int nodes[], int PopSize, int* Pop[],int id)
 {
   int i,j;
   int r[node_count];
-  
   void randperm(int a, int b, int r[],int id);
   for(i=0;i<PopSize;i++){
     randperm(0,node_count,r,id);
@@ -211,7 +210,7 @@ void computeCost(int cost[], int assignment[], int topology[], int xcoors[],
     for (r=0; r<N; r++){
       j=assignment[topology[r+N*k]];
       i=assignment[r];
-      dx=fabs(xcoors[j]-xcoors[i]); if (dx>25.0/2.0) {dx=fabs(dx-25);}
+      dx=fabs(xcoors[j]-xcoors[i]); if (dx>25.0/2.0) {dx=fabs(dx-25);} /*Interconnect dimensions: 25x16x24 */
       dy=fabs(ycoors[j]-ycoors[i]); if (dy>16.0/2.0) {dy=fabs(dy-16);}
       dz=fabs(zcoors[j]-zcoors[i]); if (dz>24.0/2.0) {dz=fabs(dz-24);}
       cost[r+N*k]=dx+2*dy+dz;

@@ -1,7 +1,3 @@
-
-
-
-
 #include<stdio.h>
 #include<stdlib.h>
 #include"utils.c"
@@ -14,7 +10,7 @@ int main(int argc, char *argv[])
   MPI_Init(&argc,&argv); 
   int n,m,p;
   n=12;m=4;p=1;
-  int PopSize=3000;
+  int PopSize=1000;
   int MaxGen=300;
   int N=n*m*p;
   FILE *node_file;
@@ -29,12 +25,21 @@ int main(int argc, char *argv[])
   int node_count; 
 
   int id,np; 
-
+/*  int test[10]={0,1,2,3,4,5,6,7,8,9};
+  int mut=malloc(10*sizeof(int));
+  int* p_mut;
+  p_mut=mutate_inject(test,10,mut);
+  for(i=0;i<10;i++){
+    printf("mut[%d]: %d\n",i,p_mut[i]);
+  }
+*/
 //#if 0
+
   MPI_Comm_rank(MPI_COMM_WORLD,&id);
   MPI_Comm_size(MPI_COMM_WORLD,&np);
 
   long idum=(long)id;
+
   if (id==0){
     node_file = fopen("/home/Spring13/ORNL/data/coords.txt","r");
     if (node_file==NULL){
