@@ -11,10 +11,10 @@
 int* mutate_inject(int elite[], int N, int mutant[])
 {
   double ran3(long *idum);
-  static long ijctidum=25;
+  static long ijctidum=15;
   int x=(int)(ran3(&ijctidum)*N);
   int y=(int)(ran3(&ijctidum)*N);
-  int z=(int)(ran3(&ijctidum)*8)+1;
+  int z=(int)(ran3(&ijctidum)*N)+1;
   int i;
 
   for(i=0;i<N;i++){

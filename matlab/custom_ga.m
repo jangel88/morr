@@ -10,7 +10,6 @@ PopSize=1000;
 NumOfProcs=tasks;
 mutate_frac=1;
 numberOfElites=5;
-
 MaxGen=1000;
 D=load('/home/Spring13/ORNL/data/coords.txt');
 xcoors=D(:,1);ycoors=D(:,2);zcoors=D(:,3);
@@ -75,10 +74,6 @@ for u=1:MaxGen
     end
     Pop=NextGen;
 end
-
-
-
-
 
 
     function [elites bfit bassign ] = tournament(pop,xcoors,ycoors,zcoors,topology,metric,numberOfElites)

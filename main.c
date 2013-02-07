@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   MPI_Init(&argc,&argv); 
   int n,m,p;
   n=12;m=4;p=1;
-  int PopSize=1000;
+  int PopSize=2000;
   int MaxGen=300;
   int N=n*m*p;
   FILE *node_file;
@@ -100,9 +100,9 @@ int main(int argc, char *argv[])
       Pop[i]=&NextGen[i][0]; 
     }  
   } 
-  int* all_solutions=malloc(np*sizeof(int)); 
-  double* all_fitness=malloc(np*sizeof(double)); 
-  MPI_Gather(bAssign,1,MPI_INT,all_solutions,1,MPI_INT,0,MPI_COMM_WORLD);
+  int* all_solutions=(int*)malloc(node_count*np*sizeof(int));
+  double* all_fitness=calloc(np,sizeof(double)); 
+  MPI_Gather(bAssign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
   MPI_Gather(&bFit,1,MPI_DOUBLE,all_fitness,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
   if(id==0){ 
     double global_best=INT_MAX; 
@@ -111,13 +111,10 @@ int main(int argc, char *argv[])
       if(all_fitness[k]<global_best){global_best=all_fitness[k]; best_rank=k;}
     } 
     printf("%d found best: %f\n",best_rank,global_best); 
-    char* out="ga.out"; 
-    FILE* outfile=fopen(out,"w");
-      fprintf(outfile,"%d's bFit:%f \n",best_rank,global_best);  
-      for(i=0;i<n;i++){
-        fprintf(outfile," %d  %d  %d  %d\n",zcoors[bAssign[n*0+i]],zcoors[bAssign[n*1+i]],zcoors[bAssign[n*2+i]],zcoors[bAssign[n*3+i]]);
-      }
-      fclose(outfile); 
+    for(i=0;i<n;i++){
+    fprintf(stdout," %d  %d  %d  %d\n",zcoors[all_solutions[n*0+i+best_rank*node_count]],zcoors[all_solutions[n*1+i+best_rank*node_count]],zcoors[all_solutions[n*2+i+best_rank*node_count]],zcoors[all_solutions[n*3+i+best_rank*node_count]]);
+    }
+
  
     
   } 
