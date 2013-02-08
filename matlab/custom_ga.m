@@ -8,12 +8,12 @@ m=12;n=4;p=1;
 tasks=n*m*p;
 PopSize=1000;
 NumOfProcs=tasks;
-mutate_frac=1;
+mutate_frac=.9;
 numberOfElites=5;
 MaxGen=1000;
 D=load('/home/Spring13/ORNL/data/coords.txt');
 xcoors=D(:,1);ycoors=D(:,2);zcoors=D(:,3);
-rng(197);
+rng(1337);
 clear D
 topology=topomat3d(m,n,p);
 metric='2norm';
@@ -58,7 +58,7 @@ for u=1:MaxGen
         fitV(c,:)=[toc BestFit];c=c+1;  
     else 
         no_better=no_better+1;
-        if no_better > 100
+        if no_better > 200
             break
         end
     end
@@ -70,11 +70,16 @@ for u=1:MaxGen
     end
     r=myrand(1,numberOfElites);
     for q=numberOfElites+1+NumOfMutants+1:PopSize 
-        NextGen(q,:)=ox_cross(Pop(elites(r(randi(numberOfElites))),:),Pop(elites(r(randi(numberOfElites))),:));
+        NextGen(q,:)=shuffle_cross(Pop(elites(r(randi(numberOfElites))),:),Pop(elites(r(randi(numberOfElites))),:));
     end
     Pop=NextGen;
 end
-
+    function [child] = shuffle_cross(parent1,parent2)
+        d=(parent1==parent2)==0;
+        proto1=parent1(d);
+        child=parent1;
+        child(d)=proto1(randperm(length(proto1)));
+    end
 
     function [elites bfit bassign ] = tournament(pop,xcoors,ycoors,zcoors,topology,metric,numberOfElites)
         [M N]=size(pop);
@@ -141,10 +146,12 @@ end
     end
 
     function mutant=mutate_head2tail(elite)
-        z_range=[2 4 6 8 16 24];
-        z=z_range(randi(6));
-        holding=elite;
-        mutant=[holding(z+1:end) holding(1:z)];
+        z_range=0:n-1;%[2 4 6 8 16 24];
+        z=z_range(randi(length(z_range)));
+        t=randi([0,m-1]);
+        start=t*n+1;
+        stop=(t+1)*n;
+        mutant=[elite(1:(start-1)) elite((start+z+1):stop) elite(start:start+z) elite((stop+1):end)];
     end
     function mutant=mutate_mirror(elite)
         z_range=[1 3 5 7 15 23];
@@ -154,7 +161,7 @@ end
     end
 
     function mutant=mutate(elite)
-      t=1;%randi(2);
+      t=1;%randi(3);
       tmp=elite;
       while(t>0)
         t=t-1;
