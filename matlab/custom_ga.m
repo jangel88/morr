@@ -13,7 +13,7 @@ numberOfElites=5;
 MaxGen=1000;
 D=load('/home/Spring13/ORNL/data/coords.txt');
 xcoors=D(:,1);ycoors=D(:,2);zcoors=D(:,3);
-rng(1337);
+rng(7919);
 clear D
 topology=topomat3d(m,n,p);
 metric='2norm';

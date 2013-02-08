@@ -9,9 +9,9 @@ int main(int argc, char *argv[])
 
   MPI_Init(&argc,&argv); 
   int n,m,p;
-  n=12;m=4;p=1;
+  n=24;m=4;p=1;
   int PopSize=2000;
-  int MaxGen=300;
+  int MaxGen=1000;
   int N=n*m*p;
   FILE *node_file;
   FILE *subset_file;  
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   int zcoors[19200];
   int topology[6*n*m*p];
   int i,j,k;
-  int NumOfElites=100,elites[PopSize]; 
+  int NumOfElites=10,elites[PopSize]; 
   int node_count; 
 
   int id,np; 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     }  
     get_coords(node_file,xcoors,ycoors,zcoors,nid); 
     fclose(node_file);
-    subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_1_24_1_2_1.txt","r");
+    subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_2_24_1_2_1.txt","r");
     if (subset_file == NULL){ 
       printf("Unable to open file");
       exit(1);
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     } 
     printf("%d found best: %f\n",best_rank,global_best); 
     for(i=0;i<n;i++){
-    fprintf(stdout," %d  %d  %d  %d\n",zcoors[all_solutions[n*0+i+best_rank*node_count]],zcoors[all_solutions[n*1+i+best_rank*node_count]],zcoors[all_solutions[n*2+i+best_rank*node_count]],zcoors[all_solutions[n*3+i+best_rank*node_count]]);
+      fprintf(stdout," %d  %d  %d  %d\n",zcoors[all_solutions[n*0+i+best_rank*node_count]],zcoors[all_solutions[n*1+i+best_rank*node_count]],zcoors[all_solutions[n*2+i+best_rank*node_count]],zcoors[all_solutions[n*3+i+best_rank*node_count]]);
     }
 
  

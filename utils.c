@@ -14,7 +14,8 @@ int* mutate_inject(int elite[], int N, int mutant[])
   static long ijctidum=15;
   int x=(int)(ran3(&ijctidum)*N);
   int y=(int)(ran3(&ijctidum)*N);
-  int z=(int)(ran3(&ijctidum)*N)+1;
+  int z_range[6]={0,1,3,5,7,15};
+  int z=z_range[(int)(ran3(&ijctidum)*6)]; 
   int i;
 
   for(i=0;i<N;i++){
@@ -73,16 +74,16 @@ double tournament(int N, int* Pop[], int PopSize, int xcoors[], int ycoors[], in
   int i,j,k;
   int* cost=malloc(sizeof(int)*N*6);
   double bFit=INT_MAX; 
-  for(i=0;i<PopSize;i++){
+  for(i=0;i<PopSize;i++){  // Compute fitness of each individual
     computeCost(cost,&Pop[i][0],topology,xcoors,ycoors,zcoors,N);
     fit[i]=norm2(cost,N*6); 
     ind[i]=&fit[i];
     if(fit[i]<bFit){bFit=fit[i];}
   } 
   free(cost);
-  qsort(ind,PopSize,sizeof(double *),compare);
+  qsort(ind,PopSize,sizeof(double *),compare); // Sort by fit
   for(i=0;i<PopSize;i++){
-    elites[i]=ind[i]-fit;
+    elites[i]=ind[i]-fit; // recover indices
   }
 
   return bFit;
@@ -161,7 +162,9 @@ double avg_cost(int cost[], int N)
 
 
 double ran3(long *idum)
-/* ran3 from Numerical Recipes in C */
+/* ran3 from Numerical Recipes in C 
+ * 
+ * Generate uniform (0,1)*/
 {
   static int inext,inextp;
   static long ma[56];
@@ -214,7 +217,6 @@ void computeCost(int cost[], int assignment[], int topology[], int xcoors[],
       dy=fabs(ycoors[j]-ycoors[i]); if (dy>16.0/2.0) {dy=fabs(dy-16);}
       dz=fabs(zcoors[j]-zcoors[i]); if (dz>24.0/2.0) {dz=fabs(dz-24);}
       cost[r+N*k]=dx+2*dy+dz;
-
     }
   }
   
