@@ -9,7 +9,7 @@ tasks=n*m*p;
 PopSize=1000;
 NumOfProcs=tasks;
 mutate_frac=.9;
-numberOfElites=5;
+numberOfElites=15;
 MaxGen=1000;
 D=load('/home/Spring13/ORNL/data/coords.txt');
 xcoors=D(:,1);ycoors=D(:,2);zcoors=D(:,3);

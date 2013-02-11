@@ -2,6 +2,10 @@
 #include<stdlib.h>
 #include"utils.c"
 #include<mpi.h>
+/* Most if statements are structured as 
+ * if (cond) {command;} in one line for
+ * compactness*/
+
 
 int main(int argc, char *argv[]) 
 
@@ -10,8 +14,8 @@ int main(int argc, char *argv[])
   MPI_Init(&argc,&argv); 
   int n,m,p;
   n=24;m=4;p=1;
-  int PopSize=2000;
-  int MaxGen=1000;
+  int PopSize=1000;
+  int MaxGen=3000;
   int N=n*m*p;
   FILE *node_file;
   FILE *subset_file;  
@@ -114,9 +118,6 @@ int main(int argc, char *argv[])
     for(i=0;i<n;i++){
       fprintf(stdout," %d  %d  %d  %d\n",zcoors[all_solutions[n*0+i+best_rank*node_count]],zcoors[all_solutions[n*1+i+best_rank*node_count]],zcoors[all_solutions[n*2+i+best_rank*node_count]],zcoors[all_solutions[n*3+i+best_rank*node_count]]);
     }
-
- 
-    
   } 
 
     

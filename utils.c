@@ -2,11 +2,17 @@
 #include<math.h>
 #include<limits.h>
 
+#define XDIM 25 // Dimension of toroidal interconnect
+#define YDIM 16
+#define ZDIM 24
 #define MBIG 1000000000
 #define MSEED 161803398
 #define MZ 0
 #define FAC (1.0/MBIG)
 #define min(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
+
+/* If statements are mostly structured as
+ * if (cond) {command;} in one line for compactness*/
 
 int* mutate_inject(int elite[], int N, int mutant[])
 {
@@ -213,9 +219,9 @@ void computeCost(int cost[], int assignment[], int topology[], int xcoors[],
     for (r=0; r<N; r++){
       j=assignment[topology[r+N*k]];
       i=assignment[r];
-      dx=fabs(xcoors[j]-xcoors[i]); if (dx>25.0/2.0) {dx=fabs(dx-25);} /*Interconnect dimensions: 25x16x24 */
-      dy=fabs(ycoors[j]-ycoors[i]); if (dy>16.0/2.0) {dy=fabs(dy-16);}
-      dz=fabs(zcoors[j]-zcoors[i]); if (dz>24.0/2.0) {dz=fabs(dz-24);}
+      dx=fabs(xcoors[j]-xcoors[i]); if (dx>(double) XDIM/2.0) {dx=fabs(dx-XDIM);} /*Interconnect dimensions: 25x16x24 */
+      dy=fabs(ycoors[j]-ycoors[i]); if (dy>(double) YDIM/2.0) {dy=fabs(dy-YDIM);}
+      dz=fabs(zcoors[j]-zcoors[i]); if (dz>(double) ZDIM/2.0) {dz=fabs(dz-ZDIM);}
       cost[r+N*k]=dx+2*dy+dz;
     }
   }
@@ -294,7 +300,7 @@ void get_indices(int id, int indices[], int n, int m, int p)
 int get_id(int i, int j, int k, int n, int m, int p) 
 { 
   int id;
-  if (p==1) { if (n==1){id=j;} else if (m==1) {id=i;} else {id=n*j+i; }}
+  if (p==1) { if (n==1){id=j;} else if (m==1) {id=i;} else {id=n*j+i; }} // written for compactness, not beauty
   else if (m==1) {if (n==1) {id=k;} else if(p==1) {id=i;} else {id=n*k+i;}}
   else if (n==1) {if (m==1) {id=k;} else if(p==1) {id=j;} else {id=m*k+j;}}
   else id=m*n*k+n*j+i;
