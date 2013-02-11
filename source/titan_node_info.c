@@ -43,3 +43,8 @@ nodeid query_nodeid(){
   return(atoi(name_offset));
 }
 
+float distance_between_nodes(nodeid n1, nodeid n2){
+const float C_same_node=0, C_same_router=1e-2, C_x=1.0, C_y=2.0, C_z=1.0; 
+
+
+}
