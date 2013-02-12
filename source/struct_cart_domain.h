@@ -4,7 +4,7 @@ typedef struct domain
 } domain;
 typedef struct subdomain
 {
-  int x,y,z;
+  int i,j,k;
 } subdomain;
 
 typedef enum metric{

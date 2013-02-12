@@ -15,20 +15,20 @@ int validate_domain_size(domain space, int node_count)
   return (node_count==(space.max_x*space.max_y*space.max_z));
 }
 
-int get_position(int i, int j, int k, domain space) 
+int get_position(subdomain element,domain space)//int i, int j, int k,  
 { 
   int position;
   if (space.max_z==1) { 
-    if (space.max_x==1){position=i;} 
-    else if (space.max_y==1) {position=j;} 
-    else {position=space.max_y*j+i; }
+    if (space.max_x==1){position=element.i;} 
+    else if (space.max_y==1) {position=element.j;} 
+    else {position=space.max_y*element.j+element.i; }
   }else if (space.max_y==1) {
-    if (space.max_x==1) {position=k;} 
-    else {position=space.max_x*k+i;}
+    if (space.max_x==1) {position=element.k;} 
+    else {position=space.max_x*element.k+element.j;}
   }else if (space.max_x==1) {
-     position=space.max_y*k+j;
+     position=space.max_y*element.k+element.i;
   }else{
-     position=space.max_x*space.max_y*k+space.max_y*j+i;
+     position=space.max_x*space.max_y*element.k+space.max_y*element.j+element.i;
   }
   return position;
 }
@@ -36,9 +36,9 @@ int get_position(int i, int j, int k, domain space)
 subdomain get_domain_coord(int position, domain space)
 {
   subdomain element;
-  element.x=position%space.max_y;
-  element.y=((position-element.x)/space.max_y)%space.max_x; 
-  element.z=(position-element.x-space.max_y*element.y)/(space.max_x*space.max_y);
+  element.i=position%space.max_y;
+  element.j=((position-element.i)/space.max_y)%space.max_x; 
+  element.k=(position-element.i-space.max_y*element.j)/(space.max_x*space.max_y);
   return element;
 }
 
@@ -52,17 +52,17 @@ subdomain get_domain_coord(int position, domain space)
         neigh[0]=get_position(i,j+1,k) 
  */
 
-#if 0
+
 int main(int argc, char** argv)
 {
 
-  int m=1,n=5,p=1;
+  int m=2,n=5,p=3;
   int i;
   int N=m*n*p;
   domain space=init_domain(m,n,p);
   for(i=0;i<N;i++){
     subdomain p=get_domain_coord(i,space);
-    printf("%d has coors (%d,%d,%d)\n",get_position(p.x,p.y,p.z,space),p.x,p.y,p.z);
+    printf("%d has coors (%d,%d,%d)\n",get_position(p,space),p.i,p.j,p.k);
   }
 }   
-#endif     
+
