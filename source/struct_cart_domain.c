@@ -1,20 +1,32 @@
 #include"struct_cart_domain.h"
 #include<stdio.h>
-
 #define TRUE 1
 #define FALSE 0
 
-domain init_domain(int max_j, int max_i, int max_k)
+domain init_domain(int max_i, int max_j, int max_k)
+
 {
   domain space;
-  space.max_j=max_j;
   space.max_i=max_i;
+  space.max_j=max_j;
   space.max_k=max_k;
   return space; 
 } 
 int validate_domain_size(domain space, int node_count)
 {
   return (node_count==(space.max_i*space.max_j*space.max_k));
+}
+
+int validate_subdomain(subdomain element, domain space)
+{
+  if( element.i < 0 || element.i >= space.max_i || 
+      element.j < 0 || element.j >= space.max_j || 
+      element.k < 0 || element.k >= space.max_k    ) {
+    return FALSE; 
+  } else { 
+    return TRUE; 
+  }
+
 }
 
 int get_position(subdomain element,domain space)//int i, int j, int k,  
@@ -72,9 +84,6 @@ int main(int argc, char** argv)
   int i;
   int N=m*n*p;
   int topology[N*6];
-
-
-
   subdomain elements[N]; 
   domain space=init_domain(m,n,p);
   topomat3d(topology,space);
@@ -83,9 +92,5 @@ int main(int argc, char** argv)
     subdomain p=get_domain_coord(i,space);
     printf("%d has coors (%d,%d,%d)\n",get_position(p,space),p.i,p.j,p.k);
   }
-
-
-
-
   
 }

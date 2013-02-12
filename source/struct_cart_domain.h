@@ -11,8 +11,10 @@ typedef enum metric{
   norm, avg, max
 } metric; 
 
-domain init_domain(int max_x, int max_y, int max_z);
+domain init_domain(int max_i, int max_j, int max_k);
 int validate_domain_size(domain space, int node_count);
+int validate_subdomain(subdomain element, int node_count);
+int get_position(subdomain element,domain space)
 subdomain get_domain_coord(int position,domain space);
 //float cost_metric(nodeid* node_list,metric);  
 
