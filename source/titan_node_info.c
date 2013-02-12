@@ -2,32 +2,35 @@
 #include <mpi.h>
 #include "titan_node_info.h" 
 
+#define TRUE 1
+#define FALSE 0
+
 int init_node_info(void){
   //Nothing to do here now. Node coords are initialized in the header file. 
   return(0); 
 }
 
 
-nodeid_validity valid_nodeid(nodeid nid)
+int valid_nodeid(nodeid nid)
 {
   if  (nid>-1 && nid<19200){
-    return VALID;
+    return TRUE;
   } else {
-    return INVALID;
+    return FALSE;
   }
 }
 
-nodeid_validity valid_node_list(int N, *nodeid node_list)
+int valid_node_list(int N, *nodeid node_list)
 /* Check that node_list of length N contains only 
  * valid node ids*/
 {
   int i;
   for(i=0;i<N;i++){
-    if (valid_nodeid(node_list[i])!=VALID){
-      return INVALID;
+    if (valid_nodeid(node_list[i])!=TRUE){
+      return FALSE;
     }
   } 
-  return VALID; 
+  return TRUE; 
 }
 
 nodeid query_nodeid(){

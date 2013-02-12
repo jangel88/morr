@@ -1,6 +1,9 @@
 #include"struct_cart_domain.h"
 #include<stdio.h>
 
+#define TRUE 1
+#define FALSE 0
+
 domain init_domain(int max_j, int max_i, int max_k)
 {
   domain space;
