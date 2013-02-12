@@ -1,11 +1,11 @@
 #include"struct_cart_domain.h"
 #include<stdio.h>
 
-domain init_domain(int max_j, int max_i, int max_k)
+domain init_domain(int max_i, int max_j, int max_k)
 {
   domain space;
-  space.max_j=max_j;
   space.max_i=max_i;
+  space.max_j=max_j;
   space.max_k=max_k;
   return space; 
 } 
