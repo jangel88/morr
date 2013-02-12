@@ -14,6 +14,18 @@ int validate_domain_size(domain space, int node_count)
   return (node_count==(space.max_i*space.max_j*space.max_k));
 }
 
+int validate_subdomain(subdomain element, domain space)
+{
+  if( element.i < 0 || element.i >= space.max_i || 
+      element.j < 0 || element.j >= space.max_j || 
+      element.k < 0 || element.k >= space.max_k    ) {
+    return FALSE; 
+  } else { 
+    return TRUE; 
+  }
+
+}
+
 int get_position(subdomain element,domain space)//int i, int j, int k,  
 {  
   return space.max_j*space.max_i*element.k+space.max_i*element.j+element.i;
