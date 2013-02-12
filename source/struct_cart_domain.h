@@ -1,6 +1,6 @@
 typedef struct domain 
 {
-  int max_x,max_y,max_z;
+  int max_i,max_j,max_k;
 } domain;
 typedef struct subdomain
 {

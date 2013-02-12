@@ -11,9 +11,9 @@ int main(int argc, char *argv[])
 
 {
 
-  MPI_Init(&argc,&argv); 
+//  MPI_Init(&argc,&argv); 
   int n,m,p;
-  n=12;m=4;p=1;
+  n=3;m=3;p=3;
   int PopSize=1000;
   int MaxGen=500;
   int N=n*m*p;
@@ -23,13 +23,18 @@ int main(int argc, char *argv[])
   int xcoors[19200];
   int ycoors[19200];
   int zcoors[19200];
-  int topology[6*n*m*p];
+  int topology[6*N];
 //  int topology2[6*n*m*p]; 
   int i,j,k;
   int NumOfElites=10,elites[PopSize]; 
   int node_count; 
 
   int id,np; 
+  topomat3d(topology,n,m,p);
+  for(i=0;i<N;i++){
+    printf("%d %d %d %d %d %d\n",topology[i],topology[i+N],topology[i+2*N],topology[i+3*N],topology[i+4*N],topology[i+5*N]);
+  }
+
 
 /* Some code used to test functions in utils.c 
  * ------------------------------------------*/
@@ -54,7 +59,7 @@ int main(int argc, char *argv[])
     printf("mut[%d]: %d\n",i,p_mut[i]);
   }
 */
-//#if 0
+#if 0
 
 // Start program
 // -------------
@@ -142,7 +147,7 @@ int main(int argc, char *argv[])
     
   
  MPI_Finalize();  
-//#endif  
+#endif  
   return 0; 
 }
 
