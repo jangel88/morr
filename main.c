@@ -13,9 +13,9 @@ int main(int argc, char *argv[])
 
   MPI_Init(&argc,&argv); 
   int n,m,p;
-  n=24;m=4;p=1;
+  n=12;m=4;p=1;
   int PopSize=1000;
-  int MaxGen=3000;
+  int MaxGen=500;
   int N=n*m*p;
   FILE *node_file;
   FILE *subset_file;  
@@ -24,11 +24,28 @@ int main(int argc, char *argv[])
   int ycoors[19200];
   int zcoors[19200];
   int topology[6*n*m*p];
+//  int topology2[6*n*m*p]; 
   int i,j,k;
   int NumOfElites=10,elites[PopSize]; 
   int node_count; 
 
   int id,np; 
+
+/* Some code used to test functions in utils.c 
+ * ------------------------------------------*/
+
+/*  topomat3d(topology,n,m,p);
+  topomat3d_new(topology2,n,m,p);
+  printf("old\n");
+  for(i=0;i<n;i++){
+    printf(" %d %d %d %d %d %d\n",topology[i+0*N],topology[i+1*N],topology[i+2*N],topology[i+3*N],topology[i+4*N],topology[i+5*N]); 
+  } 
+  printf("new\n");
+  for(i=0;i<n;i++){
+    printf(" %d %d %d %d %d %d\n",topology2[i+0*N],topology2[i+1*N],topology2[i+2*N],topology2[i+3*N],topology2[i+4*N],topology2[i+5*N]); 
+  } 
+*/
+
 /*  int test[10]={0,1,2,3,4,5,6,7,8,9};
   int mut=malloc(10*sizeof(int));
   int* p_mut;
@@ -39,6 +56,8 @@ int main(int argc, char *argv[])
 */
 //#if 0
 
+// Start program
+// -------------
   MPI_Comm_rank(MPI_COMM_WORLD,&id);
   MPI_Comm_size(MPI_COMM_WORLD,&np);
 

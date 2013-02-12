@@ -308,12 +308,33 @@ int get_id(int i, int j, int k, int n, int m, int p)
   return id;
 }
 
+void topomat3d(int topology[],int n, int m, int p)
+{
+  int indices[3];
+  int id;
+  int r,q;
+  int i,j,k;;
+  int N=n*m*p;
+
+  for(r=0;r<N;r++){
+    get_indices(r,indices,n,m,p);
+    i=indices[0];j=indices[1];k=indices[2];
+
+    topology[r]=get_id(i,(j+1)%m,k,n,m,p);
+    topology[N+r]=get_id((i-1)%n+((i-1)%n<0)*n,j,k,n,m,p);
+    topology[2*N+r]=get_id(i,(j-1)%m+((j-1)%m<0)*m,k,n,m,p);
+    topology[3*N+r]=get_id((i+1)%n,j,k,n,m,p);
+    topology[4*N+r]=get_id(i,j,(k-1)%p+((k-1)%p<0)*p,n,m,p);
+    topology[5*N+r]=get_id(i,j,(k+1)%p,n,m,p);
+   }
+ 
+}
+#if 0
+/* Old ugly topology matrix generator 
+ * ---------------------------------*/
+
 void topomat3d(int topology[], int n, int m, int p)
 {
-
-
-
-
   int indices[3];
   int id;
   int r,q;
@@ -617,6 +638,7 @@ void topomat3d(int topology[], int n, int m, int p)
     }
 }
 }
+#endif
        
   
   
