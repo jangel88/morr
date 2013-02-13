@@ -1,5 +1,6 @@
 #include"struct_cart_domain.h"
 #include<stdio.h>
+
 #define TRUE 1
 #define FALSE 0
 
@@ -29,7 +30,7 @@ int validate_subdomain(subdomain element, domain space)
 
 }
 
-int get_position(subdomain element,domain space)//int i, int j, int k,  
+int get_position(subdomain element,domain space)
 {  
   return space.max_j*space.max_i*element.k+space.max_i*element.j+element.i;
 }
@@ -43,50 +44,50 @@ subdomain get_domain_coord(int position, domain space)
   return element;
 }
 
-int find_neighbors(domain space, subdomain element, subdomain* neighbor){
+int find_neighbors(domain space, subdomain element, subdomain* neighbor)
+{
   // -i 
-  neighbor[0].i = element.i==0 ? space.max_i-1 : element.i-1
-  neighbor[0].j = element.j
-  neighbor[0].k = element.k
+  neighbor[0].i = element.i==0 ? space.max_i-1 : element.i-1;
+  neighbor[0].j = element.j;
+  neighbor[0].k = element.k;
   // +i
-  neighbor[1].i = element.i==space.max_i-1 ? 0 : element.i+1
-  neighbor[1].j = element.j
-  neighbor[1].k = element.k
+  neighbor[1].i = element.i==space.max_i-1 ? 0 : element.i+1;
+  neighbor[1].j = element.j;
+  neighbor[1].k = element.k;
   // -j 
-  neighbor[2].i = element.i
-  neighbor[2].j = element.j==0 ? space.max_j-1 : element.j-1
-  neighbor[2].k = element.k
+  neighbor[2].i = element.i;
+  neighbor[2].j = element.j==0 ? space.max_j-1 : element.j-1;
+  neighbor[2].k = element.k;
   // +j
-  neighbor[3].i = element.i
-  neighbor[3].j = element.j==space.max_j-1 ? 0 : element.j+1
-  neighbor[3].k = element.k
+  neighbor[3].i = element.i;
+  neighbor[3].j = element.j==space.max_j-1 ? 0 : element.j+1;
+  neighbor[3].k = element.k;
   // -k 
-  neighbor[4].i = element.i
-  neighbor[4].j = element.j
-  neighbor[4].k = element.k==0 ? space.max_k-1 : element.k-1
+  neighbor[4].i = element.i;
+  neighbor[4].j = element.j;
+  neighbor[4].k = element.k==0 ? space.max_k-1 : element.k-1;
   // +k
-  neighbor[5].i = element.i
-  neighbor[5].j = element.j
-  neighbor[5].k = element.k==space.max_k-1 ? 0 : element.k+1
+  neighbor[5].i = element.i;
+  neighbor[5].j = element.j;
+  neighbor[5].k = element.k==space.max_k-1 ? 0 : element.k+1;
 }
 
 void topomat3d(int topology[],domain space)
 {
-
   subdomain q;
   int n,m,p;
   m=space.max_j;
   n=space.max_i; 
   p=space.max_k;
   int r,s;
-  int i,j,k;;
+  int i,j,k;
   int N=n*m*p;
   
   for(r=0;r<N;r++){
     q=get_domain_coord(r,space);
     i=q.i;j=q.j;k=q.k;
-    subdomain neigh[6]={{i,(j+1)%m,k},{(i-1)%n+((i-1)%n<0)*n,j,k},{i,(j-1)%m+((j-1)%m<0)*m,k},{(i+1)%n,j,k},{i,j,(k-1)%p+((k-1)%p<0)*p},{i,j,(k+1)%p}}; //initialize neighbors inline
- 
+    subdomain neigh[6];
+    find_neighbors(space,q,neigh);
     for(s=0;s<6;s++){
       topology[s*N+r]=get_position(neigh[s],space);
     } 
@@ -114,10 +115,11 @@ int main(int argc, char** argv)
   subdomain elements[N]; 
   domain space=init_domain(m,n,p);
   topomat3d(topology,space);
-
+  
   for(i=0;i<N;i++){
-    subdomain p=get_domain_coord(i,space);
-    printf("%d has coors (%d,%d,%d)\n",get_position(p,space),p.i,p.j,p.k);
+//  subdomain p=get_domain_coord(i,space);
+//  printf("%d has coors (%d,%d,%d)\n",get_position(p,space),p.i,p.j,p.k);
+    printf("%d has neigh: %d %d %d %d %d %d\n",i,topology[i],topology[i+N],topology[i+2*N],topology[i+3*N],topology[i+4*N],topology[i+5*N]);
   }
   
 }
