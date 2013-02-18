@@ -2,6 +2,7 @@
 #include<math.h>
 #include<limits.h>
 
+
 #define XDIM 25 // Dimension of toroidal interconnect
 #define YDIM 16
 #define ZDIM 24
@@ -11,6 +12,9 @@
 #define FAC (1.0/MBIG)
 #define min(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 
+
+typedef int nodeid; 
+float distance_between_nodes(nodeid, nodeid); 
 /* If statements are mostly structured as
  * if (cond) {command;} in one line for compactness*/
 
@@ -66,19 +70,19 @@ int* mutate_swap(int elite[], int N, int mutant[])
 
 
 
-double tournament(int N, int* Pop[], int PopSize, int xcoors[], int ycoors[], int zcoors[],int topology[],
-                int elites[], int NumOfElites)
+double tournament(int N, int* Pop[], int PopSize,const int xcoors[],const int ycoors[],const int zcoors[],
+                int topology[],int elites[], int NumOfElites)
 {
 
-  double norm2(int cost[], int N);
+  double norm2(float cost[], int N);
   int compare(const void * a, const void * b);
-  void computeCost(int cost[], int assignment[], int topology[], int xcoors[],
-                 int ycoors[], int zcoors[],  int N);
+  void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
+                 const int ycoors[],const int zcoors[],  int N);
 
   double fit[PopSize],tmp;
   double *ind[PopSize]; 
   int i,j,k;
-  int* cost=malloc(sizeof(int)*N*6);
+  float* cost=malloc(sizeof(float)*N*6);
   double bFit=INT_MAX; 
   for(i=0;i<PopSize;i++){  // Compute fitness of each individual
     computeCost(cost,&Pop[i][0],topology,xcoors,ycoors,zcoors,N);
@@ -143,7 +147,7 @@ void randperm(int a, int b, int r[],int id)
   }
 }
 
-double norm2(int cost[], int N)
+double norm2(float cost[], int N)
 {
   int i;
   double norm=0.0;
@@ -154,7 +158,7 @@ double norm2(int cost[], int N)
 
 }
 
-double avg_cost(int cost[], int N)
+double avg_cost(float cost[], int N)
 {
    int i;
    double tmp=0;
@@ -209,23 +213,24 @@ double ran3(long *idum)
 
 }
 
-void computeCost(int cost[], int assignment[], int topology[], int xcoors[],
-                 int ycoors[], int zcoors[],  int N)
+void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
+               const int ycoors[],const int zcoors[],  int N)
 {
   int r,i,j,k;
+
 
   int dx,dy,dz;
   for (k=0; k<6; k++){
     for (r=0; r<N; r++){
       j=assignment[topology[r+N*k]];
       i=assignment[r];
-      dx=fabs(xcoors[j]-xcoors[i]); if (dx>(double) XDIM/2.0) {dx=fabs(dx-XDIM);} /*Interconnect dimensions: 25x16x24 */
-      dy=fabs(ycoors[j]-ycoors[i]); if (dy>(double) YDIM/2.0) {dy=fabs(dy-YDIM);}
-      dz=fabs(zcoors[j]-zcoors[i]); if (dz>(double) ZDIM/2.0) {dz=fabs(dz-ZDIM);}
-      cost[r+N*k]=dx+2*dy+dz;
+//    dx=fabs(xcoors[3*j]-xcoors[3*i]); if (dx>(double) XDIM/2.0) {dx=fabs(dx-XDIM);} /*Interconnect dimensions: 25x16x24 */
+//    dy=fabs(ycoors[3*j]-ycoors[3*i]); if (dy>(double) YDIM/2.0) {dy=fabs(dy-YDIM);}
+//    dz=fabs(zcoors[3*j]-zcoors[3*i]); if (dz>(double) ZDIM/2.0) {dz=fabs(dz-ZDIM);}
+      cost[r+N*k]=distance_between_nodes((nodeid) i,(nodeid) j);//dx+2*dy+dz; 
     }
-  }
   
+  }
 }                 
 
 void get_subset(FILE *fp, int subset_nodes[], int node_count)
@@ -250,7 +255,9 @@ int count_lines(FILE *fp)
   }
   return line_count; 
 }
-
+/* Using coords from titan_node_info.h
+ * -----------------------------------
+ *
 void get_coords(FILE *fp, int xcoors[], int ycoors[], int zcoors[], int nid[])
 {
   int i,j,k,n,m; 
@@ -283,6 +290,7 @@ void get_coords(FILE *fp, int xcoors[], int ycoors[], int zcoors[], int nid[])
      }
  
 }
+*/
 void get_indices(int id, int indices[], int n, int m, int p)
 /* Return (i,j,k) indices based on domain size and id
  */
@@ -307,7 +315,8 @@ int get_id(int i, int j, int k, int n, int m, int p)
   
   return id;
 }
-
+/* Now using generator in source/struct_cart_domain.c
+ * -------------------------------------------------
 void topomat3d(int topology[],int n, int m, int p)
 {
   int indices[3];
@@ -329,6 +338,7 @@ void topomat3d(int topology[],int n, int m, int p)
    }
  
 }
+*/
 #if 0
 /* Old ugly topology matrix generator 
  * ---------------------------------*/

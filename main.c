@@ -2,6 +2,10 @@
 #include<stdlib.h>
 #include"utils.c"
 #include<mpi.h>
+
+#include<titan_node_info.c>
+#include<struct_cart_domain.c>
+
 /* Most if statements are structured as 
  * if (cond) {command;} in one line for
  * compactness*/
@@ -11,30 +15,49 @@ int main(int argc, char *argv[])
 
 {
 
-//  MPI_Init(&argc,&argv); 
+  MPI_Init(&argc,&argv); 
   int n,m,p;
-  n=3;m=3;p=3;
-  int PopSize=1000;
-  int MaxGen=500;
+  n=4;m=12;p=1;
+  int PopSize=1800;
+  int MaxGen=1000;
   int N=n*m*p;
   FILE *node_file;
   FILE *subset_file;  
   int nid[19200];
-  int xcoors[19200];
-  int ycoors[19200];
-  int zcoors[19200];
+//int xcoors[19200];
+//int ycoors[19200];
+//int zcoors[19200];
+  const int* xcoors;
+  const int* ycoors;
+  const int* zcoors;
+  double r1,r2;
+  int rn;
   int topology[6*N];
 //  int topology2[6*n*m*p]; 
   int i,j,k;
   int NumOfElites=10,elites[PopSize]; 
   int node_count; 
-
+  domain space;
   int id,np; 
+  xcoors=&titan_node_coords[0][0];
+  ycoors=&titan_node_coords[0][1];
+  zcoors=&titan_node_coords[0][2];
+   
+/*  
+  for(i=0;i<15;i++){
+      printf("x[%d]: %d y[%d]: %d z[%d]: %d\n",i,titan_node_coords[i][0],i,titan_node_coords[i][1],i,titan_node_coords[i][2]);
+    }
+  printf("Pointers\n");
+  for(i=0;i<15;i++){
+    printf("x[%d]: %d y[%d]: %d z[%d]: %d\n",i,xcoors[3*i],i,ycoors[3*i],i,zcoors[3*i]);
+  }
+*/ 
+/* 
   topomat3d(topology,n,m,p);
   for(i=0;i<N;i++){
     printf("%d %d %d %d %d %d\n",topology[i],topology[i+N],topology[i+2*N],topology[i+3*N],topology[i+4*N],topology[i+5*N]);
   }
-
+*/
 
 /* Some code used to test functions in utils.c 
  * ------------------------------------------*/
@@ -59,7 +82,7 @@ int main(int argc, char *argv[])
     printf("mut[%d]: %d\n",i,p_mut[i]);
   }
 */
-#if 0
+//#if 0
 
 // Start program
 // -------------
@@ -69,14 +92,14 @@ int main(int argc, char *argv[])
   long idum=(long)id;
 
   if (id==0){
-    node_file = fopen("/home/Spring13/ORNL/data/coords.txt","r");
-    if (node_file==NULL){
-      printf("Unable to open file");
-      exit(1);
-    }  
-    get_coords(node_file,xcoors,ycoors,zcoors,nid); 
-    fclose(node_file);
-    subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_2_24_1_2_1.txt","r");
+//  node_file = fopen("/home/Spring13/ORNL/data/coords.txt","r");
+//  if (node_file==NULL){
+//    printf("Unable to open file");
+//    exit(1);
+//  }  
+//  get_coords(node_file,xcoors,ycoors,zcoors,nid); 
+//  fclose(node_file);
+    subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_1_24_1_2_1.txt","r");
     if (subset_file == NULL){ 
       printf("Unable to open file");
       exit(1);
@@ -91,12 +114,13 @@ int main(int argc, char *argv[])
     fclose(subset_file); 
   }
   MPI_Barrier(MPI_COMM_WORLD);
-  MPI_Bcast((void *)xcoors,19200,MPI_INT,0,MPI_COMM_WORLD); 
-  MPI_Bcast((void *)ycoors,19200,MPI_INT,0,MPI_COMM_WORLD);
-  MPI_Bcast((void *)zcoors,19200,MPI_INT,0,MPI_COMM_WORLD); 
+//MPI_Bcast((void *)xcoors,19200,MPI_INT,0,MPI_COMM_WORLD); 
+//MPI_Bcast((void *)ycoors,19200,MPI_INT,0,MPI_COMM_WORLD);
+//MPI_Bcast((void *)zcoors,19200,MPI_INT,0,MPI_COMM_WORLD); 
   MPI_Bcast((void *)subset_nodes,node_count,MPI_INT,0,MPI_COMM_WORLD);
-
-  topomat3d(topology,n,m,p);
+  space=init_domain(m,n,p);
+  
+  topomat3d(topology,space);
   
   int *Pop[PopSize]; 
   create_pop(node_count,subset_nodes,PopSize,Pop,id); 
@@ -115,9 +139,9 @@ int main(int argc, char *argv[])
     }
     for(i=NumOfElites;i<PopSize;i++){   
       mutants[i-NumOfElites]=malloc(node_count*sizeof(int)); /*Populate */
-      double r1=ran3(&idum);
-      double r2=ran3(&idum);
-      int rn=(int)(r2*NumOfElites);
+      r1=ran3(&idum);
+      r2=ran3(&idum);
+      rn=(int)(r2*NumOfElites);
       if (r1>.500){ /* coin flip */
         NextGen[i]=mutate_swap(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
       }else{ 
@@ -128,6 +152,7 @@ int main(int argc, char *argv[])
       Pop[i]=&NextGen[i][0]; 
     }  
   } 
+  
   int* all_solutions=(int*)malloc(node_count*np*sizeof(int));
   double* all_fitness=calloc(np,sizeof(double)); 
   MPI_Gather(bAssign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
@@ -139,15 +164,16 @@ int main(int argc, char *argv[])
       if(all_fitness[k]<global_best){global_best=all_fitness[k]; best_rank=k;}
     } 
     printf("%d found best: %f\n",best_rank,global_best); 
-    for(i=0;i<n;i++){
-      fprintf(stdout," %d  %d  %d  %d\n",zcoors[all_solutions[n*0+i+best_rank*node_count]],zcoors[all_solutions[n*1+i+best_rank*node_count]],zcoors[all_solutions[n*2+i+best_rank*node_count]],zcoors[all_solutions[n*3+i+best_rank*node_count]]);
+    for(i=0;i<m;i++){
+      fprintf(stdout," %d  %d  %d  %d\n",zcoors[3*all_solutions[m*0+i+best_rank*node_count]],zcoors[3*all_solutions[m*1+i+best_rank*node_count]],zcoors[3*all_solutions[m*2+i+best_rank*node_count]],zcoors[3*all_solutions[m*3+i+best_rank*node_count]]);
     }
   } 
+ free(all_solutions);
+ free(all_fitness);
 
-    
   
  MPI_Finalize();  
-#endif  
+//#endif  
   return 0; 
 }
 

@@ -105,7 +105,7 @@ void topomat3d(int topology[],domain space)
         neigh[0]=get_position(i,j+1,k) 
 */
 
-
+#if 0
 int main(int argc, char** argv)
 {
   int m=3,n=3,p=3;
@@ -123,3 +123,4 @@ int main(int argc, char** argv)
   }
   
 }
+#endif
