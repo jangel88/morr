@@ -24,10 +24,10 @@ int* mutate_inject(int elite[], int N, int mutant[])
   static long ijctidum=15;
   int x=(int)(ran3(&ijctidum)*N);
   int y=(int)(ran3(&ijctidum)*N);
-  int z_range[6]={0,1,3,5,7,15};
+  int z_range[6]={1,2,4,6,8,16};
   int z=z_range[(int)(ran3(&ijctidum)*6)]; 
   int i;
-  z=0;
+//  z=1;
   for(i=0;i<N;i++){
     if (x<y){
       z=min(z,(N-y));
@@ -52,7 +52,8 @@ int* mutate_swap(int elite[], int N, int mutant[])
   double ran3(long *idum);
   static long swpidum=10;
   int i,tmp,M;
-  M=(int) ran3(&swpidum)*2;
+  M=(int) ran3(&swpidum)*N;
+//  M=0;
   for(i=0;i<=M;i++){ 
     int x=(int)(ran3(&swpidum)*N);
     int y=(int)(ran3(&swpidum)*N);

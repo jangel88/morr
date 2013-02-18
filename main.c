@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
 
   MPI_Init(&argc,&argv); 
   int n,m,p;
-  n=4;m=12;p=1;
-  int PopSize=1000;
+  n=4;m=24;p=1;
+  int PopSize=1500;
   int MaxGen=500;
   int N=n*m*p;
   FILE *node_file;
@@ -34,7 +34,8 @@ int main(int argc, char *argv[])
   int rn;
   int topology[6*N];
 //  int topology2[6*n*m*p]; 
-  int i,j,k;
+  int i,j,k,q;
+  int number_of_runs=10;
   int NumOfElites=10,elites[PopSize]; 
   int node_count; 
   domain space;
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
 //  }  
 //  get_coords(node_file,xcoors,ycoors,zcoors,nid); 
 //  fclose(node_file);
-    subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_1_24_1_2_1.txt","r");
+    subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_2_24_1_2_1.txt","r");
     if (subset_file == NULL){ 
       printf("Unable to open file");
       exit(1);
@@ -123,54 +124,56 @@ int main(int argc, char *argv[])
   topomat3d(topology,space);
   
   int *Pop[PopSize]; 
-  create_pop(node_count,subset_nodes,PopSize,Pop,id); 
+  
 
   int* bAssign;
   double bFit=INT_MAX,nFit;
   int* mutants[PopSize-NumOfElites];  
   int* NextGen[PopSize]; 
 
-
-  for(j=0;j<MaxGen;j++){
-    nFit=tournament(N,Pop,PopSize,xcoors,ycoors,zcoors,topology,elites,NumOfElites);
-    if (nFit<bFit){bFit=nFit;bAssign=&Pop[elites[0]][0];} /*New best solution*/
-
-    for(i=0;i<PopSize;i++){
-      if(i<NumOfElites){ NextGen[i]=&Pop[elites[i]][0];} /* Elite*/
-      else {free(&Pop[elites[i]][0]);}                  /* Unfit*/
-    }
-    for(i=NumOfElites;i<PopSize;i++){   
-      mutants[i-NumOfElites]=malloc(node_count*sizeof(int)); /*Populate */
-      r1=ran3(&idum);
-      r2=ran3(&idum);
-      rn=(int)(r2*NumOfElites);
-      if (r1>.500){ /* coin flip */
-        NextGen[i]=mutate_swap(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
-      }else{ 
-        NextGen[i]=mutate_inject(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
+  for(q=0;q<number_of_runs;q++){
+    create_pop(node_count,subset_nodes,PopSize,Pop,id+q); 
+    for(j=0;j<MaxGen;j++){
+      nFit=tournament(N,Pop,PopSize,xcoors,ycoors,zcoors,topology,elites,NumOfElites);
+      if (nFit<bFit){bFit=nFit;bAssign=&Pop[elites[0]][0];} /*New best solution*/
+  
+      for(i=0;i<PopSize;i++){
+        if(i<NumOfElites){ NextGen[i]=&Pop[elites[i]][0];} /* Elite*/
+        else {free(&Pop[elites[i]][0]);}                  /* Unfit*/
+      }
+      for(i=NumOfElites;i<PopSize;i++){   
+        mutants[i-NumOfElites]=malloc(node_count*sizeof(int)); /*Populate */
+        r1=ran3(&idum);
+        r2=ran3(&idum);
+        rn=(int)(r2*NumOfElites);
+        if (r1>.500){ /* coin flip */
+          NextGen[i]=mutate_swap(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
+        }else{ 
+          NextGen[i]=mutate_inject(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
+        }  
+      } 
+      for(i=0;i<PopSize;i++){
+        Pop[i]=&NextGen[i][0]; 
       }  
     } 
-    for(i=0;i<PopSize;i++){
-      Pop[i]=&NextGen[i][0]; 
-    }  
-  } 
-  int* all_solutions=(int*)malloc(node_count*np*sizeof(int));
-  double* all_fitness=calloc(np,sizeof(double)); 
-  MPI_Gather(bAssign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
-  MPI_Gather(&bFit,1,MPI_DOUBLE,all_fitness,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-  if(id==0){ 
-    double global_best=INT_MAX; 
-    int best_rank;
-    for(k=0;k<np;k++){
-      if(all_fitness[k]<global_best){global_best=all_fitness[k]; best_rank=k;}
+    int* all_solutions=(int*)malloc(node_count*np*sizeof(int));
+    double* all_fitness=calloc(np,sizeof(double)); 
+    MPI_Gather(bAssign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Gather(&bFit,1,MPI_DOUBLE,all_fitness,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+    if(id==0){ 
+      double global_best=INT_MAX; 
+      int best_rank;
+      for(k=0;k<np;k++){
+        if(all_fitness[k]<global_best){global_best=all_fitness[k]; best_rank=k;}
+      } 
+      printf("%d found best: %f\n",best_rank,global_best); 
+      for(i=0;i<m;i++){
+        fprintf(stdout," %d  %d  %d  %d\n",zcoors[3*all_solutions[m*0+i+best_rank*node_count]],zcoors[3*all_solutions[m*1+i+best_rank*node_count]],zcoors[3*all_solutions[m*2+i+best_rank*node_count]],zcoors[3*all_solutions[m*3+i+best_rank*node_count]]);
+      }
     } 
-    printf("%d found best: %f\n",best_rank,global_best); 
-    for(i=0;i<m;i++){
-      fprintf(stdout," %d  %d  %d  %d\n",zcoors[3*all_solutions[m*0+i+best_rank*node_count]],zcoors[3*all_solutions[m*1+i+best_rank*node_count]],zcoors[3*all_solutions[m*2+i+best_rank*node_count]],zcoors[3*all_solutions[m*3+i+best_rank*node_count]]);
-    }
-  } 
- free(all_solutions);
- free(all_fitness);
+   free(all_solutions);
+   free(all_fitness);
+ }
  MPI_Barrier(MPI_COMM_WORLD);
  
 
