@@ -27,7 +27,7 @@ int* mutate_inject(int elite[], int N, int mutant[])
   int z_range[6]={0,1,3,5,7,15};
   int z=z_range[(int)(ran3(&ijctidum)*6)]; 
   int i;
-
+  z=0;
   for(i=0;i<N;i++){
     if (x<y){
       z=min(z,(N-y));
@@ -51,17 +51,20 @@ int* mutate_swap(int elite[], int N, int mutant[])
 {
   double ran3(long *idum);
   static long swpidum=10;
-
-  int x=(int)(ran3(&swpidum)*N);
-  int y=(int)(ran3(&swpidum)*N);
-
-  int i,tmp=elite[x];
-
-  for(i=0;i<N;i++){
-    if(i==x) {mutant[i]=elite[y];}
-    else if (i==y) {mutant[i]=tmp;}
-    else {mutant[i]=elite[i];}
-  } 
+  int i,tmp,M;
+  M=(int) ran3(&swpidum)*2;
+  for(i=0;i<=M;i++){ 
+    int x=(int)(ran3(&swpidum)*N);
+    int y=(int)(ran3(&swpidum)*N);
+    tmp=elite[x]; 
+   
+  
+    for(i=0;i<N;i++){
+      if(i==x) {mutant[i]=elite[y];}
+      else if (i==y) {mutant[i]=tmp;}
+      else {mutant[i]=elite[i];}
+    } 
+  }
   return &mutant[0]; 
  
 }
@@ -217,19 +220,12 @@ void computeCost(float cost[], int assignment[], int topology[],const int xcoors
                const int ycoors[],const int zcoors[],  int N)
 {
   int r,i,j,k;
-
-
-  int dx,dy,dz;
   for (k=0; k<6; k++){
     for (r=0; r<N; r++){
       j=assignment[topology[r+N*k]];
       i=assignment[r];
-//    dx=fabs(xcoors[3*j]-xcoors[3*i]); if (dx>(double) XDIM/2.0) {dx=fabs(dx-XDIM);} /*Interconnect dimensions: 25x16x24 */
-//    dy=fabs(ycoors[3*j]-ycoors[3*i]); if (dy>(double) YDIM/2.0) {dy=fabs(dy-YDIM);}
-//    dz=fabs(zcoors[3*j]-zcoors[3*i]); if (dz>(double) ZDIM/2.0) {dz=fabs(dz-ZDIM);}
-      cost[r+N*k]=distance_between_nodes((nodeid) i,(nodeid) j);//dx+2*dy+dz; 
-    }
-  
+      cost[r+N*k]=distance_between_nodes((nodeid) i,(nodeid) j);
+    } 
   }
 }                 
 

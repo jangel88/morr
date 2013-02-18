@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
   MPI_Init(&argc,&argv); 
   int n,m,p;
   n=4;m=12;p=1;
-  int PopSize=1800;
-  int MaxGen=1000;
+  int PopSize=1000;
+  int MaxGen=500;
   int N=n*m*p;
   FILE *node_file;
   FILE *subset_file;  
@@ -129,6 +129,8 @@ int main(int argc, char *argv[])
   double bFit=INT_MAX,nFit;
   int* mutants[PopSize-NumOfElites];  
   int* NextGen[PopSize]; 
+
+
   for(j=0;j<MaxGen;j++){
     nFit=tournament(N,Pop,PopSize,xcoors,ycoors,zcoors,topology,elites,NumOfElites);
     if (nFit<bFit){bFit=nFit;bAssign=&Pop[elites[0]][0];} /*New best solution*/
@@ -152,7 +154,6 @@ int main(int argc, char *argv[])
       Pop[i]=&NextGen[i][0]; 
     }  
   } 
-  
   int* all_solutions=(int*)malloc(node_count*np*sizeof(int));
   double* all_fitness=calloc(np,sizeof(double)); 
   MPI_Gather(bAssign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
@@ -170,6 +171,8 @@ int main(int argc, char *argv[])
   } 
  free(all_solutions);
  free(all_fitness);
+ MPI_Barrier(MPI_COMM_WORLD);
+ 
 
   
  MPI_Finalize();  
