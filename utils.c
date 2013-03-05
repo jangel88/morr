@@ -10,7 +10,7 @@
 #define MSEED 161803398
 #define MZ 0
 #define FAC (1.0/MBIG)
-#define min(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
+#define MIN(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 
 
 typedef int nodeid; 
@@ -18,48 +18,78 @@ float distance_between_nodes(nodeid, nodeid);
 /* If statements are mostly structured as
  * if (cond) {command;} in one line for compactness*/
 
-int* mutate_inject(int elite[], int N, int mutant[])
-{
-  double ran3(long *idum);
-  static long ijctidum=15;
-  int x=(int)(ran3(&ijctidum)*N);
-  int y=(int)(ran3(&ijctidum)*N);
-  int z_range[6]={1,2,4,6,8,16};
-  int z=z_range[(int)(ran3(&ijctidum)*6)]; 
-  int i;
-//  z=1;
-  for(i=0;i<N;i++){
-    if (x<y){
-      z=min(z,(N-y));
-      if (i<x){mutant[i]=elite[i];}
-      else if(i>=x && i<y){mutant[i]=elite[i+z];}
-      else if(i>=y && i<(y+z)){mutant[i]=elite[x+(i-y)];}  
-      else {mutant[i]=elite[i];}
-   }else {
-      z=min(z,(N-x));
-      if (i<y){mutant[i]=elite[i];}
-      else if(i>=y && i<x) {mutant[i]=elite[i+z];}
-      else if(i>=x && i<(x+z)){mutant[i]=elite[y+(i-x)];}
-      else {mutant[i]=elite[i];}
-   } 
-  } 
 
-  return &mutant[0];  
+
+int* mutate(int elite[], int N, int mutant[],int id)
+{
+
+
+  long mut_idum=id*47+1;
+  double r1=ran3(&mut_idum);  /* coin flip */
+  int z_range[2]={1,2};//,4};//,6,8,16};
+  int z=z_range[rand_int_inclusive(0,1,mut_idum)];
+  int x=rand_int_inclusive(0,N-1,mut_idum);
+  int y=rand_int_inclusive(0,N-1,mut_idum);
+  int* mut;
+  if (r1>.500){
+    mut=mutate_swap(elite,N,mutant);
+//      printf("Swap\n");
+    }else{// if(r1>.333){ 
+    mut=mutate_inject(elite,N,mutant,x,y,z);
+//      printf("Inject\n");
+//  }else{
+//    mut=mutate_mirror(elite,N,mutant,z);
+//    printf("Mirror\n");
+    }      
+  return mut; 
 }
+int* copy_inject(int elite[], int N, int mutant[],int start, int stop, int z, int mirr_flag)
+{
+  int i;
+  if(start>stop){
+    printf("Error! Start > Stop\n");
+    exit(1);
+  }
+  z=MIN(z,(N-stop));
+//printf("z: %d\n",z); 
+  for(i=0;i<N;i++){
+    if (i<start){ 
+      mutant[i]=elite[i];
+    }else if(i>=start && i<stop){
+      mutant[i]=elite[i+z];
+    }else if(i>=stop && i<(stop+z)){
+      mutant[i]=elite[start+(1-2*mirr_flag)*(i-stop)+mirr_flag*(z-1)];
+    }else{
+      mutant[i]=elite[i];
+    }
+  }
+  return &mutant[0];
+}
+int* mutate_inject(int elite[], int N, int mutant[],int x, int y, int z)
+{
+  long m_idum=21;
+  int mirr_flag=rand_int_inclusive(0,1,m_idum);
+//  printf("Mirror flag:%d\n",mirr_flag);
+//  mirr_flag=0;
+  if (x<y){
+    return copy_inject(elite,N,mutant,x,y,z,mirr_flag);
+  }else{
+    return copy_inject(elite,N,mutant,y,x,z,mirr_flag);
+  } 
+}
+
+
 
 int* mutate_swap(int elite[], int N, int mutant[])
 {
-  double ran3(long *idum);
-  static long swpidum=10;
-  int i,tmp,M;
-  M=(int) ran3(&swpidum)*N;
+  int i,tmp,M,x,y;
+  long swp_idum=100;
+  M=rand_int_inclusive(0,1,swp_idum);
 //  M=0;
   for(i=0;i<=M;i++){ 
-    int x=(int)(ran3(&swpidum)*N);
-    int y=(int)(ran3(&swpidum)*N);
+    x=rand_int_inclusive(0,N-1,swp_idum);
+    y=rand_int_inclusive(0,N-1,swp_idum);
     tmp=elite[x]; 
-   
-  
     for(i=0;i<N;i++){
       if(i==x) {mutant[i]=elite[y];}
       else if (i==y) {mutant[i]=tmp;}
@@ -70,12 +100,42 @@ int* mutate_swap(int elite[], int N, int mutant[])
  
 }
 
+int* mutate_mirror(int elite[], int N, int mutant[], int z)
+{
 
+  static long mirr_idum=11;
+  int i,j=0;
+  int k=rand_int_inclusive(1,N-1,mirr_idum);
+  int m=MIN(k-z,0);
+   
+  for(i=0;i<N;i++){
+    if(i<m){
+      mutant[i]=elite[i];
+    }else if(i>=m && i<=k){
+      mutant[i]=elite[k-j];
+      j++;
+    }else{
+      mutant[i]=elite[i];
+    }
+  }
+  return &mutant[0];
+}
 
+int rand_int_inclusive(int min, int max, long rint_idum)
+{
+  double ran3(long *idum);
+  int r;
+ 
+  while (1){ 
+    r=(int) ran3(&rint_idum)*(max-min+1)+min;
+    if(r>=min && r<=max){ // Make sure r is in bounds
+      return r;
+    }
+  } 
+}
 
-
-double tournament(int N, int* Pop[], int PopSize,const int xcoors[],const int ycoors[],const int zcoors[],
-                int topology[],int elites[], int NumOfElites)
+double tournament(int N, int* pop[], int pop_size,const int xcoors[],const int ycoors[],const int zcoors[],
+                int topology[],int elites[], int num_of_elites)
 {
 
   double norm2(float cost[], int N);
@@ -83,27 +143,79 @@ double tournament(int N, int* Pop[], int PopSize,const int xcoors[],const int yc
   void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
                  const int ycoors[],const int zcoors[],  int N);
 
-  double fit[PopSize],tmp;
-  double *ind[PopSize]; 
+  double fit[pop_size];
+  double *ind[pop_size]; 
   int i,j,k;
   float* cost=malloc(sizeof(float)*N*6);
-  double bFit=INT_MAX; 
-  for(i=0;i<PopSize;i++){  // Compute fitness of each individual
-    computeCost(cost,&Pop[i][0],topology,xcoors,ycoors,zcoors,N);
+  double b_fit=INT_MAX; 
+  for(i=0;i<pop_size;i++){  // Compute fitness of each individual
+    computeCost(cost,&pop[i][0],topology,xcoors,ycoors,zcoors,N);
     fit[i]=norm2(cost,N*6); 
     ind[i]=&fit[i];
-    if(fit[i]<bFit){bFit=fit[i];}
+    b_fit=(fit[i]<b_fit) ? fit[i] : b_fit; 
   } 
   free(cost);
-  qsort(ind,PopSize,sizeof(double *),compare); // Sort by fit
-  for(i=0;i<PopSize;i++){
+  qsort(ind,pop_size,sizeof(double *),compare); // Sort by fit
+  for(i=0;i<pop_size;i++){
     elites[i]=ind[i]-fit; // recover indices
   }
 
-  return bFit;
+  return b_fit;
 }
 
+#if 0
+double roulette(int N, int* pop[], int pop_size,const int xcoors[],const int ycoors[],const int zcoors[],
+                int topology[],int elites[], int num_of_elites)
+{
 
+  double norm2(float cost[], int N);
+  int compare(const void * a, const void * b);
+  void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
+                 const int ycoors[],const int zcoors[],  int N);
+  double ran3(long* idum);
+  double fit[pop_size],scaled_fit[pop_size];
+  double *ind[pop_size]; 
+  int i,j,k,tmp;
+  long roul_idum=10;
+  double total_fit=0.0;
+  float* cost=malloc(sizeof(float)*N*6);
+  double b_fit=INT_MAX; 
+  for(i=0;i<pop_size;i++){  // Compute fitness of each individual
+    computeCost(cost,&pop[i][0],topology,xcoors,ycoors,zcoors,N);
+    fit[i]=norm2(cost,N*6);   
+    total_fit+=fit[i];
+    b_fit=(fit[i]<b_fit) ? fit[i] : b_fit; 
+  } 
+  free(cost);
+
+  j=num_of_elites-1;
+  i=0;
+  double r1,partial_sum;
+  int chosen_one=0;
+  int* chosen=calloc(pop_size,sizeof(int));
+  while(j>=0){ 
+    partial_sum=0;
+    chosen_one=0;
+    r1=ran3(&roul_idum)*total_fit; 
+    while(r1>partial_sum){
+      partial_sum+=fit[chosen_one];
+      chosen_one++;
+    }
+    elites[i]=chosen_one;
+    chosen[chosen_one]=1;
+    i++;
+    j--;
+  } 
+  k=0;
+  for(i=0;i<pop_size;i++){
+    if(chosen[i]==0){
+      elites[num_of_elites+k]=i;       
+      k++;
+    }
+  }
+  return b_fit;
+}
+#endif
 
 
 int compare(const void * a, const void * b)
@@ -114,16 +226,16 @@ int compare(const void * a, const void * b)
   return (va>vb)-(va<vb);
 }
 
-void create_pop(int node_count, int nodes[], int PopSize, int* Pop[],int id)
+void create_pop(int node_count, int nodes[], int pop_size, int* pop[],int id)
 {
   int i,j;
   int r[node_count];
   void randperm(int a, int b, int r[],int id);
-  for(i=0;i<PopSize;i++){
+  for(i=0;i<pop_size;i++){
     randperm(0,node_count,r,id);
-    Pop[i]=malloc(node_count*sizeof(int)); 
+    pop[i]=malloc(node_count*sizeof(int)); 
     for(j=0;j<node_count;j++){
-      Pop[i][j]=nodes[r[j]];      
+      pop[i][j]=nodes[r[j]];      
     } 
   }
 }
@@ -252,403 +364,6 @@ int count_lines(FILE *fp)
   }
   return line_count; 
 }
-/* Using coords from titan_node_info.h
- * -----------------------------------
- *
-void get_coords(FILE *fp, int xcoors[], int ycoors[], int zcoors[], int nid[])
-{
-  int i,j,k,n,m; 
-  int tmp;
-  j=0;k=0;n=0;m=0; 
-  for(i=0; i<19200*4;i++) 
-    {
-       
-       fscanf(fp,"%d",&tmp);
-       if (i % 4 == 0) 
-         {
-           xcoors[j]=tmp;
-           j+=1;
-         }
-       else if(i % 4 == 1)
-         {
-           ycoors[k]=tmp;
-           k+=1;
-         }
-       else if(i % 4 == 2)
-         {
-           zcoors[n]=tmp;
-           n+=1;
-         }
-       else
-         {
-           nid[m]=tmp;
-           m+=1;
-         } 
-     }
- 
-}
-*/
-void get_indices(int id, int indices[], int n, int m, int p)
-/* Return (i,j,k) indices based on domain size and id
- */
-{ 
-  int i,j,k;
-  i=id%n; 
-  j=(id-i)/n%m;
-  k=(id-i-n*j)/(m*n);
-  indices[0]=i;
-  indices[1]=j;
-  indices[2]=k;
-
-}
-
-int get_id(int i, int j, int k, int n, int m, int p) 
-{ 
-  int id;
-  if (p==1) { if (n==1){id=j;} else if (m==1) {id=i;} else {id=n*j+i; }} // written for compactness, not beauty
-  else if (m==1) {if (n==1) {id=k;} else if(p==1) {id=i;} else {id=n*k+i;}}
-  else if (n==1) {if (m==1) {id=k;} else if(p==1) {id=j;} else {id=m*k+j;}}
-  else id=m*n*k+n*j+i;
-  
-  return id;
-}
-/* Now using generator in source/struct_cart_domain.c
- * -------------------------------------------------
-void topomat3d(int topology[],int n, int m, int p)
-{
-  int indices[3];
-  int id;
-  int r,q;
-  int i,j,k;;
-  int N=n*m*p;
-
-  for(r=0;r<N;r++){
-    get_indices(r,indices,n,m,p);
-    i=indices[0];j=indices[1];k=indices[2];
-
-    topology[r]=get_id(i,(j+1)%m,k,n,m,p);
-    topology[N+r]=get_id((i-1)%n+((i-1)%n<0)*n,j,k,n,m,p);
-    topology[2*N+r]=get_id(i,(j-1)%m+((j-1)%m<0)*m,k,n,m,p);
-    topology[3*N+r]=get_id((i+1)%n,j,k,n,m,p);
-    topology[4*N+r]=get_id(i,j,(k-1)%p+((k-1)%p<0)*p,n,m,p);
-    topology[5*N+r]=get_id(i,j,(k+1)%p,n,m,p);
-   }
- 
-}
-*/
-#if 0
-/* Old ugly topology matrix generator 
- * ---------------------------------*/
-
-void topomat3d(int topology[], int n, int m, int p)
-{
-  int indices[3];
-  int id;
-  int r,q;
-  int i,j,k;
-  int N=n*m*p;
-  for (r=0;r<N;r++)
-  {
-    get_indices(r,indices,n,m,p);
-    i=indices[0];j=indices[1];k=indices[2];
-    if (k==0)
-    {
-      if (j!=0 && j!=m-1)
-      { 
-        if(i!=n-1 && i!=0) 
-        {  
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-        }
-        else if(i==0) /* Front Face, top row, not corner*/
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-        }
-       else if(i==n-1) /* Front face, bottom row, not corner*/
-       {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-  
-       }
-    }
-      else if (j==m-1)
-    {
-         if(i!=n-1 && i!=0) /*Front face, right column, not corner*/
-       {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-       }
-         else if(i==0) /* Front face, top right corner */
-       {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-
-       }  
-        else if(i==n-1) /* Front face, bottom right corner */
-        {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-        }
-      }
-      else if(j==0)
-      {
-        if(i!=n-1 && i!=0) /*Front face, left column, not corner*/
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-        }
-        else if(i==0) /*Top corner*/
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-
-        }
-        else if(i==n-1) /*Bottom corner*/
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,p-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-
-        }
-      }
-    } 
-    else if(k==p-1)
-    {
-      if (j!=0 && j!=m-1)
-      { 
-        if(i!=n-1 && i!=0) 
-        {  
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-        }
-        else if(i==0) /* Rear Face, top row, not corner*/
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-        }
-       else if(i==n-1) /* Read face, bottom row, not corner*/
-       {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-  
-       }
-    }
-      else if (j==m-1)
-    {
-         if(i!=n-1 && i!=0) /*Rear face, right column, not corner*/
-       {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-       }
-         else if(i==0) /* Rear face, top right corner */
-       {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-
-       }  
-        else if(i==n-1) /* Rear face, bottom right corner */
-        {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-        }
-      }
-      else if(j==0)
-      {
-        if(i!=n-1 && i!=0) /*Rear face, left column, not corner*/
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-        }
-        else if(i==0)
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-
-        }
-        else if(i==n-1)
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,0,n,m,p);
-
-        }
-      }
-    } 
-    else if(k!=0 && k!=p-1)
-    {
-       if (j!=0 && j!=m-1)
-      { 
-        if(i!=n-1 && i!=0) 
-        {  
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-        }
-        else if(i==0) 
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-        }
-       else if(i==n-1) 
-       {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-  
-       }
-    }
-      else if (j==m-1)
-    {
-         if(i!=n-1 && i!=0) /*Rear face, right column, not corner*/
-       {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-       }
-         else if(i==0) /* Rear face, top right corner */
-       {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-
-       }  
-        else if(i==n-1) /* Rear face, bottom right corner */
-        {
-          topology[r]=get_id(i,0,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,j-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-        }
-      }
-      else if(j==0)
-      {
-        if(i!=n-1 && i!=0) /*Rear face, left column, not corner*/
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-        }
-        else if(i==0)
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(n-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(i+1,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-
-        }
-        else if(i==n-1)
-        {
-          topology[r]=get_id(i,j+1,k,n,m,p);
-          topology[N+r]=get_id(i-1,j,k,n,m,p);
-          topology[2*N+r]=get_id(i,m-1,k,n,m,p);
-          topology[3*N+r]=get_id(0,j,k,n,m,p);
-          topology[4*N+r]=get_id(i,j,k-1,n,m,p);
-          topology[5*N+r]=get_id(i,j,k+1,n,m,p);
-
-        }
-      }     
-
-    }
-}
-}
-#endif
-       
-  
-  
 
 
 

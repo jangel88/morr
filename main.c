@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include"utils.c"
 #include<mpi.h>
-
+#include<time.h>
 #include<titan_node_info.c>
 #include<struct_cart_domain.c>
 
@@ -14,36 +14,45 @@
 int main(int argc, char *argv[]) 
 
 {
-
+ 
   MPI_Init(&argc,&argv); 
+
   int n,m,p;
   n=4;m=24;p=1;
-  int PopSize=1500;
-  int MaxGen=500;
+  int pop_size=2000;
+  int max_gen=2000;
   int N=n*m*p;
   FILE *node_file;
   FILE *subset_file;  
-  int nid[19200];
-//int xcoors[19200];
-//int ycoors[19200];
-//int zcoors[19200];
+  int nid[19200];  
   const int* xcoors;
   const int* ycoors;
   const int* zcoors;
   double r1,r2;
   int rn;
   int topology[6*N];
-//  int topology2[6*n*m*p]; 
   int i,j,k,q;
-  int number_of_runs=10;
-  int NumOfElites=10,elites[PopSize]; 
+  int number_of_runs=5;
+  int num_of_elites=800,elites[pop_size]; 
   int node_count; 
   domain space;
   int id,np; 
-  xcoors=&titan_node_coords[0][0];
-  ycoors=&titan_node_coords[0][1];
-  zcoors=&titan_node_coords[0][2];
-   
+//xcoors=&titan_node_coords[0][0];
+//ycoors=&titan_node_coords[0][1];
+//zcoors=&titan_node_coords[0][2];
+  MPI_Comm_rank(MPI_COMM_WORLD,&id);
+  MPI_Comm_size(MPI_COMM_WORLD,&np);
+
+
+
+
+
+//int A[10]={0,1,2,3,4,5,6,7,8,9};
+//int* A_p=malloc(sizeof(int)*10);
+//A_p=mutate(A,10,A_p,id);
+//for(i=0;i<10;i++){
+//  printf("A_p[%d]: %d\n",i,A_p[i]);
+//}  
 /*  
   for(i=0;i<15;i++){
       printf("x[%d]: %d y[%d]: %d z[%d]: %d\n",i,titan_node_coords[i][0],i,titan_node_coords[i][1],i,titan_node_coords[i][2]);
@@ -83,23 +92,15 @@ int main(int argc, char *argv[])
     printf("mut[%d]: %d\n",i,p_mut[i]);
   }
 */
-//#if 0
 
+
+
+//#if 0
 // Start program
 // -------------
-  MPI_Comm_rank(MPI_COMM_WORLD,&id);
-  MPI_Comm_size(MPI_COMM_WORLD,&np);
-
-  long idum=(long)id;
+  long idum=(long)2*id;
 
   if (id==0){
-//  node_file = fopen("/home/Spring13/ORNL/data/coords.txt","r");
-//  if (node_file==NULL){
-//    printf("Unable to open file");
-//    exit(1);
-//  }  
-//  get_coords(node_file,xcoors,ycoors,zcoors,nid); 
-//  fclose(node_file);
     subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_2_24_1_2_1.txt","r");
     if (subset_file == NULL){ 
       printf("Unable to open file");
@@ -115,51 +116,46 @@ int main(int argc, char *argv[])
     fclose(subset_file); 
   }
   MPI_Barrier(MPI_COMM_WORLD);
-//MPI_Bcast((void *)xcoors,19200,MPI_INT,0,MPI_COMM_WORLD); 
-//MPI_Bcast((void *)ycoors,19200,MPI_INT,0,MPI_COMM_WORLD);
-//MPI_Bcast((void *)zcoors,19200,MPI_INT,0,MPI_COMM_WORLD); 
   MPI_Bcast((void *)subset_nodes,node_count,MPI_INT,0,MPI_COMM_WORLD);
   space=init_domain(m,n,p);
   
   topomat3d(topology,space);
   
-  int *Pop[PopSize]; 
+  int *pop[pop_size]; 
   
 
-  int* bAssign;
-  double bFit=INT_MAX,nFit;
-  int* mutants[PopSize-NumOfElites];  
-  int* NextGen[PopSize]; 
+  int* b_assign;
+  double b_fit=INT_MAX,n_fit;
+  int* mutants[pop_size-num_of_elites];  
+  int* next_gen[pop_size]; 
 
   for(q=0;q<number_of_runs;q++){
-    create_pop(node_count,subset_nodes,PopSize,Pop,id+q); 
-    for(j=0;j<MaxGen;j++){
-      nFit=tournament(N,Pop,PopSize,xcoors,ycoors,zcoors,topology,elites,NumOfElites);
-      if (nFit<bFit){bFit=nFit;bAssign=&Pop[elites[0]][0];} /*New best solution*/
+    create_pop(node_count,subset_nodes,pop_size,pop,id*(q+1)); 
+    for(j=0;j<max_gen;j++){
+      n_fit=tournament(N,pop,pop_size,xcoors,ycoors,zcoors,topology,elites,num_of_elites);
+      if (n_fit<b_fit){b_fit=n_fit;b_assign=&pop[elites[0]][0];} /*New best solution*/
   
-      for(i=0;i<PopSize;i++){
-        if(i<NumOfElites){ NextGen[i]=&Pop[elites[i]][0];} /* Elite*/
-        else {free(&Pop[elites[i]][0]);}                  /* Unfit*/
+      for(i=0;i<pop_size;i++){
+        if(i<num_of_elites){ 
+          next_gen[i]=&pop[elites[i]][0]; /* Elite*/
+        }else{
+          free(&pop[elites[i]][0]); /* Unfit*/
+        }                 
       }
-      for(i=NumOfElites;i<PopSize;i++){   
-        mutants[i-NumOfElites]=malloc(node_count*sizeof(int)); /*Populate */
-        r1=ran3(&idum);
+      for(i=num_of_elites;i<pop_size;i++){   
+        mutants[i-num_of_elites]=malloc(node_count*sizeof(int)); /*populate */       
         r2=ran3(&idum);
-        rn=(int)(r2*NumOfElites);
-        if (r1>.500){ /* coin flip */
-          NextGen[i]=mutate_swap(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
-        }else{ 
-          NextGen[i]=mutate_inject(NextGen[rn],node_count,mutants[(i-NumOfElites)]); 
-        }  
+        rn=(int)(r2*num_of_elites);
+        next_gen[i]=mutate(next_gen[rn],node_count,mutants[(i-num_of_elites)],id); 
       } 
-      for(i=0;i<PopSize;i++){
-        Pop[i]=&NextGen[i][0]; 
+      for(i=0;i<pop_size;i++){
+        pop[i]=&next_gen[i][0]; 
       }  
     } 
     int* all_solutions=(int*)malloc(node_count*np*sizeof(int));
     double* all_fitness=calloc(np,sizeof(double)); 
-    MPI_Gather(bAssign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Gather(&bFit,1,MPI_DOUBLE,all_fitness,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+    MPI_Gather(b_assign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Gather(&b_fit,1,MPI_DOUBLE,all_fitness,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
     if(id==0){ 
       double global_best=INT_MAX; 
       int best_rank;
@@ -178,8 +174,9 @@ int main(int argc, char *argv[])
  
 
   
- MPI_Finalize();  
+ 
 //#endif  
+  MPI_Finalize(); 
   return 0; 
 }
 

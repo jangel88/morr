@@ -48,7 +48,7 @@ nodeid query_nodeid(){
 
 float distance_between_nodes(nodeid n1, nodeid n2)
 {
-  const float C_same_node=0, C_same_router=1e-2, C_x=1.0, C_y=2.0, C_z=1.0; 
+  const float C_same_node=0, C_same_router=0.01, C_x=1.0, C_y=2.0, C_z=1.0; 
   int x1,x2;
   int y1,y2;
   int z1,z2;
@@ -62,10 +62,9 @@ float distance_between_nodes(nodeid n1, nodeid n2)
 
   if (n1==n2){
     return (float)(C_same_node);
-  }
-  if (x1==x2 &&
-      y1==y2 &&
-      z1==z2){
+  }else if (x1==x2 && 
+            y1==y2 && 
+            z1==z2){
     return (float)(C_same_router);
   }else{
     dx=fabs(x2-x1); dx=(dx>(double)XDIM/2.0) ? fabs(dx-XDIM) : dx;
