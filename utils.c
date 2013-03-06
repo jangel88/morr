@@ -13,7 +13,7 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 
 
-typedef int nodeid; 
+//typedef int nodeid; 
 float distance_between_nodes(nodeid, nodeid); 
 /* If statements are mostly structured as
  * if (cond) {command;} in one line for compactness*/
@@ -24,12 +24,12 @@ int* mutate(int elite[], int N, int mutant[],int id)
 {
 
 
-  long mut_idum=id*47+1;
-  double r1=ran3(&mut_idum);  /* coin flip */
+
+  double r1=rand()/(double)RAND_MAX;// coin flip 
   int z_range[2]={1,2};//,4};//,6,8,16};
-  int z=z_range[rand_int_inclusive(0,1,mut_idum)];
-  int x=rand_int_inclusive(0,N-1,mut_idum);
-  int y=rand_int_inclusive(0,N-1,mut_idum);
+  int z=z_range[rand_int_inclusive(0,1)];
+  int x=rand_int_inclusive(0,N-1);
+  int y=rand_int_inclusive(0,N-1);
   int* mut;
   if (r1>.500){
     mut=mutate_swap(elite,N,mutant);
@@ -67,8 +67,8 @@ int* copy_inject(int elite[], int N, int mutant[],int start, int stop, int z, in
 }
 int* mutate_inject(int elite[], int N, int mutant[],int x, int y, int z)
 {
-  long m_idum=21;
-  int mirr_flag=rand_int_inclusive(0,1,m_idum);
+
+  int mirr_flag=rand_int_inclusive(0,1);
 //  printf("Mirror flag:%d\n",mirr_flag);
 //  mirr_flag=0;
   if (x<y){
@@ -83,12 +83,12 @@ int* mutate_inject(int elite[], int N, int mutant[],int x, int y, int z)
 int* mutate_swap(int elite[], int N, int mutant[])
 {
   int i,tmp,M,x,y;
-  long swp_idum=100;
-  M=rand_int_inclusive(0,1,swp_idum);
-//  M=0;
+
+  M=rand_int_inclusive(0,1);
+  M=0;
   for(i=0;i<=M;i++){ 
-    x=rand_int_inclusive(0,N-1,swp_idum);
-    y=rand_int_inclusive(0,N-1,swp_idum);
+    x=rand_int_inclusive(0,N-1);
+    y=rand_int_inclusive(0,N-1);
     tmp=elite[x]; 
     for(i=0;i<N;i++){
       if(i==x) {mutant[i]=elite[y];}
@@ -103,9 +103,9 @@ int* mutate_swap(int elite[], int N, int mutant[])
 int* mutate_mirror(int elite[], int N, int mutant[], int z)
 {
 
-  static long mirr_idum=11;
+
   int i,j=0;
-  int k=rand_int_inclusive(1,N-1,mirr_idum);
+  int k=rand_int_inclusive(1,N-1);
   int m=MIN(k-z,0);
    
   for(i=0;i<N;i++){
@@ -121,13 +121,13 @@ int* mutate_mirror(int elite[], int N, int mutant[], int z)
   return &mutant[0];
 }
 
-int rand_int_inclusive(int min, int max, long rint_idum)
+int rand_int_inclusive(int min, int max)
 {
-  double ran3(long *idum);
+
   int r;
  
   while (1){ 
-    r=(int) ran3(&rint_idum)*(max-min+1)+min;
+    r=(rand()/(double)RAND_MAX)*(max-min+1)+min;
     if(r>=min && r<=max){ // Make sure r is in bounds
       return r;
     }
@@ -143,7 +143,7 @@ double tournament(int N, int* pop[], int pop_size,const int xcoors[],const int y
   void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
                  const int ycoors[],const int zcoors[],  int N);
 
-  double fit[pop_size];
+  double fit[pop_size],tmp;
   double *ind[pop_size]; 
   int i,j,k;
   float* cost=malloc(sizeof(float)*N*6);
@@ -163,7 +163,7 @@ double tournament(int N, int* pop[], int pop_size,const int xcoors[],const int y
   return b_fit;
 }
 
-#if 0
+
 double roulette(int N, int* pop[], int pop_size,const int xcoors[],const int ycoors[],const int zcoors[],
                 int topology[],int elites[], int num_of_elites)
 {
@@ -172,11 +172,11 @@ double roulette(int N, int* pop[], int pop_size,const int xcoors[],const int yco
   int compare(const void * a, const void * b);
   void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
                  const int ycoors[],const int zcoors[],  int N);
-  double ran3(long* idum);
+
   double fit[pop_size],scaled_fit[pop_size];
   double *ind[pop_size]; 
   int i,j,k,tmp;
-  long roul_idum=10;
+
   double total_fit=0.0;
   float* cost=malloc(sizeof(float)*N*6);
   double b_fit=INT_MAX; 
@@ -196,7 +196,7 @@ double roulette(int N, int* pop[], int pop_size,const int xcoors[],const int yco
   while(j>=0){ 
     partial_sum=0;
     chosen_one=0;
-    r1=ran3(&roul_idum)*total_fit; 
+    r1=(rand()/(double)RAND_MAX)*total_fit;
     while(r1>partial_sum){
       partial_sum+=fit[chosen_one];
       chosen_one++;
@@ -215,7 +215,7 @@ double roulette(int N, int* pop[], int pop_size,const int xcoors[],const int yco
   }
   return b_fit;
 }
-#endif
+
 
 
 int compare(const void * a, const void * b)
@@ -247,16 +247,16 @@ void create_pop(int node_count, int nodes[], int pop_size, int* pop[],int id)
 void randperm(int a, int b, int r[],int id)
 {
 
-  double ran3(long *idum);
+
   int i,j;
-  long permidum=id; 
+
   double tmp,rn; 
   for(j=0;j<(b-a+1);j++){
     r[j]=a+j;
   }
 
   for(i=a;i<b;i++){
-     rn=round((b-a))*ran3(&permidum);
+     rn=round((b-a))*rand()/(double)RAND_MAX;
      tmp=r[i];
      r[i]=r[(int) rn];
      r[(int) rn]=tmp;
@@ -287,47 +287,7 @@ double avg_cost(float cost[], int N)
 
 
 
-double ran3(long *idum)
-/* ran3 from Numerical Recipes in C 
- * 
- * Generate uniform (0,1)*/
-{
-  static int inext,inextp;
-  static long ma[56];
-  static int iff=0;
-  long mj,mk; 
-  int i,ii,k;
 
-  if(*idum<0 || iff==0) {
-    iff=1;
-    mj=labs(MSEED-labs(*idum));
-    mj %= MBIG;
-    ma[55]=mj;
-    mk=1;
-    for (i=1;i<=54;i++) {
-       ii=(21*i)%55;
-       ma[ii]=mk;
-       mk=mj-mk;
-       if(mk < MZ) mk += MBIG;
-       mj=ma[ii];
-    }
-    for (k=1;k<=4;k++)
-       for (i=1;i<=55;i++) {
-          ma[i] -= ma[1+(i+30) % 55];
-          if (ma[i] < MZ) ma[i] += MBIG;
-        }
-    inext=0;
-    inextp=31;
-    *idum=1;
-   }
-   if (++inext==56) inext=1;
-   if (++inextp==56) inextp=1;
-   mj=ma[inext]-ma[inextp];
-   if (mj < MZ) mj += MBIG;
-   ma[inext]=mj;
-   return mj*FAC;
-
-}
 
 void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
                const int ycoors[],const int zcoors[],  int N)

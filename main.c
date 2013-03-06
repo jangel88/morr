@@ -16,11 +16,11 @@ int main(int argc, char *argv[])
 {
  
   MPI_Init(&argc,&argv); 
-
+  double t_start,t_stop;
   int n,m,p;
   n=4;m=24;p=1;
-  int pop_size=2000;
-  int max_gen=2000;
+  int pop_size=200;
+  int max_gen=1000;
   int N=n*m*p;
   FILE *node_file;
   FILE *subset_file;  
@@ -33,19 +33,17 @@ int main(int argc, char *argv[])
   int topology[6*N];
   int i,j,k,q;
   int number_of_runs=5;
-  int num_of_elites=800,elites[pop_size]; 
+  int num_of_elites=70,elites[pop_size]; 
   int node_count; 
   domain space;
   int id,np; 
-//xcoors=&titan_node_coords[0][0];
-//ycoors=&titan_node_coords[0][1];
-//zcoors=&titan_node_coords[0][2];
+  xcoors=&titan_node_coords[0][0];
+  ycoors=&titan_node_coords[0][1];
+  zcoors=&titan_node_coords[0][2];
   MPI_Comm_rank(MPI_COMM_WORLD,&id);
   MPI_Comm_size(MPI_COMM_WORLD,&np);
 
-
-
-
+  srand(id);
 
 //int A[10]={0,1,2,3,4,5,6,7,8,9};
 //int* A_p=malloc(sizeof(int)*10);
@@ -98,7 +96,7 @@ int main(int argc, char *argv[])
 //#if 0
 // Start program
 // -------------
-  long idum=(long)2*id;
+
 
   if (id==0){
     subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_2_24_1_2_1.txt","r");
@@ -116,6 +114,7 @@ int main(int argc, char *argv[])
     fclose(subset_file); 
   }
   MPI_Barrier(MPI_COMM_WORLD);
+  t_start=MPI_Wtime();
   MPI_Bcast((void *)subset_nodes,node_count,MPI_INT,0,MPI_COMM_WORLD);
   space=init_domain(m,n,p);
   
@@ -142,9 +141,9 @@ int main(int argc, char *argv[])
           free(&pop[elites[i]][0]); /* Unfit*/
         }                 
       }
-      for(i=num_of_elites;i<pop_size;i++){   
-        mutants[i-num_of_elites]=malloc(node_count*sizeof(int)); /*populate */       
-        r2=ran3(&idum);
+      for(i=num_of_elites;i<pop_size;i++){   /*populate */       
+        mutants[i-num_of_elites]=malloc(node_count*sizeof(int)); 
+        r2=rand()/(double)RAND_MAX;
         rn=(int)(r2*num_of_elites);
         next_gen[i]=mutate(next_gen[rn],node_count,mutants[(i-num_of_elites)],id); 
       } 
@@ -169,9 +168,12 @@ int main(int argc, char *argv[])
     } 
    free(all_solutions);
    free(all_fitness);
- }
- MPI_Barrier(MPI_COMM_WORLD);
- 
+  }
+  MPI_Barrier(MPI_COMM_WORLD);
+  t_stop=MPI_Wtime();
+  if(id==0){
+    printf("Elasped time: %f\n",t_stop-t_start);
+  } 
 
   
  

@@ -1,6 +1,6 @@
 
 typedef int nodeid; 
-int rand_int_inclusive(int min, int max, long ridum);
+int rand_int_inclusive(int min, int max);
 int* copy_inject(int elite[], int N, int mutant[],int start, int stop, int z, int mirr_flag);
 int* mutate(int elite[], int N, int mutant[],int id);
 int* mutate_inject(int elite[], int N, int mutant[],int x, int y,int z);
@@ -17,7 +17,7 @@ double avg_cost(float cost[], int N);
 
 
 
-double ran3(long *idum);
+
 void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
                  const int ycoors[],const int zcoors[],  int N);
 
