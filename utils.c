@@ -1,58 +1,33 @@
 #include"utils.h"
 #include<math.h>
 #include<limits.h>
-
-
-#define XDIM 25 // Dimension of toroidal interconnect
-#define YDIM 16
-#define ZDIM 24
-#define MBIG 1000000000
-#define MSEED 161803398
-#define MZ 0
-#define FAC (1.0/MBIG)
+#include<mpi.h>
 #define MIN(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 
-
-//typedef int nodeid; 
-float distance_between_nodes(nodeid, nodeid); 
-/* If statements are mostly structured as
- * if (cond) {command;} in one line for compactness*/
-
-
-
-int* mutate(int elite[], int N, int mutant[],int id)
+void mutate(  int elite[],   int chromo_length,   int mutant[],int id)
 {
-
-
-
-  double r1=rand()/(double)RAND_MAX;// coin flip 
+  float r1=rand()/(float)RAND_MAX;// coin flip 
   int z_range[2]={1,2};//,4};//,6,8,16};
   int z=z_range[rand_int_inclusive(0,1)];
-  int x=rand_int_inclusive(0,N-1);
-  int y=rand_int_inclusive(0,N-1);
-  int* mut;
-  if (r1>.500){
-    mut=mutate_swap(elite,N,mutant);
-//      printf("Swap\n");
-    }else{// if(r1>.333){ 
-    mut=mutate_inject(elite,N,mutant,x,y,z);
-//      printf("Inject\n");
-//  }else{
-//    mut=mutate_mirror(elite,N,mutant,z);
-//    printf("Mirror\n");
-    }      
-  return mut; 
+  int x=rand_int_inclusive(0,chromo_length-1);
+  int y=rand_int_inclusive(0,chromo_length-1);
+  if(r1>.500){
+    mutate_swap(elite,chromo_length,mutant);
+  }else{
+    mutate_inject(elite,chromo_length,mutant,x,y,z);
+  }      
 }
-int* copy_inject(int elite[], int N, int mutant[],int start, int stop, int z, int mirr_flag)
+
+void copy_inject(  int elite[],   int chromo_length,   int mutant[],int start, int stop, int z, int mirr_flag)
 {
   int i;
   if(start>stop){
-    printf("Error! Start > Stop\n");
+    printf("Error! copy_inject: Start > Stop\n");
     exit(1);
   }
-  z=MIN(z,(N-stop));
-//printf("z: %d\n",z); 
-  for(i=0;i<N;i++){
+  z=MIN(z,(chromo_length-stop));
+
+  for(i=0;i<chromo_length;i++){
     if (i<start){ 
       mutant[i]=elite[i];
     }else if(i>=start && i<stop){
@@ -63,99 +38,74 @@ int* copy_inject(int elite[], int N, int mutant[],int start, int stop, int z, in
       mutant[i]=elite[i];
     }
   }
-  return &mutant[0];
 }
-int* mutate_inject(int elite[], int N, int mutant[],int x, int y, int z)
+
+void mutate_inject(  int elite[],   int chromo_length,   int mutant[],int x, int y, int z)
 {
 
   int mirr_flag=rand_int_inclusive(0,1);
-//  printf("Mirror flag:%d\n",mirr_flag);
-//  mirr_flag=0;
   if (x<y){
-    return copy_inject(elite,N,mutant,x,y,z,mirr_flag);
+    copy_inject(elite,chromo_length,mutant,x,y,z,mirr_flag);
   }else{
-    return copy_inject(elite,N,mutant,y,x,z,mirr_flag);
+    copy_inject(elite,chromo_length,mutant,y,x,z,mirr_flag);
   } 
 }
 
-
-
-int* mutate_swap(int elite[], int N, int mutant[])
+void mutate_swap(  int elite[],   int chromo_length,   int mutant[])
 {
-  int i,tmp,M,x,y;
-
-  M=rand_int_inclusive(0,1);
-  M=0;
+  int i,j,tmp,M,x,y;
+  M=rand_int_inclusive(0,4);
+//M=0;
   for(i=0;i<=M;i++){ 
-    x=rand_int_inclusive(0,N-1);
-    y=rand_int_inclusive(0,N-1);
+    x=rand_int_inclusive(0,chromo_length-1);
+    y=rand_int_inclusive(0,chromo_length-1);
     tmp=elite[x]; 
-    for(i=0;i<N;i++){
-      if(i==x) {mutant[i]=elite[y];}
-      else if (i==y) {mutant[i]=tmp;}
-      else {mutant[i]=elite[i];}
+    for(j=0;j<chromo_length;j++){
+      if(j==x){
+        mutant[j]=elite[y];
+      }else if(j==y){
+        mutant[j]=tmp;
+      }else{
+        mutant[j]=elite[j];
+      }
     } 
   }
-  return &mutant[0]; 
- 
 }
 
-int* mutate_mirror(int elite[], int N, int mutant[], int z)
-{
 
-
-  int i,j=0;
-  int k=rand_int_inclusive(1,N-1);
-  int m=MIN(k-z,0);
-   
-  for(i=0;i<N;i++){
-    if(i<m){
-      mutant[i]=elite[i];
-    }else if(i>=m && i<=k){
-      mutant[i]=elite[k-j];
-      j++;
-    }else{
-      mutant[i]=elite[i];
-    }
-  }
-  return &mutant[0];
-}
 
 int rand_int_inclusive(int min, int max)
 {
-
   int r;
- 
   while (1){ 
-    r=(rand()/(double)RAND_MAX)*(max-min+1)+min;
+    r=(rand()/(float)RAND_MAX)*(max-min+1)+min;
     if(r>=min && r<=max){ // Make sure r is in bounds
       return r;
     }
   } 
 }
 
-double tournament(int N, int* pop[], int pop_size,const int xcoors[],const int ycoors[],const int zcoors[],
-                int topology[],int elites[], int num_of_elites)
+
+float tournament(  int chromo_length,   int* pop[],   int pop_size,domain* space,  int elites[],   int n_elites)
 {
 
-  double norm2(float cost[], int N);
+  float norm2(float cost[],   int chromo_length);
   int compare(const void * a, const void * b);
-  void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
-                 const int ycoors[],const int zcoors[],  int N);
+  void computeCost(float cost[],   int assignment[],   int topology[],    int chromo_length);
 
-  double fit[pop_size],tmp;
-  double *ind[pop_size]; 
+  float fit[pop_size],tmp;
+  float *ind[pop_size]; 
   int i,j,k;
-  float* cost=malloc(sizeof(float)*N*6);
-  double b_fit=INT_MAX; 
+  float* cost=malloc(sizeof(float)*chromo_length*6);
+  float b_fit=INT_MAX; 
   for(i=0;i<pop_size;i++){  // Compute fitness of each individual
-    computeCost(cost,&pop[i][0],topology,xcoors,ycoors,zcoors,N);
-    fit[i]=norm2(cost,N*6); 
+    computeCost(cost,&pop[i][0],space->topology,chromo_length);
+    fit[i]=norm2(cost,chromo_length*6); 
     ind[i]=&fit[i];
     b_fit=(fit[i]<b_fit) ? fit[i] : b_fit; 
   } 
   free(cost);
-  qsort(ind,pop_size,sizeof(double *),compare); // Sort by fit
+  qsort(ind,pop_size,sizeof(float *),compare); // Sort by fit
   for(i=0;i<pop_size;i++){
     elites[i]=ind[i]-fit; // recover indices
   }
@@ -164,75 +114,22 @@ double tournament(int N, int* pop[], int pop_size,const int xcoors[],const int y
 }
 
 
-double roulette(int N, int* pop[], int pop_size,const int xcoors[],const int ycoors[],const int zcoors[],
-                int topology[],int elites[], int num_of_elites)
-{
-
-  double norm2(float cost[], int N);
-  int compare(const void * a, const void * b);
-  void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
-                 const int ycoors[],const int zcoors[],  int N);
-
-  double fit[pop_size],scaled_fit[pop_size];
-  double *ind[pop_size]; 
-  int i,j,k,tmp;
-
-  double total_fit=0.0;
-  float* cost=malloc(sizeof(float)*N*6);
-  double b_fit=INT_MAX; 
-  for(i=0;i<pop_size;i++){  // Compute fitness of each individual
-    computeCost(cost,&pop[i][0],topology,xcoors,ycoors,zcoors,N);
-    fit[i]=norm2(cost,N*6);   
-    total_fit+=fit[i];
-    b_fit=(fit[i]<b_fit) ? fit[i] : b_fit; 
-  } 
-  free(cost);
-
-  j=num_of_elites-1;
-  i=0;
-  double r1,partial_sum;
-  int chosen_one=0;
-  int* chosen=calloc(pop_size,sizeof(int));
-  while(j>=0){ 
-    partial_sum=0;
-    chosen_one=0;
-    r1=(rand()/(double)RAND_MAX)*total_fit;
-    while(r1>partial_sum){
-      partial_sum+=fit[chosen_one];
-      chosen_one++;
-    }
-    elites[i]=chosen_one;
-    chosen[chosen_one]=1;
-    i++;
-    j--;
-  } 
-  k=0;
-  for(i=0;i<pop_size;i++){
-    if(chosen[i]==0){
-      elites[num_of_elites+k]=i;       
-      k++;
-    }
-  }
-  return b_fit;
-}
-
-
 
 int compare(const void * a, const void * b)
 {
-  double va=**(const double**) a;
-  double vb=**(const double**) b;
- 
+  float va=**(const float**) a;
+  float vb=**(const float**) b;
   return (va>vb)-(va<vb);
 }
 
-void create_pop(int node_count, int nodes[], int pop_size, int* pop[],int id)
+
+void create_pop(int node_count, int nodes[],   int pop_size,   int* pop[])
 {
   int i,j;
   int r[node_count];
-  void randperm(int a, int b, int r[],int id);
+  void randperm(int a, int b, int r[]);
   for(i=0;i<pop_size;i++){
-    randperm(0,node_count,r,id);
+    randperm(0,node_count,r);
     pop[i]=malloc(node_count*sizeof(int)); 
     for(j=0;j<node_count;j++){
       pop[i][j]=nodes[r[j]];      
@@ -240,76 +137,58 @@ void create_pop(int node_count, int nodes[], int pop_size, int* pop[],int id)
   }
 }
 
-
-
-
-
-void randperm(int a, int b, int r[],int id)
+void randperm(int a, int b, int r[])
 {
-
-
   int i,j;
-
-  double tmp,rn; 
+  float tmp,rn; 
   for(j=0;j<(b-a+1);j++){
     r[j]=a+j;
   }
-
   for(i=a;i<b;i++){
-     rn=round((b-a))*rand()/(double)RAND_MAX;
+     rn=round((b-a))*rand()/(float)RAND_MAX;
      tmp=r[i];
      r[i]=r[(int) rn];
      r[(int) rn]=tmp;
   }
 }
 
-double norm2(float cost[], int N)
+float norm2(float cost[],   int chromo_length)
 {
   int i;
-  double norm=0.0;
-  for (i=0;i<N;i++){
-    norm+=(double) cost[i]*(double) cost[i];
+  float norm=0.0;
+  for (i=0;i<chromo_length;i++){
+    norm+=(float) cost[i]*(float) cost[i];
   }
   return sqrt(norm);
-
 }
 
-double avg_cost(float cost[], int N)
+float avg_cost(float cost[],   int chromo_length)
 {
    int i;
-   double tmp=0;
-   for (i=0;i<N;i++){
+   float tmp=0;
+   for (i=0;i<chromo_length;i++){
      tmp+=cost[i];
    }
-   return tmp/N;
+   return tmp/chromo_length;
 }
 
-
-
-
-
-
-void computeCost(float cost[], int assignment[], int topology[],const int xcoors[],
-               const int ycoors[],const int zcoors[],  int N)
+void computeCost(float cost[],   int assignment[],   int topology[],   int chromo_length)
 {
   int r,i,j,k;
   for (k=0; k<6; k++){
-    for (r=0; r<N; r++){
-      j=assignment[topology[r+N*k]];
+    for (r=0; r<chromo_length; r++){
+      j=assignment[topology[r+chromo_length*k]];
       i=assignment[r];
-      cost[r+N*k]=distance_between_nodes((nodeid) i,(nodeid) j);
+      cost[r+chromo_length*k]=distance_between_nodes((nodeid) i,(nodeid) j);
     } 
   }
 }                 
 
 void get_subset(FILE *fp, int subset_nodes[], int node_count)
 {
-  
   int i; 
-  for (i=0;i<node_count;i++)
-  {
+  for (i=0;i<node_count;i++){
     fscanf(fp,"%d",&subset_nodes[i]);
-
   }
 }
 
@@ -327,7 +206,29 @@ int count_lines(FILE *fp)
 
 
 
-
+void print_solution(const int* zcoors,float b_fit,   int* b_assign, int node_count,int id, int np,domain* space)
+{
+  int i,k,m=space->max_i; 
+  int* all_solutions=(int*)malloc(node_count*np*sizeof(int));
+  float* all_fitness=calloc(np,sizeof(float)); 
+  MPI_Gather(b_assign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
+  MPI_Gather(&b_fit,1,MPI_FLOAT,all_fitness,1,MPI_FLOAT,0,MPI_COMM_WORLD);
+  if(id==0){ 
+    float global_best=INT_MAX; 
+    int best_rank;
+    for(k=0;k<np;k++){
+      if(all_fitness[k]<global_best){
+        global_best=all_fitness[k]; best_rank=k;
+      }
+    } 
+    printf("%d found best: %f\n",best_rank,global_best); 
+    for(i=0;i<m;i++){
+      fprintf(stdout," %d  %d  %d  %d\n",zcoors[3*all_solutions[m*0+i+best_rank*node_count]],zcoors[3*all_solutions[m*1+i+best_rank*node_count]],zcoors[3*all_solutions[m*2+i+best_rank*node_count]],zcoors[3*all_solutions[m*3+i+best_rank*node_count]]);
+    }
+  } 
+  free(all_solutions);
+  free(all_fitness);
+}
 
 
 

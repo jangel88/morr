@@ -4,15 +4,18 @@
 #define TRUE 1
 #define FALSE 0
 
-domain init_domain(int max_i, int max_j, int max_k)
+ domain init_domain(int max_i, int max_j, int max_k)
 
 {
   domain space;
   space.max_i=max_i;
   space.max_j=max_j;
   space.max_k=max_k;
+  space.topology=malloc(sizeof(int)*max_i*max_j*max_k*6);
+  topomat3d(&space);
+  
   return space; 
-} 
+}
 int validate_domain_size(domain space, int node_count)
 {
   return (node_count==(space.max_i*space.max_j*space.max_k));
@@ -72,29 +75,29 @@ int find_neighbors(domain space, subdomain element, subdomain* neighbor)
   neighbor[5].k = element.k==space.max_k-1 ? 0 : element.k+1;
 }
 
-void topomat3d(int topology[],domain space)
+
+void topomat3d(domain* space)
 {
   subdomain q;
   int n,m,p;
-  m=space.max_j;
-  n=space.max_i; 
-  p=space.max_k;
+  m=space->max_j;
+  n=space->max_i; 
+  p=space->max_k;
   int r,s;
   int i,j,k;
   int N=n*m*p;
-  
+
   for(r=0;r<N;r++){
-    q=get_domain_coord(r,space);
+    q=get_domain_coord(r,*space);
     i=q.i;j=q.j;k=q.k;
     subdomain neigh[6];
-    find_neighbors(space,q,neigh);
-    for(s=0;s<6;s++){
-      topology[s*N+r]=get_position(neigh[s],space);
+    find_neighbors(*space,q,neigh);
+    for(s=0;s<6;s++){ 
+      space->topology[s*N+r]=get_position(neigh[s],*space);
     } 
   }
  
 }
-
 /*float cost_metric(nodeid* node_list, metric, domain space){
   int i,j,k;
   int me;
