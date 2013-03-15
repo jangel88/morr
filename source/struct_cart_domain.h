@@ -17,6 +17,7 @@ int validate_domain_size(domain space, int node_count);
 int validate_subdomain(subdomain element, domain space);
 int get_position(subdomain element,domain space);
 int find_neighbors(domain space, subdomain element, subdomain* neighbor);
+int get_period(domain space); 
 
 void topomat3d(domain* space);
 subdomain get_domain_coord(int position,domain space);
