@@ -67,9 +67,9 @@ float distance_between_nodes(nodeid n1, nodeid n2)
             z1==z2){
     return (float)(C_same_router);
   }else{
-    dx=fabs(x2-x1); dx=(dx>(double)XDIM/2.0) ? fabs(dx-XDIM) : dx;
-    dy=fabs(y2-y1); dy=(dy>(double)YDIM/2.0) ? fabs(dy-YDIM) : dy;
-    dz=fabs(z2-z1); dz=(dz>(double)ZDIM/2.0) ? fabs(dz-ZDIM) : dz;
+    dx=fabs(x2-x1); dx=(dx>(float)XDIM/2.0) ? fabs(dx-XDIM) : dx;
+    dy=fabs(y2-y1); dy=(dy>(float)YDIM/2.0) ? fabs(dy-YDIM) : dy;
+    dz=fabs(z2-z1); dz=(dz>(float)ZDIM/2.0) ? fabs(dz-ZDIM) : dz;
     return (float)(C_x*dx+C_y*dy+C_z*dz);
   }
  

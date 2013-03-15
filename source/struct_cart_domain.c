@@ -47,7 +47,7 @@ subdomain get_domain_coord(int position, domain space)
   return element;
 }
 
-int find_neighbors(domain space, subdomain element, subdomain* neighbor)
+void find_neighbors(domain space, subdomain element, subdomain* neighbor)
 {
   // -i 
   neighbor[0].i = element.i==0 ? space.max_i-1 : element.i-1;
@@ -84,12 +84,9 @@ void topomat3d(domain* space)
   n=space->max_i; 
   p=space->max_k;
   int r,s;
-  int i,j,k;
   int N=n*m*p;
-
   for(r=0;r<N;r++){
     q=get_domain_coord(r,*space);
-    i=q.i;j=q.j;k=q.k;
     subdomain neigh[6];
     find_neighbors(*space,q,neigh);
     for(s=0;s<6;s++){ 

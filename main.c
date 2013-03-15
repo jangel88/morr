@@ -16,9 +16,9 @@ int main(int argc, char *argv[])
   double t_start,t_stop;
   int n,m,p;
   n=4;m=24;p=1;
-  int pop_size=20000;
+  int pop_size=1000;
   int max_gen=1000;
-  int n_elites=4000,elites[pop_size]; 
+  int n_elites=100,elites[pop_size]; 
   int chromo_length=n*m*p;
   int *pop[pop_size]; 
   int* next_gen[pop_size]; 
@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
   const int* ycoors=&titan_node_coords[0][1];
   const int* zcoors=&titan_node_coords[0][2];
 
-  float r1,r2;
+  float r2;
   int rn;
-  int topology[6*chromo_length];
-  int i,j,k;
+
+  int i,j;
 
   int node_count; 
   domain space=init_domain(m,n,p);

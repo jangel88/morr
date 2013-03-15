@@ -6,9 +6,9 @@
 
 void mutate(  int elite[],   int chromo_length,   int mutant[],int id)
 {
-  float r1=rand()/(float)RAND_MAX;// coin flip 
-  int z_range[2]={1,2};//,4};//,6,8,16};
-  int z=z_range[rand_int_inclusive(0,1)];
+  float r1=rand()/(float)RAND_MAX;/* coin flip*/ 
+  int z_range[3]={1,2,4};
+  int z=z_range[rand_int_inclusive(0,2)];
   int x=rand_int_inclusive(0,chromo_length-1);
   int y=rand_int_inclusive(0,chromo_length-1);
   if(r1>.500){
@@ -55,11 +55,11 @@ void mutate_swap(  int elite[],   int chromo_length,   int mutant[])
 {
   int i,j,tmp,M,x,y;
   M=rand_int_inclusive(0,4);
-//M=0;
+
   for(i=0;i<=M;i++){ 
     x=rand_int_inclusive(0,chromo_length-1);
     y=rand_int_inclusive(0,chromo_length-1);
-    tmp=elite[x]; 
+    tmp=elite[x];
     for(j=0;j<chromo_length;j++){
       if(j==x){
         mutant[j]=elite[y];
@@ -79,7 +79,7 @@ int rand_int_inclusive(int min, int max)
   int r;
   while (1){ 
     r=(rand()/(float)RAND_MAX)*(max-min+1)+min;
-    if(r>=min && r<=max){ // Make sure r is in bounds
+    if(r>=min && r<=max){ /* Make sure r is in bounds*/
       return r;
     }
   } 
@@ -93,21 +93,21 @@ float tournament(  int chromo_length,   int* pop[],   int pop_size,domain* space
   int compare(const void * a, const void * b);
   void computeCost(float cost[],   int assignment[],   int topology[],    int chromo_length);
 
-  float fit[pop_size],tmp;
+  float fit[pop_size];
   float *ind[pop_size]; 
-  int i,j,k;
+  int i;
   float* cost=malloc(sizeof(float)*chromo_length*6);
   float b_fit=INT_MAX; 
-  for(i=0;i<pop_size;i++){  // Compute fitness of each individual
+  for(i=0;i<pop_size;i++){  /* Compute fitness of each individual*/
     computeCost(cost,&pop[i][0],space->topology,chromo_length);
     fit[i]=norm2(cost,chromo_length*6); 
     ind[i]=&fit[i];
     b_fit=(fit[i]<b_fit) ? fit[i] : b_fit; 
   } 
   free(cost);
-  qsort(ind,pop_size,sizeof(float *),compare); // Sort by fit
+  qsort(ind,pop_size,sizeof(float *),compare); /* Sort by fit*/
   for(i=0;i<pop_size;i++){
-    elites[i]=ind[i]-fit; // recover indices
+    elites[i]=ind[i]-fit; /* recover indices*/
   }
 
   return b_fit;
@@ -209,13 +209,13 @@ int count_lines(FILE *fp)
 void print_solution(const int* zcoors,float b_fit,   int* b_assign, int node_count,int id, int np,domain* space)
 {
   int i,k,m=space->max_i; 
+  float global_best=INT_MAX; 
+  int best_rank; 
   int* all_solutions=(int*)malloc(node_count*np*sizeof(int));
   float* all_fitness=calloc(np,sizeof(float)); 
   MPI_Gather(b_assign,node_count,MPI_INT,all_solutions,node_count,MPI_INT,0,MPI_COMM_WORLD);
   MPI_Gather(&b_fit,1,MPI_FLOAT,all_fitness,1,MPI_FLOAT,0,MPI_COMM_WORLD);
   if(id==0){ 
-    float global_best=INT_MAX; 
-    int best_rank;
     for(k=0;k<np;k++){
       if(all_fitness[k]<global_best){
         global_best=all_fitness[k]; best_rank=k;
