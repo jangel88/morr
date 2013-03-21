@@ -16,11 +16,11 @@ int main(int argc, char *argv[])
   double t_start,t_stop;
   int n,m,p;
   n=4;m=24;p=1;
-  int pop_size=1000;
-  int max_gen=1000;
-  int n_elites=100,elites[pop_size]; 
+  int pop_size=2000;
+  int max_gen=1500;
+  int n_elites=50,elites[pop_size]; 
   int chromo_length=n*m*p;
-  int *pop[pop_size]; 
+  int* pop[pop_size]; 
   int* next_gen[pop_size]; 
   int* mutants[pop_size-n_elites];  
   int* b_assign;
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
   const int* ycoors=&titan_node_coords[0][1];
   const int* zcoors=&titan_node_coords[0][2];
 
-  float r2;
+  float r1;
   int rn;
 
   int i,j;
@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
     if (n_fit<b_fit){ /*New best solution*/
       b_fit=n_fit;
       b_assign=pop[elites[0]];
+      printf("b_fit: %f\n",b_fit);
     }
     for(i=0;i<pop_size;i++){
       if(i<n_elites){ 
@@ -88,8 +89,8 @@ int main(int argc, char *argv[])
     }
     for(i=n_elites;i<pop_size;i++){   /*populate */       
       mutants[i-n_elites]=malloc(node_count*sizeof(int)); 
-      r2=rand()/(float)RAND_MAX;
-      rn=(int)(r2*n_elites);
+      r1=rand()/(float)RAND_MAX;
+      rn=(int)(r1*n_elites);
       mutate(next_gen[rn],node_count,mutants[(i-n_elites)],id); 
       next_gen[i]=mutants[i-n_elites];
     } 

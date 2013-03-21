@@ -53,22 +53,17 @@ void mutate_inject(  int elite[],   int chromo_length,   int mutant[],int x, int
 
 void mutate_swap(  int elite[],   int chromo_length,   int mutant[])
 {
-  int i,j,tmp,M,x,y;
+  int i,tmp,M,x,y;
   M=rand_int_inclusive(0,4);
-
+  for(i=0;i<chromo_length;i++){
+    mutant[i]=elite[i];
+  }
   for(i=0;i<=M;i++){ 
     x=rand_int_inclusive(0,chromo_length-1);
     y=rand_int_inclusive(0,chromo_length-1);
-    tmp=elite[x];
-    for(j=0;j<chromo_length;j++){
-      if(j==x){
-        mutant[j]=elite[y];
-      }else if(j==y){
-        mutant[j]=tmp;
-      }else{
-        mutant[j]=elite[j];
-      }
-    } 
+    tmp=mutant[x]; 
+    mutant[x]=mutant[y]; 
+    mutant[y]=tmp;
   }
 }
 
@@ -98,6 +93,7 @@ float tournament(  int chromo_length,   int* pop[],   int pop_size,domain* space
   int i;
   float* cost=malloc(sizeof(float)*chromo_length*6);
   float b_fit=INT_MAX; 
+
   for(i=0;i<pop_size;i++){  /* Compute fitness of each individual*/
     computeCost(cost,&pop[i][0],space->topology,chromo_length);
     fit[i]=norm2(cost,chromo_length*6); 
@@ -128,6 +124,7 @@ void create_pop(int node_count, int nodes[],   int pop_size,   int* pop[])
   int i,j;
   int r[node_count];
   void randperm(int a, int b, int r[]);
+
   for(i=0;i<pop_size;i++){
     randperm(0,node_count,r);
     pop[i]=malloc(node_count*sizeof(int)); 
