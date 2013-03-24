@@ -12,8 +12,8 @@
 #define ZDIM 24
 
 // start titan_node_coords declaration
-const int titan_node_count=TITAN_NODE_COUNT; 
-const int titan_node_coords[TITAN_NODE_COUNT][3]= 
+static const int titan_node_count=TITAN_NODE_COUNT; 
+static const int titan_node_coords[TITAN_NODE_COUNT][3]= 
 {
 {0,  0,  0,},//      0
 {0,  0,  0,},//      1
@@ -19219,7 +19219,7 @@ const int titan_node_coords[TITAN_NODE_COUNT][3]=
 // end titan_node_coords declaration
 
 int init_node_info(void){
-  //Nothing to do here now. Node coords are initialized in the header file. 
+  //Nothing to do here now. Node coords are initialized in the static variable
   return(0); 
 }
 
