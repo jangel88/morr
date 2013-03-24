@@ -1,9 +1,7 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <mpi.h>
 #include "titan_node_info.h" 
-
-#define TRUE 1
-#define FALSE 0
 
 // These are the definitions and data that are unique to Titan and should not be used directly elsewhere
 #define TITAN_NODE_COUNT 19200
@@ -19224,26 +19222,26 @@ int init_node_info(void){
 }
 
 
-int valid_nodeid(nodeid nid)
+bool valid_nodeid(nodeid nid)
 {
   if  (nid>-1 && nid<19200){
-    return TRUE;
+    return true;
   } else {
-    return FALSE;
+    return false;
   }
 }
 
-int valid_node_list(int N, nodeid* node_list)
+bool valid_node_list(int N, nodeid* node_list)
 /* Check that node_list of length N contains only 
  * valid node ids*/
 {
   int i;
   for(i=0;i<N;i++){
-    if (valid_nodeid(node_list[i])!=TRUE){
-      return FALSE;
+    if (valid_nodeid(node_list[i])!=true){
+      return false;
     }
   } 
-  return TRUE; 
+  return true; 
 }
 
 nodeid query_nodeid(){
