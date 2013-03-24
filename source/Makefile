@@ -1,5 +1,6 @@
 # ---------------------------------------------------------------------- 
 CC      = cc
+CXX     = CC
 CFLAGS	= 
 
 # ---------------------------------------------------------------------- 
@@ -8,12 +9,14 @@ CFLAGS	=
 .c.o:
 	$(CC) $(CFLAGS) -c $<
  
+.C.o:
+	$(CXX) $(CFLAGS) -c $<
+ 
 # ---------------------------------------------------------------------- 
-TESTEXE = test.exe
-TESTOBJ = titan_node_info.o
+DEFAULT = titan_node_info_test.exe
 
-$(TESTEXE):	$(TESTOBJ)
-	$(CC) $(CFLAGS) -o $(TESTEXE) $(TESTOBJ)
+titan_node_info_test.exe:	titan_node_info_test.o titan_node_info.o 
+	$(CC) $(CFLAGS) -o $@ $^
 
 # ---------------------------------------------------------------------- 
 
