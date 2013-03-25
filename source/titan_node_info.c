@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include <mpi.h>
 #include "titan_node_info.h" 
 
@@ -19231,7 +19232,7 @@ bool valid_nodeid(nodeid nid)
   }
 }
 
-bool valid_node_list(int N, nodeid* node_list)
+bool valid_nodeid_list(int N, nodeid* node_list)
 /* Check that node_list of length N contains only 
  * valid node ids*/
 {
@@ -19253,7 +19254,7 @@ nodeid query_nodeid(){
   flag = MPI_Get_processor_name(name, &len);
   if(flag != MPI_SUCCESS) return(-1);
   name_offset=&name[3];
-  printf("%s\n", name_offset);
+  //printf("%s\n", name_offset);
   return(atoi(name_offset));
 }
 

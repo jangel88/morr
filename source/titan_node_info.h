@@ -1,4 +1,5 @@
 #include <stdbool.h>
+
 // These are the definitions that should be available across all node architectures
 typedef int nodeid; 
 typedef enum nodeid_validity{
