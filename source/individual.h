@@ -1,6 +1,4 @@
-#include<list>
-
-class Individual : public std::list<nodeid> {
+class Individual : public std::vector<nodeid> {
   private:
     double fitness;
     void swap_segment(bool mirror1, bool mirror2); 
@@ -13,7 +11,8 @@ class Individual : public std::list<nodeid> {
     void mutate(); 
     static void crossover 
       (Individual parent1, Individual parent2, Individual* offspring1, Individual* offspring2); 
-    int get_fitness(); 
+    float get_fitness(std::vector<int>* topology); 
     void show_Individual(); 
+    float give_fitness();
 };
 

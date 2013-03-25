@@ -4,7 +4,7 @@ clc
 
 
 
-m=12;n=4;p=1;
+m=24;n=4;p=1;
 tasks=n*m*p;
 PopSize=1000;
 NumOfProcs=tasks;
@@ -20,7 +20,7 @@ metric='2norm';
 BestFit=Inf;
 StopTime=240;
 BestAssignment=zeros(NumOfProcs,1);
-v=load('/home/Spring13/ORNL/data/nodes_1_1_24_1_2_1.txt');
+v=load('/home/Spring13/ORNL/data/nodes_1_2_24_1_2_1.txt');
 %v=load('/home/Spring13/ORNL/data/maxnorm.txt');
 %v=load('/home/Spring13/ORNL/matlab/tests/nodes.txt');
 v=[v];%;v];

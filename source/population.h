@@ -1,9 +1,15 @@
 // ---------------------------------------------------------------------- 
+
+typedef std::pair<float,int> fit_pair;
+bool comparator (const fit_pair& i, const fit_pair& j);
+
+
 class Population {
   private:
     int p_size;
     int max_psize;
-    Individual** individuals;
+//  Individual* individuals;
+    std::vector<Individual> individuals;
   protected:
   public: 
     Population(int max_psize,int individual_size, Individual* ancestors);
@@ -14,4 +20,8 @@ class Population {
     int get_best_fitness(); 
     void show_population(); 
     void show_fitness_of_population();  
+    void tournament(std::vector<Individual>,std::vector<int>*);    
 };
+
+
+

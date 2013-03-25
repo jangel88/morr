@@ -1,7 +1,7 @@
 #include"utils.h"
 
 
-bool comparotor (const fit_pair& i, const fit_pair& j)
+bool comparator (const fit_pair& i, const fit_pair& j)
   { return i.first < j.first; }
 
 float norm2(float cost[], int length)
@@ -26,7 +26,7 @@ float tournament(int chromo_length,Population* pop, Domain* space,int elites[],i
     fit=norm2(cost,chromo_length*6);
     ind_fit.push_back(std::make_pair(fit,i));
   }
-  std::sort(ind_fit.begin(),ind_fit.end(),comparotor);
+  std::sort(ind_fit.begin(),ind_fit.end(),comparator);
   for(i=0;i<pop->p_size;i++){
     elites[i]=ind_fit[i].second;
   }
