@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
@@ -19264,7 +19265,7 @@ float distance_between_nodes(nodeid n1, nodeid n2)
   int x1,x2;
   int y1,y2;
   int z1,z2;
-  float dx,dy,dz;
+  float dx,dy,dz,distance;
   x1=titan_node_coords[n1][0];
   x2=titan_node_coords[n2][0];
   y1=titan_node_coords[n1][1];
@@ -19273,17 +19274,17 @@ float distance_between_nodes(nodeid n1, nodeid n2)
   z2=titan_node_coords[n2][2];
 
   if (n1==n2){
-    return (float)(C_same_node);
+    distance=(C_same_node);
   }else if (x1==x2 && 
             y1==y2 && 
             z1==z2){
-    return (float)(C_same_router);
+    distance=(C_same_router);
   }else{
     dx=fabs(x2-x1); dx=(dx>(float)XDIM/2.0) ? fabs(dx-XDIM) : dx;
     dy=fabs(y2-y1); dy=(dy>(float)YDIM/2.0) ? fabs(dy-YDIM) : dy;
     dz=fabs(z2-z1); dz=(dz>(float)ZDIM/2.0) ? fabs(dz-ZDIM) : dz;
-    return (float)(C_x*dx+C_y*dy+C_z*dz);
+    distance=(C_x*dx+C_y*dy+C_z*dz);
   }
- 
-
+  //printf("%d (%d,%d,%d) - %d (%d,%d,%d) = %.3f\n", n1, x1, y1, z1, n2, x2, y2, z2, distance);
+  return(distance); 
 }
