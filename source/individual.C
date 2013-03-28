@@ -42,7 +42,7 @@ float Individual::get_fitness(std::vector<int>* topology)
   int N=size();
   float tmp=0.0;
   nodeid n1,n2;
-  std::vector<float> cost(N*6,0);
+  std::vector<float> cost(N*6);
   for(j=0;j<6;j++){
     for(i=0;i<N;i++){
       n1=at(topology->at(i+N*j));
@@ -62,39 +62,37 @@ void Individual::mutate()
   int r=rand()%2;
   int mirr1=rand()%2;
   int mirr2=rand()%2;
+  std::cout << r << std::endl;
   if(r==0){
     cut_n_paste_segment(false);
-//}else if(r==1){
   }else{
     swap_segment(mirr1,mirr2);
-//}else{
-//  head_to_tail(mirr1);
-//}
   }
 }
 
 void Individual::swap_segment(bool mirror1, bool mirror2)
 {
-  int z_range[4]={1,2,4,8};
-  int z=z_range[rand()%4];
+  int length_range[4]={1,2,4,8};
+  int length=length_range[rand()%4];
   int N=size();
   int x=rand()%size();
   int y=rand()%size();
   int stop=MAX(x,y); 
   int start=MIN(x,y);
+  length=1; 
   std::vector<nodeid>::iterator itx=begin()+x;
   std::vector<nodeid>::iterator ity=begin()+y;
-  std::vector<nodeid> temp1(z);
-  std::vector<nodeid> temp2(z); 
-  z=MIN(z,N-stop);
-  z=MIN(z,(stop-start)-1);
-  for(int i=0; i<z; i++){
+  std::vector<nodeid> temp1(length);
+  std::vector<nodeid> temp2(length); 
+  length=MIN(length,N-stop);
+  length=MIN(length,(stop-start)-1);
+  for(int i=0; i<length; i++){
     temp1[i]=(*(itx+i));
     temp2[i]=(*(ity+i)); 
   }
-  for(int i=0;i<z;i++){
-    at(x+i)=temp2[i+mirror2*(z-2*i-1)];
-    at(y+i)=temp1[i+mirror1*(z-2*i-1)];
+  for(int i=0;i<length;i++){
+    at(x+i)=temp2[i+mirror2*(length-2*i-1)];
+    at(y+i)=temp1[i+mirror1*(length-2*i-1)];
   }
   if (size()!=N){ 
     std::cout << "Error in swap! Vector changed length\n";
@@ -105,8 +103,8 @@ void Individual::swap_segment(bool mirror1, bool mirror2)
 void Individual::cut_n_paste_segment(bool mirr)
 {
   int N=size();
-  int z_range[4]={1,2,4,8};
-  int length=z_range[rand()%2];
+  int length_range[4]={1,2,4,8};
+  int length=length_range[rand()%2];
   length=1;
   int dst=rand()%size();
   int start=rand()%size();
@@ -116,6 +114,7 @@ void Individual::cut_n_paste_segment(bool mirr)
   std::vector<nodeid> tmp(begin() + start, begin() + start + length);
   erase(begin() + start, begin() + start + length);
   insert(begin() + final_dst, tmp.begin(), tmp.end()); 
+
   if (size()!=N){ 
     std::cout << "Error in cut_n_paste! Vector changed length\n";
     exit(1);

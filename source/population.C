@@ -1,5 +1,5 @@
 #include"population.h"
-
+#include<float.h>
 bool comparator (const fit_pair& i, const fit_pair& j)
 { 
   return i.first < j.first; 
@@ -13,7 +13,6 @@ Population::Population(int max_psize, int individual_size, Individual* ancestor)
   this->max_psize=max_psize; 
   while(p_size<max_psize){
     Individual temp(ancestor,true);
-    std::random_shuffle(temp.begin(),temp.end());
     individuals.push_back(temp);
     p_size+=1;  
   }
@@ -65,6 +64,7 @@ void Population::tournament(std::vector<Individual> elites, std::vector<int>* to
   }
 }
 
+
 Population Population::find_elites(int elite_size)
 {
 
@@ -72,7 +72,7 @@ Population Population::find_elites(int elite_size)
 
 int Population::get_best_fitness()
 {
-  float best=1e6;
+  float best=FLT_MAX;
   for(int i=0;i<p_size;i++){
     if (individuals[i].give_fitness()< best)
       best=individuals[i].give_fitness();
