@@ -62,9 +62,8 @@ void Individual::mutate()
   int r=rand()%2;
   int mirr1=rand()%2;
   int mirr2=rand()%2;
-  std::cout << r << std::endl;
   if(r==0){
-    cut_n_paste_segment(false);
+    cut_n_paste_segment(mirr1);
   }else{
     swap_segment(mirr1,mirr2);
   }
@@ -77,23 +76,29 @@ void Individual::swap_segment(bool mirror1, bool mirror2)
   int N=size();
   int x=rand()%size();
   int y=rand()%size();
-  int stop=MAX(x,y); 
-  int start=MIN(x,y);
-  length=1; 
-  std::vector<nodeid>::iterator itx=begin()+x;
-  std::vector<nodeid>::iterator ity=begin()+y;
-  std::vector<nodeid> temp1(length);
-  std::vector<nodeid> temp2(length); 
-  length=MIN(length,N-stop);
-  length=MIN(length,(stop-start)-1);
-  for(int i=0; i<length; i++){
-    temp1[i]=(*(itx+i));
-    temp2[i]=(*(ity+i)); 
+  while(x == y){
+    x=rand()%size();
   }
-  for(int i=0;i<length;i++){
-    at(x+i)=temp2[i+mirror2*(length-2*i-1)];
-    at(y+i)=temp1[i+mirror1*(length-2*i-1)];
+  int start2=MAX(x,y); 
+  int start1=MIN(x,y); 
+  while((length > (size()-start2-1)) ||
+           (start1+length > start2)){
+    length-=1;
   }
+  std::vector<nodeid> temp(length);
+
+  if(mirror1){
+    std::reverse_copy(begin()+start2,begin()+start2+length,temp.begin());
+  }else{
+    std::copy(begin()+start2,begin()+start2+length,temp.begin());
+  }
+  if(mirror2){
+    std::reverse_copy(begin()+start1,begin()+start1+length,begin()+start2);
+  }else{
+    std::copy(begin()+start1,begin()+start1+length,begin()+start2);
+  } 
+  std::copy(temp.begin(),temp.end(),begin()+start1);
+
   if (size()!=N){ 
     std::cout << "Error in swap! Vector changed length\n";
     exit(1);
@@ -104,16 +109,22 @@ void Individual::cut_n_paste_segment(bool mirr)
 {
   int N=size();
   int length_range[4]={1,2,4,8};
-  int length=length_range[rand()%2];
-  length=1;
+  int length=length_range[rand()%4];
+
   int dst=rand()%size();
-  int start=rand()%size();
-
-  const size_t final_dst = dst > start ? dst - length : dst;
-
-  std::vector<nodeid> tmp(begin() + start, begin() + start + length);
-  erase(begin() + start, begin() + start + length);
-  insert(begin() + final_dst, tmp.begin(), tmp.end()); 
+  int src=rand()%size();
+  while((src+length) > size() || 
+        (dst+length) > size()){
+    length-=1;
+  }
+  std::vector<nodeid> temp(length); 
+  if(mirr){
+    std::reverse_copy(begin() + src , begin() + src + length,temp.begin() ); 
+  }else{
+    std::copy(begin() + src , begin() + src + length,temp.begin() ); 
+  }
+  erase(begin() + src, begin() + src + length);
+  insert(begin() + dst, temp.begin(), temp.end()); 
 
   if (size()!=N){ 
     std::cout << "Error in cut_n_paste! Vector changed length\n";

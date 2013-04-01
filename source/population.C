@@ -7,8 +7,6 @@ bool comparator (const fit_pair& i, const fit_pair& j)
 
 Population::Population(int max_psize, int individual_size, Individual* ancestor)
 {
-//set_current_psize(1);
-//set_max_psize(max_psize);
   this->p_size=0;
   this->max_psize=max_psize; 
   while(p_size<max_psize){
@@ -16,16 +14,6 @@ Population::Population(int max_psize, int individual_size, Individual* ancestor)
     individuals.push_back(temp);
     p_size+=1;  
   }
-}
-
-void Population::set_max_psize(int max_psize)
-{
-  max_psize=max_psize;
-}
-
-void Population::set_current_psize(int p_size)
-{
-  p_size=p_size;
 }
 
 void Population::show_population()

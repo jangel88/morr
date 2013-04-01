@@ -20,7 +20,7 @@ void copy_best(int node_count, int* pop[],int elites[],int* b_assign );
 void alloc_pop(int node_count, int *pop[], int pop_size);
 
 
-void computeCost(float cost[],   int assignment[],   int topology[],  int N);
+void compute_cost(float cost[],   int assignment[],   int topology[],  int N);
 
 void get_subset(FILE *fp, int subset_nodes[], int node_count);
 

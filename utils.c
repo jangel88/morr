@@ -86,7 +86,7 @@ float tournament(  int chromo_length,   int* pop[],   int pop_size,domain* space
 
   float norm2(float cost[],   int chromo_length);
   int compare(const void * a, const void * b);
-  void computeCost(float cost[],   int assignment[],   int topology[],    int chromo_length);
+  void compute_cost(float cost[],   int assignment[],   int topology[],    int chromo_length);
 
   float fit[pop_size];
   float *ind[pop_size]; 
@@ -95,7 +95,7 @@ float tournament(  int chromo_length,   int* pop[],   int pop_size,domain* space
   float b_fit=INFINITY; 
 
   for(i=0;i<pop_size;i++){  /* Compute fitness of each individual*/
-    computeCost(cost,&pop[i][0],space->topology,chromo_length);
+    compute_cost(cost,&pop[i][0],space->topology,chromo_length);
     fit[i]=norm2(cost,chromo_length*6); 
     ind[i]=&fit[i];
     b_fit=(fit[i]<b_fit) ? fit[i] : b_fit; 
@@ -184,7 +184,7 @@ float avg_cost(float cost[],   int chromo_length)
    return tmp/chromo_length;
 }
 
-void computeCost(float cost[],   int assignment[],   int topology[],   int chromo_length)
+void compute_cost(float cost[],   int assignment[],   int topology[],   int chromo_length)
 {
   int r,i,j,k;
   for (k=0; k<6; k++){
