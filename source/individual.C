@@ -31,7 +31,7 @@ Individual::Individual(Individual* parent, bool shuffle)
 void Individual::show_Individual()
 {
   for(Individual::iterator it=begin();it!=end();++it){
-    std::cout << *it<< " " ;
+    std::cout << *it << " " ;
   }
   std::cout << "\n";
 }
@@ -76,12 +76,12 @@ void Individual::swap_segment(bool mirror1, bool mirror2)
   int N=size();
   int x=rand()%size();
   int y=rand()%size();
-  while(x == y){
+  while(x == y){ //unique segments
     x=rand()%size();
   }
   int start2=MAX(x,y); 
   int start1=MIN(x,y); 
-  while((length > (size()-start2-1)) ||
+  while((length > (size()-start2-1)) || //make sure we arent overshooting or overlapping
            (start1+length > start2)){
     length-=1;
   }
@@ -113,7 +113,7 @@ void Individual::cut_n_paste_segment(bool mirr)
 
   int dst=rand()%size();
   int src=rand()%size();
-  while((src+length) > size() || 
+  while((src+length) > size() || //dont overshoot the end
         (dst+length) > size()){
     length-=1;
   }

@@ -20,7 +20,7 @@ void copy_best(int node_count, int* pop[],int elites[],int* b_assign );
 void alloc_pop(int node_count, int *pop[], int pop_size);
 
 
-void compute_cost(float cost[],   int assignment[],   int topology[],  int N);
+void compute_cost(float cost[],   int assignment[],   int topology[],  int N,int print_flag);
 
 void get_subset(FILE *fp, int subset_nodes[], int node_count);
 
@@ -34,6 +34,9 @@ void free_pop(int pop_size, int *pop[]);
 void get_indices(int id, int indices[], int n, int m, int p);
 
 int get_id(int i, int j, int k, int n, int m, int p);
+
+void print_cost_matrix(float cost[], int assignment[],int topology[], int chromo_length);
+
 
 //void topomat3d(int topology[], int n, int m, int p); 
 // Using topomat3d from source/struct_cart_domain.c
