@@ -16,8 +16,8 @@ int main(int argc, char *argv[])
   double t_start,t_stop;
   int n,m,p;
   n=4;m=24;p=1;
-  int pop_size=300;
-  int max_gen=500;
+  int pop_size=1000;
+  int max_gen=1000;
   int n_elites=2,elites[pop_size]; 
   int chromo_length=n*m*p;
   int *pop[pop_size]; 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
   float r1;
   int rn;
-  int num_runs=60;
+  int num_runs=1;
   int i,j,k;
 
   int node_count; 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD,&id);
   MPI_Comm_size(MPI_COMM_WORLD,&np);
 
-  srand(time(NULL));
+  srand(id);
 
 // Start program
 // -------------
@@ -75,14 +75,12 @@ int main(int argc, char *argv[])
   alloc_pop(node_count,pop,pop_size); 
 
   for(k=0;k<num_runs;k++){
-
     create_pop(node_count,subset_nodes,pop_size,pop); 
-  
     for(j=0;j<max_gen;j++){
       n_fit=tournament(chromo_length,pop,pop_size,&space,elites,n_elites);
       if (n_fit<b_fit){ /*New best solution*/
         b_fit=n_fit;
-        copy_best(node_count,pop,elites,b_assign);
+        copy_best(node_count,pop,elites,b_assign); 
       }
       for(i=0;i<pop_size;i++){
         if(i<n_elites){ 
@@ -102,12 +100,12 @@ int main(int argc, char *argv[])
         pop[i]=next_gen[i]; 
       }  
     } 
-  printf("run: %d\n",k); 
+
   } 
   free_pop(pop_size,pop);
   print_solution(zcoors,b_fit,b_assign,node_count,id,np,&space);
   MPI_Barrier(MPI_COMM_WORLD);
-  t_stop=MPI_Wtime();
+  t_stop=MPI_Wtime(); 
   free(b_assign);
 
 //if(id==0){

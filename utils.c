@@ -86,7 +86,7 @@ float tournament(  int chromo_length,   int* pop[],   int pop_size,domain* space
 
   float norm2(float cost[],   int chromo_length);
   int compare(const void * a, const void * b);
-  void compute_cost(float cost[],   int assignment[],   int topology[],    int chromo_length);
+  void compute_cost(float cost[],   int assignment[],   int topology[],    int chromo_length, int print_flag);
 
   float fit[pop_size];
   float *ind[pop_size]; 
@@ -95,8 +95,9 @@ float tournament(  int chromo_length,   int* pop[],   int pop_size,domain* space
   float b_fit=INFINITY; 
 
   for(i=0;i<pop_size;i++){  /* Compute fitness of each individual*/
-    compute_cost(cost,&pop[i][0],space->topology,chromo_length);
+    compute_cost(cost,&pop[i][0],space->topology,chromo_length,0);
     fit[i]=norm2(cost,chromo_length*6); 
+//  fit[i]=avg_cost(cost,chromo_length*6); 
     ind[i]=&fit[i];
     b_fit=(fit[i]<b_fit) ? fit[i] : b_fit; 
   } 
@@ -137,12 +138,15 @@ void free_pop(int pop_size, int *pop[])
 
 void create_pop(int node_count, int nodes[],   int pop_size,   int* pop[])
 {
-  int i,j;
+  int i,j,k;
   int r[node_count];
   void randperm(int a, int b, int r[]);
 
   for(i=0;i<pop_size;i++){
-    randperm(0,node_count,r);
+//  randperm(0,node_count,r);
+    for(k=0;k<node_count;k++){
+      r[k]=k;
+    } 
     for(j=0;j<node_count;j++){
       pop[i][j]=nodes[r[j]];      
     } 
@@ -184,7 +188,7 @@ float avg_cost(float cost[],   int chromo_length)
    return tmp/chromo_length;
 }
 
-void compute_cost(float cost[],   int assignment[],   int topology[],   int chromo_length)
+void compute_cost(float cost[],   int assignment[],   int topology[],   int chromo_length,int print_flag)
 {
   int r,i,j,k;
   for (k=0; k<6; k++){
@@ -195,7 +199,19 @@ void compute_cost(float cost[],   int assignment[],   int topology[],   int chro
 
     } 
   }
+  if(print_flag){
+    print_cost_matrix(cost,assignment,topology,chromo_length);
+  }
 }                 
+
+void print_cost_matrix(float cost[],int assignment[],int topology[], int chromo_length)
+{
+
+  int i,j;
+  for(i=0;i<chromo_length;i++){
+      printf("%f %f %f %f %f %f\n",cost[i],cost[i+chromo_length*1],cost[i+chromo_length*2],cost[i+chromo_length*3],cost[i+chromo_length*4],cost[i+chromo_length*5]);     
+  }
+} 
 
 void get_subset(FILE *fp, int subset_nodes[], int node_count)
 {
