@@ -1,3 +1,9 @@
+#include <iostream>
+#include <math.h>
+
+#include <algorithm>    // std::random_shuffle
+#include <vector>       // std::vector
+#include "node_info.h" 
 class Individual : public std::vector<nodeid> {
   private:
     double fitness;
