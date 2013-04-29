@@ -1,11 +1,7 @@
-#include"struct_cart_domain.h"
 #include<stdio.h>
-
-#define TRUE 1
-#define FALSE 0
+#include"struct_cart_domain.h"
 
  domain init_domain(int max_i, int max_j, int max_k)
-
 {
   domain space;
   space.max_i=max_i;
@@ -16,21 +12,25 @@
   
   return space; 
 }
-int validate_domain_size(domain space, int node_count)
+
+bool validate_domain_size(domain space, int node_count)
 {
-  return (node_count==(space.max_i*space.max_j*space.max_k));
+  if (node_count==(space.max_i*space.max_j*space.max_k)){
+    return true; 
+  } else { 
+    return false; 
+  }
 }
 
-int validate_subdomain(subdomain element, domain space)
+bool validate_subdomain(subdomain element, domain space)
 {
   if( element.i < 0 || element.i >= space.max_i || 
       element.j < 0 || element.j >= space.max_j || 
       element.k < 0 || element.k >= space.max_k    ) {
-    return FALSE; 
+    return false; 
   } else { 
-    return TRUE; 
+    return true; 
   }
-
 }
 
 int get_position(subdomain element,domain space)
