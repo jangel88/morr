@@ -10,9 +10,9 @@ Domain::Domain(int max_i, int max_j, int max_k)
   for(i=0;i<N;i++){
     Subdomain q(i,max_i,max_j,max_k);
     std::vector<Subdomain> neigh;
-    neigh=find_neighbors(q,max_i,max_j,max_k);
+    neigh=find_neighbors(q); 
     for(j=0;j<6;j++){
-      topology.push_back(get_position(neigh[j],max_i,max_j,max_k));
+      topology.push_back(get_position(neigh[j])); 
     }
   }  
 }
@@ -29,7 +29,7 @@ std::vector<int> Domain::give_topo()
   return topology;
 }
 
-std::vector<Subdomain> Domain::find_neighbors(Subdomain element,int max_i,int max_j, int max_k)
+std::vector<Subdomain> Domain::find_neighbors(Subdomain element) 
 {
   int i,j,k;
   int coors[3];
@@ -55,7 +55,7 @@ std::vector<Subdomain> Domain::find_neighbors(Subdomain element,int max_i,int ma
   return neighbor;
 }
 
-int Domain::get_position(Subdomain element,int max_i,int max_j,int max_k)
+int Domain::get_position(Subdomain element)
 {
   int i,j,k;
   int coors[3];

@@ -17,15 +17,9 @@ class Domain {
     Domain(int max_i, int max_j, int max_k);
     void  show_topo();
     std::vector<int> give_topo();
-    int get_position(Subdomain element,int max_i,int max_j,int max_k);
-    std::vector<Subdomain> find_neighbors(Subdomain element, int max_i,int max_j,int max_k);
+    int get_position(Subdomain element); 
+    std::vector<Subdomain> find_neighbors(Subdomain element); 
 };
-
-
-
-
-
-
 
 
 
