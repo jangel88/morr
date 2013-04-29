@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------- 
-CC      = cc
-CXX     = CC
+CC      = mpicc
+CXX     = mpiCC
 CFLAGS	= 
 
 # ---------------------------------------------------------------------- 
@@ -13,10 +13,14 @@ CFLAGS	=
 	$(CXX) $(CFLAGS) -c $<
  
 # ---------------------------------------------------------------------- 
-DEFAULT = titan_node_info_test.exe
+#DEFAULT: titan_node_info_test.exe
+DEFAULT: titan_node_info_test.exe individual_test.exe
 
 titan_node_info_test.exe:	titan_node_info_test.o titan_node_info.o 
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CXX) $(CFLAGS) -o $@ $^
+
+individual_test.exe:	individual_test.o individual.o node_info.o 
+	$(CXX) $(CFLAGS) -o $@ $^
 
 # ---------------------------------------------------------------------- 
 
