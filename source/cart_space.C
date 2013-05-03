@@ -1,9 +1,11 @@
-#include<cart_space.h>
+#include"cart_space.h"
+
 Domain::Domain(int max_i, int max_j, int max_k)
 {
-  max_i=max_i;
-  max_j=max_j;
-  max_k=max_k;  
+  this->max_i=max_i;
+  this->max_j=max_j;
+  this->max_k=max_k;  
+  this->period=max_i*max_j;
   int i,j; 
   
   int N=max_i*max_j*max_k; 
@@ -24,10 +26,6 @@ void Domain::show_topo()
   }
 }
 
-std::vector<int> Domain::give_topo()
-{
-  return topology;
-}
 
 std::vector<Subdomain> Domain::find_neighbors(Subdomain element) 
 {

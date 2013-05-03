@@ -1,5 +1,5 @@
-
 #include"individual.h"
+
 #define MIN(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 #define MAX(a, b) (((a) > (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 
@@ -57,15 +57,17 @@ float Individual::get_fitness(std::vector<int>* topology)
   return fitness;
 }
 
-void Individual::mutate()
+void Individual::mutate(Domain* space)
 {
-  int r=rand()%2;
+  int r=rand()%3;
   int mirr1=rand()%2;
   int mirr2=rand()%2;
   if(r==0){
     cut_n_paste_segment(mirr1);
-  }else{
+  }else if(r==1){
     swap_segment(mirr1,mirr2);
+  }else{
+    head_to_tail(mirr1,space);
   }
 }
 
@@ -81,17 +83,19 @@ void Individual::swap_segment(bool mirror1, bool mirror2)
   }
   int start2=MAX(x,y); 
   int start1=MIN(x,y); 
+  length=1;
   while((length > (size()-start2-1)) || //make sure we arent overshooting or overlapping
            (start1+length > start2)){
     length-=1;
   }
-  std::vector<nodeid> temp(length);
+  std::vector<nodeid> temp(length); 
 
   if(mirror1){
     std::reverse_copy(begin()+start2,begin()+start2+length,temp.begin());
   }else{
     std::copy(begin()+start2,begin()+start2+length,temp.begin());
   }
+
   if(mirror2){
     std::reverse_copy(begin()+start1,begin()+start1+length,begin()+start2);
   }else{
@@ -109,10 +113,10 @@ void Individual::cut_n_paste_segment(bool mirr)
 {
   int N=size();
   int length_range[4]={1,2,4,8};
-  int length=length_range[rand()%4];
-
+  int length=length_range[rand()%4]; 
   int dst=rand()%size();
   int src=rand()%size();
+
   while((src+length) > size() || //dont overshoot the end
         (dst+length) > size()){
     length-=1;
@@ -122,7 +126,7 @@ void Individual::cut_n_paste_segment(bool mirr)
     std::reverse_copy(begin() + src , begin() + src + length,temp.begin() ); 
   }else{
     std::copy(begin() + src , begin() + src + length,temp.begin() ); 
-  }
+  } 
   erase(begin() + src, begin() + src + length);
   insert(begin() + dst, temp.begin(), temp.end()); 
 
@@ -130,4 +134,25 @@ void Individual::cut_n_paste_segment(bool mirr)
     std::cout << "Error in cut_n_paste! Vector changed length\n";
     exit(1);
   }
+}
+
+void Individual::head_to_tail(bool mirr,Domain* space)
+{ 
+  int N=size(); 
+  int i=space->get_max_i();
+  int j=space->get_max_j();
+  int k=space->get_max_k(); 
+  int subdomains=space->get_num_subdomain();
+  int depth=rand()%k;
+  int num_to_cut=i*j*depth;
+ 
+  std::vector<nodeid> temp(num_to_cut); 
+  std::copy(begin(),begin()+num_to_cut,temp.begin()); 
+  erase(begin(),begin()+num_to_cut); 
+  insert(end() ,temp.begin(),temp.end()); 
+
+  if (size()!=N){
+    std::cout << "Error in head2tail! Vector changed length!\n";
+    exit(1);
+  } 
 }

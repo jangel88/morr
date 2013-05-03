@@ -1,3 +1,6 @@
+#include<vector> // std::vector
+#include"individual.h" // Individual class
+
 // ---------------------------------------------------------------------- 
 
 typedef std::pair<float,int> fit_pair;
@@ -18,7 +21,7 @@ class Population {
     int get_best_fitness(); 
     void show_population(); 
     void show_fitness_of_population();  
-    void tournament(std::vector<Individual>,std::vector<int>*);    
+    void tournament(std::vector<Individual>,Domain*);    
 };
 
 

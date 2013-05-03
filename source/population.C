@@ -20,25 +20,24 @@ Population::Population(int max_psize, int individual_size, Individual* ancestor)
 void Population::show_population()
 {
   for(int i=0;i<p_size;++i){
-    individuals[i].show_Individual();
-    std::cout << i << std::endl;
+    individuals[i].show_Individual(); 
   }
 }
 
-void Population::tournament(std::vector<Individual> elites, std::vector<int>* topology)
+void Population::tournament(std::vector<Individual> elites, Domain* space)
 {
   std::vector<fit_pair> ind_fit;
   float tmp_fit; 
-
+  std::vector<int> topo=space->give_topo();
   for(int i=0; i<p_size;i++){
-    tmp_fit=(float)individuals[i].get_fitness(topology);
+    tmp_fit=(float)individuals[i].get_fitness(&topo);
     ind_fit.push_back(std::make_pair(tmp_fit,i));
   }
 
   std::sort(ind_fit.begin(),ind_fit.end(),comparator);
 
   for(int i=0; i<elites.size();i++){
-    elites[i]=(individuals[ind_fit[i].second]);
+    elites[i]=individuals[ind_fit[i].second];
   }  
       
   for(int i=0;i<p_size;i++){
@@ -47,7 +46,7 @@ void Population::tournament(std::vector<Individual> elites, std::vector<int>* to
     }else{ 
       int elite_n=(int)(((float)rand()/RAND_MAX)*elites.size());
       Individual mutant(elites[elite_n]);
-      mutant.mutate();
+      mutant.mutate(space);
       individuals[i]=mutant;
     }
   }

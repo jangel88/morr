@@ -100,7 +100,6 @@ int main(int argc, char *argv[])
         pop[i]=next_gen[i]; 
       }  
     } 
-
   } 
   free_pop(pop_size,pop);
   print_solution(zcoors,b_fit,b_assign,node_count,id,np,&space);
