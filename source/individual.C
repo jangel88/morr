@@ -49,6 +49,7 @@ float Individual::get_fitness(std::vector<int>* topology)
       n1=at(topology->at(i+N*j));
       n2=at(i);
       cost[i+N*j]=distance_between_nodes(n1,n2);
+      printf("qwe %d %d %d %d\n",i,j,n1,n2);
     }
   }
   for(i=0;i<N*6;i++){

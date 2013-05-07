@@ -11,7 +11,7 @@ Population::Population(int max_psize, int individual_size, Individual* ancestor)
   this->p_size=0;
   this->max_psize=max_psize; 
   while(p_size<max_psize){
-    Individual temp(ancestor,true);
+    Individual temp(ancestor,false);
     individuals.push_back(temp);
     p_size+=1;  
   }
