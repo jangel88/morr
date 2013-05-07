@@ -52,13 +52,23 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
   }
 }
 
-
 Population Population::find_elites(int elite_size)
 {
 
 }
 
-int Population::get_best_fitness()
+Individual Population::get_best_map()
+{
+  float best=FLT_MAX;
+  Individual *best_map = (Individual*) ::operator new (sizeof(Individual));
+  for(int i = 0; i < p_size; i++){
+    if(individuals[i].give_fitness() < best)
+      best_map = &individuals[i];
+  }
+  return *best_map; 
+}
+
+float Population::get_best_fitness()
 {
   float best=FLT_MAX;
   for(int i=0;i<p_size;i++){
@@ -66,4 +76,5 @@ int Population::get_best_fitness()
       best=individuals[i].give_fitness();
   }
   std::cout << best << std::endl; 
+  return best;
 }

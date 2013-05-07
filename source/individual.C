@@ -1,5 +1,6 @@
 #include"individual.h"
-
+#include<stdio.h>
+ 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 #define MAX(a, b) (((a) > (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 
@@ -59,15 +60,19 @@ float Individual::get_fitness(std::vector<int>* topology)
 
 void Individual::mutate(Domain* space)
 {
-  int r=rand()%3;
-  int mirr1=rand()%2;
-  int mirr2=rand()%2;
-  if(r==0){
-    cut_n_paste_segment(mirr1);
-  }else if(r==1){
-    swap_segment(mirr1,mirr2);
-  }else{
-    head_to_tail(mirr1,space);
+  float roll=1;
+  while((float) rand()/RAND_MAX < roll){
+    int r=rand()%3;
+    int mirr1=rand()%2;
+    int mirr2=rand()%2;
+    if(r==0){
+      cut_n_paste_segment(mirr1);
+    }else if(r==1){
+      swap_segment(mirr1,mirr2);
+    }else{
+      head_to_tail(mirr1,space);
+    }
+    roll *= (float) 1/3; 
   }
 }
 
@@ -75,15 +80,15 @@ void Individual::swap_segment(bool mirror1, bool mirror2)
 {
   int length_range[4]={1,2,4,8};
   int length=length_range[rand()%4];
-  int N=size();
   int x=rand()%size();
   int y=rand()%size();
   while(x == y){ //unique segments
     x=rand()%size();
   }
+  int N=size();
   int start2=MAX(x,y); 
   int start1=MIN(x,y); 
-  length=1;
+
   while((length > (size()-start2-1)) || //make sure we arent overshooting or overlapping
            (start1+length > start2)){
     length-=1;
@@ -155,4 +160,16 @@ void Individual::head_to_tail(bool mirr,Domain* space)
     std::cout << "Error in head2tail! Vector changed length!\n";
     exit(1);
   } 
+}
+
+void Individual::show_zcoors(Domain *space)
+{ 
+  int max_j=space->get_max_j();
+  int max_i=space->get_max_i();
+  for(int i = 0; i < max_i; i++){ 
+//    printf("%d%c",titan_node_coords[at(i)][2],(i+1) % max_j == 0 ? '\n' : ' ');
+    std::cout << titan_node_coords[at(i)][2] << " " <<titan_node_coords[at(i+max_i)][2] << " " <<titan_node_coords[at(i+2*max_i)][2] <<" " << titan_node_coords[at(i+3*max_i)][2] << std::endl;
+
+  }
+
 }

@@ -96,8 +96,8 @@ float tournament(  int chromo_length,   int* pop[],   int pop_size,domain* space
 
   for(i=0;i<pop_size;i++){  /* Compute fitness of each individual*/
     compute_cost(cost,&pop[i][0],space->topology,chromo_length,0);
-//  fit[i]=norm2(cost,chromo_length*6); 
-    fit[i]=avg_cost(cost,chromo_length*6); 
+    fit[i]=norm2(cost,chromo_length*6); 
+//  fit[i]=avg_cost(cost,chromo_length*6); 
     ind[i]=&fit[i];
     b_fit=(fit[i]<b_fit) ? fit[i] : b_fit; 
   } 

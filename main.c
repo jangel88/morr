@@ -1,6 +1,7 @@
 #include<struct_pop.c>
 #include<struct_cart_domain.c>
-#include<titan_node_info.c>
+//#include<titan_node_info.c>
+#include<node_info.C>
 #include"utils.c"
 #include<mpi.h>
 #include<time.h>

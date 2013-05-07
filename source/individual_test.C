@@ -17,7 +17,7 @@ int main(int argc, char*argv[]) {
   
   for (int i=0; i<25; i++) {
     Individual* indv1 = new Individual(*gold);
-    indv1->head_to_tail(false,&space);
+    indv1->mutate(&space);
     indv1->show_Individual(); 
   }
 

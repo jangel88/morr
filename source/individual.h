@@ -5,6 +5,10 @@
 #include <vector>       // std::vector
 #include "node_info.h" 
 #include "cart_space.h"
+
+
+
+
 class Individual : public std::vector<nodeid> {
   private:
     double fitness;
@@ -21,5 +25,7 @@ class Individual : public std::vector<nodeid> {
     float get_fitness(std::vector<int>* topology); 
     void show_Individual(); 
     float give_fitness();
+
+    void show_zcoors(Domain *space);
 };
 
