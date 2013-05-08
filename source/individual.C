@@ -46,10 +46,9 @@ float Individual::get_fitness(std::vector<int>* topology)
   std::vector<float> cost(N*6);
   for(j=0;j<6;j++){
     for(i=0;i<N;i++){
-      n1=at(topology->at(i+N*j));
+      n1=at(topology->at(i*6+j));
       n2=at(i);
-      cost[i+N*j]=distance_between_nodes(n1,n2);
-      printf("qwe %d %d %d %d\n",i,j,n1,n2);
+      cost[i+N*j]=distance_between_nodes(n1,n2); 
     }
   }
   for(i=0;i<N*6;i++){
@@ -59,6 +58,10 @@ float Individual::get_fitness(std::vector<int>* topology)
   return fitness;
 }
 
+
+
+
+
 void Individual::mutate(Domain* space)
 {
   float roll=1;
@@ -67,13 +70,13 @@ void Individual::mutate(Domain* space)
     int mirr1=rand()%2;
     int mirr2=rand()%2;
     if(r==0){
-      cut_n_paste_segment(mirr1);
+      cut_n_paste_segment(mirr1); 
     }else if(r==1){
       swap_segment(mirr1,mirr2);
     }else{
       head_to_tail(mirr1,space);
     }
-    roll *= (float) 1/3; 
+    roll *= (float) 1/2; 
   }
 }
 
@@ -90,8 +93,8 @@ void Individual::swap_segment(bool mirror1, bool mirror2)
   int start2=MAX(x,y); 
   int start1=MIN(x,y); 
 
-  while((length > (size()-start2-1)) || //make sure we arent overshooting or overlapping
-           (start1+length > start2)){
+  while((length > (size()-start2-1)) || //make sure we arent overshooting 
+           (start1+length > start2)){   //or overlapping
     length-=1;
   }
   std::vector<nodeid> temp(length); 
@@ -127,6 +130,7 @@ void Individual::cut_n_paste_segment(bool mirr)
         (dst+length) > size()){
     length-=1;
   }
+
   std::vector<nodeid> temp(length); 
   if(mirr){
     std::reverse_copy(begin() + src , begin() + src + length,temp.begin() ); 

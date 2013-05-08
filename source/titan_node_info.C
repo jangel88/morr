@@ -72,6 +72,6 @@ float distance_between_nodes(nodeid n1, nodeid n2)
     dz=fabs(z2-z1); dz=(dz>(float)ZDIM/2.0) ? fabs(dz-ZDIM) : dz;
     distance=(C_x*dx+C_y*dy+C_z*dz);
   }
-  printf("%d (%d,%d,%d) - %d (%d,%d,%d) = %.3f\n", n1, x1, y1, z1, n2, x2, y2, z2, distance);
+  //printf("%d (%d,%d,%d) - %d (%d,%d,%d) = %.3f\n", n1, x1, y1, z1, n2, x2, y2, z2, distance);
   return(distance); 
 }
