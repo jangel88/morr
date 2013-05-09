@@ -1,0 +1,11 @@
+# FILE format for the test inputs. 
+# Lines starting with # are to be interpreted as comments. 
+N  max_i max_j max_k  
+# where N has to equal max_i*max_j*max_k
+<nid1>  
+<nid2>
+.
+.
+.
+<nidN>
+

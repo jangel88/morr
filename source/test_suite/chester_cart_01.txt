@@ -1,0 +1,11 @@
+# The optimal cost should be sqrt( 8 * 1^2) = 2.828
+8 4 2 1
+88
+88
+86
+86
+89
+89
+87
+87
+
