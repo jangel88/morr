@@ -172,8 +172,8 @@ void Individual::show_zcoors(Domain *space)
   int max_j=space->get_max_j();
   int max_i=space->get_max_i();
   for(int i = 0; i < max_i; i++){ 
-//    printf("%d%c",titan_node_coords[at(i)][2],(i+1) % max_j == 0 ? '\n' : ' ');
-    std::cout << titan_node_coords[at(i)][2] << " " <<titan_node_coords[at(i+max_i)][2] << " " <<titan_node_coords[at(i+2*max_i)][2] <<" " << titan_node_coords[at(i+3*max_i)][2] << std::endl;
+//    printf("%d%c",compute_node_coords[at(i)][2],(i+1) % max_j == 0 ? '\n' : ' ');
+    std::cout << compute_node_coords[at(i)][2] << " " <<compute_node_coords[at(i+max_i)][2] << " " <<compute_node_coords[at(i+2*max_i)][2] <<" " << compute_node_coords[at(i+3*max_i)][2] << std::endl;
 
   }
 
