@@ -16,9 +16,9 @@ float distance_between_nodes(nodeid, nodeid);
 
 // These are the definitions and data that are unique to Titan and should not be used directly elsewhere
 #define COMPUTE_NODE_COUNT 96
-#define XDIM 25 // Dimensions for Titan's interconnect
-#define YDIM 16
-#define ZDIM 24
+#define XDIM  3 // Dimensions for Titan's interconnect
+#define YDIM  2
+#define ZDIM  8
 
 // start chester compute_node_coords declaration
 static const int compute_node_count=COMPUTE_NODE_COUNT; 
