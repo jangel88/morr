@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <mpi.h>
-#include "titan_node_info.h"
+#include "node_info.h"
 
 int main(int argc, char*argv[]) {
 
