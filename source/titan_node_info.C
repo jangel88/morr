@@ -13,7 +13,7 @@ int init_node_info(void){
 
 bool valid_nodeid(nodeid nid)
 {
-  if  (nid>-1 && nid<19200){
+  if  (nid>-1 && nid<COMPUTE_NODE_COUNT){
     return true;
   } else {
     return false;
@@ -53,12 +53,12 @@ float distance_between_nodes(nodeid n1, nodeid n2)
   int y1,y2;
   int z1,z2;
   float dx,dy,dz,distance;
-  x1=titan_node_coords[n1][0];
-  x2=titan_node_coords[n2][0];
-  y1=titan_node_coords[n1][1];
-  y2=titan_node_coords[n2][1];
-  z1=titan_node_coords[n1][2];
-  z2=titan_node_coords[n2][2];
+  x1=compute_node_coords[n1][0];
+  x2=compute_node_coords[n2][0];
+  y1=compute_node_coords[n1][1];
+  y2=compute_node_coords[n2][1];
+  z1=compute_node_coords[n1][2];
+  z2=compute_node_coords[n2][2];
 
   if (n1==n2){
     distance=(C_same_node);

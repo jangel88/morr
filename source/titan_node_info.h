@@ -15,14 +15,14 @@ float distance_between_nodes(nodeid, nodeid);
 
 
 // These are the definitions and data that are unique to Titan and should not be used directly elsewhere
-#define TITAN_NODE_COUNT 19200
+#define COMPUTE_NODE_COUNT 19200
 #define XDIM 25 // Dimensions for Titan's interconnect
 #define YDIM 16
 #define ZDIM 24
 
-// start titan_node_coords declaration
-static const int titan_node_count=TITAN_NODE_COUNT; 
-static const int titan_node_coords[TITAN_NODE_COUNT][3]= 
+// start titan compute_node_coords declaration
+static const int compute_node_count=COMPUTE_NODE_COUNT; 
+static const int compute_node_coords[COMPUTE_NODE_COUNT][3]= 
 {
 {0,  0,  0,},//      0
 {0,  0,  0,},//      1
@@ -19225,6 +19225,6 @@ static const int titan_node_coords[TITAN_NODE_COUNT][3]=
 {1, 15,  0,},//  19198
 {1, 15,  0 },//  19199
 }; 
-// end titan_node_coords declaration
+// end titan compute_node_coords declaration
 
 
