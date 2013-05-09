@@ -13,10 +13,10 @@ CFLAGS	=
 	$(CXX) $(CFLAGS) -c $<
  
 # ---------------------------------------------------------------------- 
-#DEFAULT: titan_node_info_test.exe
-DEFAULT: titan_node_info_test.exe individual_test.exe population_test.exe
+#DEFAULT: node_info_test.exe
+DEFAULT: node_info_test.exe individual_test.exe population_test.exe
 
-titan_node_info_test.exe:	titan_node_info_test.o titan_node_info.o 
+node_info_test.exe:	node_info_test.o node_info.o 
 	$(CXX) $(CFLAGS) -o $@ $^
 
 individual_test.exe:	individual_test.o individual.o cart_space.o node_info.o
