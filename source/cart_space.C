@@ -7,15 +7,22 @@ Domain::Domain(int max_i, int max_j, int max_k)
   this->max_k=max_k;  
   this->period=max_i*max_j;
   int i,j; 
-  
   int N=max_i*max_j*max_k; 
+  topology.resize(N*6); 
   for(i=0;i<N;i++){
     Subdomain q(i,max_i,max_j,max_k);
     std::vector<Subdomain> neigh;
     neigh=find_neighbors(q); 
-    for(j=0;j<6;j++){
-      topology.push_back(get_position(neigh[j])); 
-    }
+    topology[i]=get_position(neigh[0]);
+    topology[i+N]=get_position(neigh[1]);
+    topology[i+2*N]=get_position(neigh[2]);
+    topology[i+3*N]=get_position(neigh[3]);
+    topology[i+4*N]=get_position(neigh[4]);
+    topology[i+5*N]=get_position(neigh[5]);
+
+//  for(j=0;j<6;j++){
+//    topology.push_back(get_position(neigh[j])); 
+//  }
   }  
 }
 

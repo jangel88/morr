@@ -25,7 +25,7 @@ class Individual : public std::vector<nodeid> {
     float get_fitness(std::vector<int>* topology); 
     void show_Individual(); 
     float give_fitness();
-
+    size_t hash(std::vector<nodeid>::iterator ,std::vector<nodeid>::iterator );
     void show_zcoors(Domain *space);
 };
 

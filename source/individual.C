@@ -32,7 +32,7 @@ Individual::Individual(Individual* parent, bool shuffle)
 void Individual::show_Individual()
 {
   for(Individual::iterator it=begin();it!=end();++it){
-    std::cout << *it << " " ;
+   std::cout << *it << " " ;
   }
   std::cout << "\n";
 }
@@ -42,23 +42,42 @@ float Individual::get_fitness(std::vector<int>* topology)
   int i,j;
   int N=size();
   float tmp=0.0;
+  fitness=0.0; 
   nodeid n1,n2;
   std::vector<float> cost(N*6);
+
   for(j=0;j<6;j++){
     for(i=0;i<N;i++){
-      n1=at(topology->at(i*6+j));
+   // n1=at(topology->at(i*6+j));
+      n1=at(topology->at(i+j*N));
       n2=at(i);
       cost[i+N*j]=distance_between_nodes(n1,n2); 
     }
   }
+ 
   for(i=0;i<N*6;i++){
-    tmp+=cost[i]*cost[i];
-  }
-  fitness=sqrt(tmp);
+  //tmp+=cost[i]*cost[i];
+    fitness+=cost[i]*cost[i];
+  } 
+  fitness=sqrt(fitness);
+//for(i=0;i<N;i++){
+//  printf("%d %f %f %f %f %f %f\n",at(i),cost[i],cost[i+N],cost[i+2*N],cost[i+3*N],cost[i+4*N],cost[i+5*N]); 
+//} 
+
+//std::cout << std::endl;  
+//std::cout << fitness << std::endl;  
+//std::cout << std::endl;  
   return fitness;
 }
 
-
+size_t Individual::hash(std::vector<nodeid>::iterator begin, std::vector<nodeid>::iterator end)
+{
+    size_t results = 2166136261U; 
+    for ( std::vector<nodeid>::iterator current = begin; current != end; ++ current ) {
+        results = 127 * results + static_cast<size_t>( *current );
+    }
+    return results; 
+}
 
 
 
@@ -66,7 +85,7 @@ void Individual::mutate(Domain* space)
 {
   float roll=1;
   while((float) rand()/RAND_MAX < roll){
-    int r=rand()%3;
+    int r=rand()%4;
     int mirr1=rand()%2;
     int mirr2=rand()%2;
     if(r==0){
@@ -76,14 +95,14 @@ void Individual::mutate(Domain* space)
     }else{
       head_to_tail(mirr1,space);
     }
-    roll *= (float) 1/2; 
+    roll *= (float) 6/7; 
   }
 }
 
 void Individual::swap_segment(bool mirror1, bool mirror2)
 {
-  int length_range[4]={1,2,4,8};
-  int length=length_range[rand()%4];
+  int length_range[5]={1,2,4,8,16};
+  int length=length_range[rand()%5];
   int x=rand()%size();
   int y=rand()%size();
   while(x == y){ //unique segments
@@ -121,8 +140,8 @@ void Individual::swap_segment(bool mirror1, bool mirror2)
 void Individual::cut_n_paste_segment(bool mirr)
 {
   int N=size();
-  int length_range[4]={1,2,4,8};
-  int length=length_range[rand()%4]; 
+  int length_range[5]={1,2,4,8,16};
+  int length=length_range[rand()%5]; 
   int dst=rand()%size();
   int src=rand()%size();
 
@@ -153,13 +172,19 @@ void Individual::head_to_tail(bool mirr,Domain* space)
   int j=space->get_max_j();
   int k=space->get_max_k(); 
   int subdomains=space->get_num_subdomain();
-  int depth=rand()%k;
-  int num_to_cut=i*j*depth;
- 
+  int depth;
+  int num_to_cut; 
+  if(k==1){
+    depth=rand()%j; 
+    num_to_cut=depth*i;
+  }else{ 
+    depth=rand()%k; 
+    num_to_cut=i*j*depth;
+  }
   std::vector<nodeid> temp(num_to_cut); 
   std::copy(begin(),begin()+num_to_cut,temp.begin()); 
   erase(begin(),begin()+num_to_cut); 
-  insert(end() ,temp.begin(),temp.end()); 
+  insert(end(),temp.begin(),temp.end()); 
 
   if (size()!=N){
     std::cout << "Error in head2tail! Vector changed length!\n";

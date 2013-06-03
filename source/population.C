@@ -29,17 +29,31 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
   std::vector<fit_pair> ind_fit;
   float tmp_fit; 
   std::vector<int> topo=space->give_topo();
+  std::vector<bool> is_hashed(199,0);
+  int i=0;
+  int elite_count=0;
+  // Create pairs of fitness and indices
   for(int i=0; i<p_size;i++){
     tmp_fit=(float)individuals[i].get_fitness(&topo);
     ind_fit.push_back(std::make_pair(tmp_fit,i));
   }
-
+  // Sort based on fitness
   std::sort(ind_fit.begin(),ind_fit.end(),comparator);
+  // Get elites.size() unique elites for next generation
+  while(elite_count<elites.size()){ 
+    std::vector<nodeid>::iterator begin=individuals[ind_fit[i].second].begin();
+    std::vector<nodeid>::iterator end=individuals[ind_fit[i].second].end();
+    int key =(int) individuals[ind_fit[i].second].hash(begin,end)%199;
+    key=abs(key); 
+    
+    if(!is_hashed[key]){
+      elites[elite_count]=individuals[ind_fit[i].second];
+      is_hashed[key]=true;
+      elite_count++; 
+    } 
+    i++; 
+  } 
 
-  for(int i=0; i<elites.size();i++){
-    elites[i]=individuals[ind_fit[i].second];
-  }  
-      
   for(int i=0;i<p_size;i++){
     if(i<elites.size()){
       individuals[i]=elites[i];
