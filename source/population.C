@@ -1,6 +1,6 @@
 #include"population.h"
-
 #include<float.h>
+
 bool comparator (const fit_pair& i, const fit_pair& j)
 { 
   return i.first < j.first; 
@@ -44,6 +44,7 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
     std::vector<nodeid>::iterator begin=individuals[ind_fit[i].second].begin();
     std::vector<nodeid>::iterator end=individuals[ind_fit[i].second].end();
     int key =(int) individuals[ind_fit[i].second].hash(begin,end)%199;
+    // key might be negative. This is a bad work around.
     key=abs(key); 
     
     if(!is_hashed[key]){
@@ -53,11 +54,12 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
     } 
     i++; 
   } 
-
   for(int i=0;i<p_size;i++){
+  // Copy elites into next gen
     if(i<elites.size()){
       individuals[i]=elites[i];
     }else{ 
+  // Fill remaining pop with mutants
       int elite_n=(int)(((float)rand()/RAND_MAX)*elites.size());
       Individual mutant(elites[elite_n]);
       mutant.mutate(space);
