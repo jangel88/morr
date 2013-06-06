@@ -30,7 +30,7 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
   float tmp_fit; 
   std::vector<int> topo=space->give_topo();
   std::vector<bool> is_hashed(199,0);
-  int i=0;
+  int j,i=0;
   int elite_count=0;
   // Create pairs of fitness and indices
   for(int i=0; i<p_size;i++){
@@ -40,6 +40,17 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
   // Sort based on fitness
   std::sort(ind_fit.begin(),ind_fit.end(),comparator);
   // Get elites.size() unique elites for next generation
+  i=0;
+  std::cout << "Sorted Ind-----------------------------\n";
+  for(int j=0;j<elites.size();j++){
+    std::vector<nodeid>::iterator begin=individuals[ind_fit[j].second].begin();
+    std::vector<nodeid>::iterator end=individuals[ind_fit[j].second].end();
+    int key =(int) individuals[ind_fit[j].second].hash(begin,end)%199;
+    // key might be negative. This is a bad work around.
+    key=abs(key); 
+    individuals[ind_fit[j].second].show_Individual();
+    std::cout << key << std::endl;
+  }
   while(elite_count<elites.size()){ 
     std::vector<nodeid>::iterator begin=individuals[ind_fit[i].second].begin();
     std::vector<nodeid>::iterator end=individuals[ind_fit[i].second].end();
@@ -54,10 +65,16 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
     } 
     i++; 
   } 
+  std::cout << "Elites---------------------------------\n";
+  for(int i=0;i<elites.size();i++){
+    elites[i].show_Individual();
+  }
+  std::cout << "Copied Ind-----------------------------\n";
   for(int i=0;i<p_size;i++){
-  // Copy elites into next gen
+  // Copy elites into next gen 
     if(i<elites.size()){
       individuals[i]=elites[i];
+      individuals[i].show_Individual();
     }else{ 
   // Fill remaining pop with mutants
       int elite_n=(int)(((float)rand()/RAND_MAX)*elites.size());
@@ -73,13 +90,18 @@ Population Population::find_elites(int elite_size)
 
 }
 
-Individual Population::get_best_map()
+Individual Population::get_best_map(std::vector<int>* topology)
 {
-  float best=FLT_MAX;
+  float tmp,best=FLT_MAX;
+
   Individual *best_map = (Individual*) ::operator new (sizeof(Individual));
   for(int i = 0; i < p_size; i++){
-    if(individuals[i].give_fitness() < best)
-      best_map = &individuals[i];
+//  std::cout << i << " " << individuals[i].get_fitness(topology) << std::endl;
+    tmp=individuals[i].get_fitness(topology); 
+    if(tmp < best){
+      best=tmp; 
+      best_map = &individuals[i]; 
+    }
   }
   return *best_map; 
 }
@@ -88,7 +110,7 @@ float Population::get_best_fitness()
 {
   float best=FLT_MAX;
   for(int i=0;i<p_size;i++){
-    if (individuals[i].give_fitness()< best)
+    if (individuals[i].give_fitness() < best)
       best=individuals[i].give_fitness();
   }
   std::cout << best << std::endl; 

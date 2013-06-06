@@ -66,8 +66,12 @@ int main(int argc, char **argv)
   for(int i=0;i<max_gen;i++){
     P.tournament(elites,&space); 
   }
-  P.get_best_fitness();
-  Individual best_map=P.get_best_map();
+
+  Individual best_map=P.get_best_map(&topo);
+//for(int i=0; i < elites.size(); i++){
+//  std::cout << P.individuals[i].give_fitness() << std::endl;
+//}
+  std::cout << best_map.give_fitness() << std::endl;
   best_map.show_Individual(); 
   return 0;
 }

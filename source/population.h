@@ -23,7 +23,7 @@ class Population {
     void show_population(); 
     void show_fitness_of_population();  
     void tournament(std::vector<Individual>,Domain*);    
-    Individual get_best_map();
+    Individual get_best_map(std::vector<int>*);
 };
 
 
