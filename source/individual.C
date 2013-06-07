@@ -48,25 +48,18 @@ float Individual::get_fitness(std::vector<int>* topology)
 
   for(j=0;j<6;j++){
     for(i=0;i<N;i++){
-   // n1=at(topology->at(i*6+j));
       n1=at(topology->at(i+j*N));
       n2=at(i);
       cost[i+N*j]=distance_between_nodes(n1,n2); 
     }
   }
  
-  for(i=0;i<N*6;i++){
-  //tmp+=cost[i]*cost[i];
+  for(i=0;i<N*6;i++){ 
     fitness+=cost[i]*cost[i];
+//  fitness+=cost[i];
   } 
   fitness=sqrt(fitness);
-//for(i=0;i<N;i++){
-//  printf("%d %f %f %f %f %f %f\n",at(i),cost[i],cost[i+N],cost[i+2*N],cost[i+3*N],cost[i+4*N],cost[i+5*N]); 
-//} 
-
-//std::cout << std::endl;  
-//std::cout << fitness << std::endl;  
-//std::cout << std::endl;  
+//fitness=fitness/(N*6);
   return fitness;
 }
 
@@ -95,7 +88,7 @@ void Individual::mutate(Domain* space)
     }else{
       head_to_tail(mirr1,space);
     }
-    roll *= (float) 6/7; 
+    roll *= (float) 4/5; 
   }
 }
 

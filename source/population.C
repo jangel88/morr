@@ -41,16 +41,16 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
   std::sort(ind_fit.begin(),ind_fit.end(),comparator);
   // Get elites.size() unique elites for next generation
   i=0;
-  std::cout << "Sorted Ind-----------------------------\n";
-  for(int j=0;j<elites.size();j++){
-    std::vector<nodeid>::iterator begin=individuals[ind_fit[j].second].begin();
-    std::vector<nodeid>::iterator end=individuals[ind_fit[j].second].end();
-    int key =(int) individuals[ind_fit[j].second].hash(begin,end)%199;
-    // key might be negative. This is a bad work around.
-    key=abs(key); 
-    individuals[ind_fit[j].second].show_Individual();
-    std::cout << key << std::endl;
-  }
+//std::cout << "Sorted Ind-----------------------------\n";
+//for(int j=0;j<elites.size();j++){
+//  std::vector<nodeid>::iterator begin=individuals[ind_fit[j].second].begin();
+//  std::vector<nodeid>::iterator end=individuals[ind_fit[j].second].end();
+//  int key =(int) individuals[ind_fit[j].second].hash(begin,end)%199;
+//  // key might be negative. This is a bad work around.
+//  key=abs(key); 
+//  individuals[ind_fit[j].second].show_Individual();
+//  std::cout << key << std::endl;
+//}
   while(elite_count<elites.size()){ 
     std::vector<nodeid>::iterator begin=individuals[ind_fit[i].second].begin();
     std::vector<nodeid>::iterator end=individuals[ind_fit[i].second].end();
@@ -65,16 +65,16 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
     } 
     i++; 
   } 
-  std::cout << "Elites---------------------------------\n";
-  for(int i=0;i<elites.size();i++){
-    elites[i].show_Individual();
-  }
-  std::cout << "Copied Ind-----------------------------\n";
+//std::cout << "Elites---------------------------------\n";
+//for(int i=0;i<elites.size();i++){
+//  elites[i].show_Individual();
+//}
+//std::cout << "Copied Ind-----------------------------\n";
   for(int i=0;i<p_size;i++){
   // Copy elites into next gen 
     if(i<elites.size()){
       individuals[i]=elites[i];
-      individuals[i].show_Individual();
+//    individuals[i].show_Individual();
     }else{ 
   // Fill remaining pop with mutants
       int elite_n=(int)(((float)rand()/RAND_MAX)*elites.size());

@@ -5,6 +5,29 @@
 #include<stdlib.h>
 #include<string.h>
 
+void print_map(Domain* space, Individual* map)
+{
+  int i,j,k;
+
+  int max_i = space->get_max_i();
+  int max_j = space->get_max_j();
+  int max_k = space->get_max_k();
+  std::cout << std::endl;
+  if (max_k == 1){
+    for(i=0;i<max_i;i++){
+      for(j=0;j<=max_j;j++){
+        if(j==max_j){
+         std::cout << std::endl;
+        } else {
+          std::cout << " " << map->at(j*max_i+i) << " ";
+        }
+      }
+    }
+   }
+
+}
+
+
 nodeid* get_nodes(FILE *node_file, nodeid* node_list, int *node_count, int *max_i, int *max_j, int *max_k)
 {
 // Read in number of cores, dimensions of simulations, and node IDs assuming
@@ -41,7 +64,7 @@ nodeid* get_nodes(FILE *node_file, nodeid* node_list, int *node_count, int *max_
 
 int main(int argc, char **argv)
 {
-  int max_gen=3500;
+  int max_gen=45000;
   int pop_size=50;
   int node_count, max_i, max_j, max_k; 
   nodeid *node_list;
@@ -73,5 +96,6 @@ int main(int argc, char **argv)
 //}
   std::cout << best_map.give_fitness() << std::endl;
   best_map.show_Individual(); 
+  print_map(&space,&best_map);
   return 0;
 }
