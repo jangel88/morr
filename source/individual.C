@@ -1,5 +1,7 @@
 #include"individual.h"
 #include<stdio.h>
+#include<math.h>
+#include <algorithm>    // std::random_shuffle
  
 #define MIN(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
 #define MAX(a, b) (((a) > (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
@@ -63,15 +65,14 @@ float Individual::get_fitness(std::vector<int>* topology)
   return fitness;
 }
 
-size_t Individual::hash(std::vector<nodeid>::iterator begin, std::vector<nodeid>::iterator end)
+size_t Individual::hash()
 {
     size_t results = 2166136261U; 
-    for ( std::vector<nodeid>::iterator current = begin; current != end; ++ current ) {
+    for ( std::vector<nodeid>::iterator current = this->begin(); current != this->end(); ++ current ) {
         results = 127 * results + static_cast<size_t>( *current );
     }
     return results; 
 }
-
 
 
 void Individual::mutate(Domain* space)

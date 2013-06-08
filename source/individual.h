@@ -1,13 +1,6 @@
-#include <iostream>
-#include <math.h>
-
-#include <algorithm>    // std::random_shuffle
 #include <vector>       // std::vector
-#include "node_info.h" 
-#include "cart_space.h"
-
-
-
+#include "node_info.h"  //nodeid
+#include "cart_space.h" //Domain
 
 class Individual : public std::vector<nodeid> {
   private:
@@ -25,7 +18,7 @@ class Individual : public std::vector<nodeid> {
     float get_fitness(std::vector<int>* topology); 
     void show_Individual(); 
     float give_fitness();
-    size_t hash(std::vector<nodeid>::iterator ,std::vector<nodeid>::iterator );
+    size_t hash(); 
     void show_zcoors(Domain *space);
 };
 

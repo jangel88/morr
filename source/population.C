@@ -1,5 +1,7 @@
 #include"population.h"
 #include<float.h>
+#include<cstdlib>
+#include<algorithm>
 
 bool comparator (const fit_pair& i, const fit_pair& j)
 { 
@@ -43,18 +45,14 @@ void Population::tournament(std::vector<Individual> elites, Domain* space)
   i=0;
 //std::cout << "Sorted Ind-----------------------------\n";
 //for(int j=0;j<elites.size();j++){
-//  std::vector<nodeid>::iterator begin=individuals[ind_fit[j].second].begin();
-//  std::vector<nodeid>::iterator end=individuals[ind_fit[j].second].end();
-//  int key =(int) individuals[ind_fit[j].second].hash(begin,end)%199;
+//  int key =(int) individuals[ind_fit[j].second].hash()%199;
 //  // key might be negative. This is a bad work around.
 //  key=abs(key); 
 //  individuals[ind_fit[j].second].show_Individual();
 //  std::cout << key << std::endl;
 //}
   while(elite_count<elites.size()){ 
-    std::vector<nodeid>::iterator begin=individuals[ind_fit[i].second].begin();
-    std::vector<nodeid>::iterator end=individuals[ind_fit[i].second].end();
-    int key =(int) individuals[ind_fit[i].second].hash(begin,end)%199;
+    int key =(int) individuals[ind_fit[i].second].hash()%199;
     // key might be negative. This is a bad work around.
     key=abs(key); 
     

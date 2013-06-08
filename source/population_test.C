@@ -1,9 +1,9 @@
 #include"population.h"
-#include"nodes.h"
 #include<tr1/functional>
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<cstdlib>
 
 void print_map(Domain* space, Individual* map)
 {
