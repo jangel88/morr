@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
 
   if (id==0){
-    subset_file = fopen("/home/Spring13/ORNL/data/nodes_1_2_24_1_2_1.txt","r");
+    subset_file = fopen("/home/jba/Spring13/ORNL/data/nodes_1_2_24_1_2_1.txt","r");
     if (subset_file == NULL){ 
       printf("Unable to open file");
       exit(1);
