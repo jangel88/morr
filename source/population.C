@@ -42,35 +42,18 @@ void Population::tournament(std::vector<Individual>* elites, Domain* space)
   // Sort based on fitness
   std::sort(ind_fit.begin(),ind_fit.end(),comparator);
 
-  
-  std::vector<size_t> hashes;  
-
-  // Copy first elite (most fit)
-  size_t first_hash = individuals[ind_fit[0].second].hash();
-  hashes.push_back(first_hash);
-  elites->at(0)=individuals[ind_fit[0].second];
-  elite_count++;
- 
-
-  // Get elites.size() unique elites for next generation
-  i=1;
-  while (elite_count<elites->size()){
-    size_t new_hash = individuals[ind_fit[i].second].hash();
-    for (int j=0; j<hashes.size();j++){ 
-      if(hashes[j]==new_hash){ 
-      // Already have same elite
-        i++;
-        break;
-      } 
-      if(j==hashes.size()-1){
-        // Didn't break out so new elite
-        elites->at(elite_count)=individuals[ind_fit[i].second];
-        hashes.push_back(new_hash);
-        elite_count++;
-        i++;
-      }
+  for(int i=0, k=0; i<p_size; i++){
+    if(k==elites->size()) break; 
+    size_t this_hash = individuals[ind_fit[i].second].hash();
+    bool repeat=false; 
+    for(int j=0; j<k; j++){
+      if(this_hash == elites->at(j).hash()) repeat=true; 
     }
-  } 
+    if(repeat == false){
+      elites->at(k)=individuals[ind_fit[i].second];
+      k++; 
+    }
+  }
 
   for(int i=0;i<p_size;i++){
   // Copy elites into next gen 
