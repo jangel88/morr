@@ -61,7 +61,7 @@ void Population::tournament(std::vector<Individual>* elites, Domain* space)
       individuals[i]=elites->at(i); 
     }else{ 
   // Fill remaining individuals with mutants
-      int elite_n=(int)(((float)rand()/RAND_MAX)*elites->size());
+      int elite_n = rand() % elites->size();
       Individual mutant(elites->at(elite_n));
       mutant.mutate(space);
       individuals[i]=mutant;
