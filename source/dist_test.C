@@ -1,11 +1,9 @@
 #include"population.h"
-//#include<mpi.h>
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<boost/mpi.hpp>
 #include<boost/serialization/vector.hpp>
-
-
 
 
 std::vector<nodeid> get_nodes(FILE *node_file,std::vector<nodeid> node_list,int *node_count,int *max_i,int *max_j,int *max_k)
@@ -64,12 +62,7 @@ int main(int argc, char **argv)
   int node_count,max_i,max_j,max_k;
   std::vector<nodeid> node_list;
 
-//MPI_Comm_size(MPI_COMM_WORLD,&np);
-//MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-
-
-
-  srand(1327*world.rank());
+  srand(137*world.rank());
 
   if(world.rank()==0){
     FILE *node_file=fopen("./test_suite/chester_cart_05.txt","r");
@@ -79,12 +72,11 @@ int main(int argc, char **argv)
 
   }
 
-  broadcast(world, node_count,0); 
+  broadcast(world,node_count,0); 
   broadcast(world,node_list,0);
   broadcast(world,max_i,0);
   broadcast(world,max_j,0);
-  broadcast(world,max_k,0);
-
+  broadcast(world,max_k,0); 
 
   Individual temp(node_count,node_list,true); 
   Domain space(max_i,max_j,max_k);
@@ -102,15 +94,13 @@ int main(int argc, char **argv)
 
   for(int i=0;i<max_gen;i++){
     P.tournament(&local_elites,&space); 
-
     all_gather(world,&local_elites[0],num_elites,global_elites); 
-    P.populate_next_gen(&global_elites,&space);
-
+    P.populate_next_gen(&global_elites,&space); 
     printf("%d %f %f\n",i,local_elites[0].give_fitness(),local_elites[num_elites-1].give_fitness());
   }
 
   P.individuals[0].print_chromosome(&space);
   std::cout << P.individuals[0].give_fitness();
-//MPI_Finalize();
+
   return 0; 
 }

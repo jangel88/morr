@@ -53,18 +53,21 @@ void Population::tournament(std::vector<Individual>* elites, Domain* space)
       elites->at(k)=individuals[ind_fit[i].second];
       k++; 
     }
-  }
-
-
+  } 
 }
 
 void Population::populate_next_gen(std::vector<Individual>* elites, Domain* space)
 {
-    
+  std::vector<fit_pair> elite_fit;  
+  for(int j=0;j<elites->size();j++){
+    elite_fit.push_back(std::make_pair(elites->at(j).give_fitness(),j));
+  }
+  std::sort(elite_fit.begin(),elite_fit.end(),comparator);
+
   for(int i=0;i<p_size;i++){
   // Copy elites into next gen 
     if(i<num_elites){
-      individuals[i]=elites->at(i); 
+      individuals[i]=elites->at(elite_fit.at(i).second); 
     }else{ 
   // Fill remaining individuals with mutants
       int elite_n = rand() % elites->size(); 
@@ -73,7 +76,6 @@ void Population::populate_next_gen(std::vector<Individual>* elites, Domain* spac
       individuals[i]=mutant;
     }
   } 
-
 }
 
 

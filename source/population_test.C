@@ -76,5 +76,6 @@ int main(int argc, char **argv)
   Individual best_map=P.get_best_map(&topo);
 
   printf("%d %f\n",pop_size,P.individuals[0].give_fitness());
+  P.individuals[0].print_chromosome(&space);
   return 0;
 }
