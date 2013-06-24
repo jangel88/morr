@@ -48,13 +48,17 @@ namespace mpi = boost::mpi;
 int main(int argc, char **argv)
 {
 
-
+  if(argc < 2){
+    printf("usage:\n");
+    printf("./dist_test population_size\n");
+    exit(1);
+  }
   mpi::environment env(argc, argv);
   mpi::communicator world;
 
   int rank,np; 
   int max_gen=1500;
-  int pop_size=5000;
+  int pop_size=(int) atoi(argv[1]);
   int num_elites=0.1*pop_size;
 
 
@@ -62,7 +66,7 @@ int main(int argc, char **argv)
   int node_count,max_i,max_j,max_k;
   std::vector<nodeid> node_list;
 
-  srand(137*world.rank());
+  srand(133*world.rank());
 
   if(world.rank()==0){
     FILE *node_file=fopen("./test_suite/chester_cart_05.txt","r");

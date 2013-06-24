@@ -42,7 +42,11 @@ std::vector<nodeid> get_nodes(FILE *node_file, std::vector<nodeid> node_list, in
 
 int main(int argc, char **argv)
 {
-
+  if(argc < 2){
+    printf("usage:\n");
+    printf("./dist_test population_size\n");
+    exit(1);
+  }
 
   int max_gen=1500;
   int pop_size=atoi(argv[1]);
