@@ -50,7 +50,8 @@ int main(int argc, char **argv)
 
   if(argc < 2){
     printf("usage:\n");
-    printf("./dist_test population_size\n");
+    printf("./dist_test N\n");
+    printf("N - population size\n");
     exit(1);
   }
   mpi::environment env(argc, argv);

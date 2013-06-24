@@ -44,7 +44,8 @@ int main(int argc, char **argv)
 {
   if(argc < 2){
     printf("usage:\n");
-    printf("./population_test population_size\n");
+    printf("./population_test N\n");
+    printf("N - population size\n");
     exit(1);
   }
 
