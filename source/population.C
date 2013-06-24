@@ -67,7 +67,7 @@ void Population::populate_next_gen(std::vector<Individual>* elites, Domain* spac
       individuals[i]=elites->at(i); 
     }else{ 
   // Fill remaining individuals with mutants
-      int elite_n=(int) rand()%elites->size();
+      int elite_n = rand() % elites->size(); 
       Individual mutant(elites->at(elite_n));
       mutant.mutate(space);
       individuals[i]=mutant;
