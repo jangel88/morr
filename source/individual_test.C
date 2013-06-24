@@ -4,7 +4,7 @@
 int main(int argc, char*argv[]) {
 
   const int count=27; 
-  nodeid nodes[count]; 
+  std::vector<nodeid> nodes(count); 
   
   std::srand(24); 
   

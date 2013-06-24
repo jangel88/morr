@@ -55,19 +55,27 @@ void Population::tournament(std::vector<Individual>* elites, Domain* space)
     }
   }
 
+
+}
+
+void Population::populate_next_gen(std::vector<Individual>* elites, Domain* space)
+{
+    
   for(int i=0;i<p_size;i++){
   // Copy elites into next gen 
-    if(i<elites->size()){
+    if(i<num_elites){
       individuals[i]=elites->at(i); 
     }else{ 
   // Fill remaining individuals with mutants
-      int elite_n=(int)(((float)rand()/RAND_MAX)*elites->size());
+      int elite_n=(int) rand()%elites->size();
       Individual mutant(elites->at(elite_n));
       mutant.mutate(space);
       individuals[i]=mutant;
     }
-  }
+  } 
+
 }
+
 
 Population Population::find_elites(int elite_size)
 {

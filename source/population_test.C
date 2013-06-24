@@ -5,30 +5,9 @@
 #include<string.h>
 #include<cstdlib>
 
-void print_map(Domain* space, Individual* map)
-{
-  int i,j,k;
-
-  int max_i = space->get_max_i();
-  int max_j = space->get_max_j();
-  int max_k = space->get_max_k();
-  std::cout << std::endl;
-  if (max_k == 1){
-    for(i=0;i<max_i;i++){
-      for(j=0;j<=max_j;j++){
-        if(j==max_j){
-         std::cout << std::endl;
-        }else{
-          printf("%4d",map->at(j*max_i+i));
-        }
-      }
-    }
-  }
-
-}
 
 
-nodeid* get_nodes(FILE *node_file, nodeid* node_list, int *node_count, int *max_i, int *max_j, int *max_k)
+std::vector<nodeid> get_nodes(FILE *node_file, std::vector<nodeid> node_list, int *node_count, int *max_i, int *max_j, int *max_k)
 {
 // Read in number of cores, dimensions of simulations, and node IDs assuming
 // format:
@@ -49,10 +28,9 @@ nodeid* get_nodes(FILE *node_file, nodeid* node_list, int *node_count, int *max_
     }else{
       line_count+=1;
       if(line_count==1){ 
-        sscanf(string,"%d%d%d%d",node_count,max_i,max_j,max_k);
-        node_list = (nodeid*) malloc(sizeof(nodeid)*(*node_count));
+        sscanf(string,"%d%d%d%d",node_count,max_i,max_j,max_k); 
       }else{
-        node_list[i]=(nodeid) atoi(string);
+        node_list.push_back((nodeid) atoi(string));
         i++;
       } 
     }
@@ -64,12 +42,15 @@ nodeid* get_nodes(FILE *node_file, nodeid* node_list, int *node_count, int *max_
 
 int main(int argc, char **argv)
 {
-  int max_gen=15000;
-  int pop_size=150;
-  int num_elites=25;
+
+
+  int max_gen=1500;
+  int pop_size=atoi(argv[1]);
+  int num_elites=(int) pop_size*0.1;
   int node_count, max_i, max_j, max_k; 
-  nodeid *node_list;
+  std::vector<nodeid> node_list;
   FILE *node_file = fopen("./test_suite/chester_cart_05.txt","r");
+
 
   node_list = get_nodes(node_file,node_list,&node_count,&max_i,&max_j,&max_k); 
   Domain space(max_i,max_j,max_k); 
@@ -78,21 +59,22 @@ int main(int argc, char **argv)
   temp.get_fitness(&topo); 
 
   Population P(pop_size,node_count,&temp);
-
+  P.set_elites(num_elites);
 
   std::vector<Individual> elites(num_elites,temp);
 
-  std::srand(1337);
+  std::srand(1327);
   P.tournament(&elites,&space);
 
 
   for(int i=0;i<max_gen;i++){
     P.tournament(&elites,&space); 
-    printf("%d %f %f\n",i,elites[0].give_fitness(),elites[num_elites-1].give_fitness()); 
+//  printf("%d %f %f\n",i,elites[0].give_fitness(),elites[num_elites-1].give_fitness()); 
+    P.populate_next_gen(&elites,&space);
   }
 
   Individual best_map=P.get_best_map(&topo);
-  print_map(&space,&best_map);
 
+  printf("%d %f\n",pop_size,P.individuals[0].give_fitness());
   return 0;
 }
