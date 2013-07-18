@@ -1,24 +1,27 @@
 # ---------------------------------------------------------------------- 
-CC      = mpicc
-CXX     = mpiCC
-CFLAGS	= -O2
-LDFLAGS = -lprofiler -lboost_mpi -lboost_serialization
-BOOST_LIB = /usr/lib
+CC      = cc
+CXX     = CC
+CFLAGS	= -O2 
+LDFLAGS = -lboost_mpi -lboost_serialization $(BOOST_FLAGS)
+
 
 # ---------------------------------------------------------------------- 
 .SUFFIXES:	.o .c
 
 .c.o:
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c $< $(LDFLAGS)
  
 .C.o:
-	$(CXX) $(CFLAGS) -c $<
+	$(CXX) $(CFLAGS) -c $< $(LDFLAGS)
  
 # ---------------------------------------------------------------------- 
 #DEFAULT: node_info_test.exe
-DEFAULT: node_info_test.exe individual_test.exe population_test.exe dist_test
+DEFAULT: node_info_test.exe individual_test.exe population_test.exe dist_test.exe query_nodes.exe
 
-node_info_test.exe:	node_info_test.o node_info.o 
+titan_node_info_test.exe: titan_node_info_test.o torus_node_info.o
+	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+node_info_test.exe:	node_info_test.o node_info.o
 	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 individual_test.exe:	individual_test.o individual.o cart_space.o node_info.o
@@ -27,8 +30,11 @@ individual_test.exe:	individual_test.o individual.o cart_space.o node_info.o
 population_test.exe:    population_test.o population.o cart_space.o individual.o node_info.o
 	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-dist_test: dist_test.o population.o cart_space.o individual.o node_info.o 
-	$(CXX) $(CFLAGS) -o $@ $^ -L$(BOOST_LIB) -ldl -Wl,-rpath,$(BOOST_LIB) $(LDFLAGS)
+query_nodes.exe: query_nodes.o population.o cart_space.o individual.o torus_node_info.o
+	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+dist_test.exe: dist_test.o population.o cart_space.o individual.o torus_node_info.o
+	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 # ---------------------------------------------------------------------- 
 
 clean:

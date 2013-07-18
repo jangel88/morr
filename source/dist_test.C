@@ -1,12 +1,11 @@
-#include"population.h"
-
+#include"population.h" 
 #include<stdio.h>
 #include<stdlib.h>
 #include<boost/mpi.hpp>
 #include<boost/serialization/vector.hpp>
 
 
-std::vector<nodeid> get_nodes(FILE *node_file,std::vector<nodeid> node_list,int *node_count,int *max_i,int *max_j,int *max_k)
+std::vector<nodeid> get_nodes(FILE *node_file,std::vector<nodeid> node_list,int *proc_count,int *max_i,int *max_j,int *max_k)
 {
 
 //Read in number of cores, dimensions of simulations, and node IDs assuming
@@ -28,8 +27,8 @@ std::vector<nodeid> get_nodes(FILE *node_file,std::vector<nodeid> node_list,int 
     }else{ 
       line_count+=1; 
       if(line_count==1){
-        sscanf(string,"%d%d%d%d",node_count,max_i,max_j,max_k); 
-      //node_list = (nodeid*) malloc(sizeof(nodeid)*(*node_count)); 
+        sscanf(string,"%d%d%d%d",proc_count,max_i,max_j,max_k); 
+      //node_list = (nodeid*) malloc(sizeof(nodeid)*(*proc_count)); 
       }else{ 
         node_list.push_back((nodeid) atoi(string));
         i++; 
@@ -50,62 +49,66 @@ int main(int argc, char **argv)
 
   if(argc < 2){
     printf("usage:\n");
-    printf("./dist_test N\n");
+    printf("./dist_test N max_gen max_i max_j max_k\n");
     printf("N - population size\n");
+    printf("max_gen - population size\n"); 
+    printf("max_i - size of i dimension\n");
+    printf("max_j - size of j dimension\n");
+    printf("max_k - size of k dimension\n");
+    printf("where simulation elements are referenced\n");
+    printf("as (i,j,k)\n");
     exit(1);
   }
+  
   mpi::environment env(argc, argv);
-  mpi::communicator world;
+  mpi::communicator world; 
 
-  int rank,np; 
-  int max_gen=1500;
   int pop_size=(int) atoi(argv[1]);
-  int num_elites=0.1*pop_size;
+  int max_gen=(int) atoi(argv[2]);
+//int num_elites=0.1*pop_size;
+  int num_elites=5;
 
 
 
-  int node_count,max_i,max_j,max_k;
+  int proc_count=world.size();
+ 
+  int max_i = atoi(argv[3]);
+  int max_j = atoi(argv[4]);
+  int max_k = atoi(argv[5]);
+
   std::vector<nodeid> node_list;
+  nodeid nid=query_nodeid();
+  all_gather(world,nid,node_list);
 
   srand(133*world.rank());
 
-  if(world.rank()==0){
-    FILE *node_file=fopen("./test_suite/chester_cart_05.txt","r");
-  
-    node_list=get_nodes(node_file,node_list,&node_count,&max_i,&max_j,&max_k);
-    printf("%4d %4d %4d %4d \n",node_count,max_i,max_j,max_k);
-
-  }
-
-  broadcast(world,node_count,0); 
-  broadcast(world,node_list,0);
-  broadcast(world,max_i,0);
-  broadcast(world,max_j,0);
-  broadcast(world,max_k,0); 
-
-  Individual temp(node_count,node_list,true); 
+  Individual temp(proc_count,node_list,false); 
   Domain space(max_i,max_j,max_k);
-  std::vector<int> topo = space.give_topo();
 
+
+  std::vector<int> topo = space.give_topo();
   temp.get_fitness(&topo);
 
-  Population P(pop_size,node_count,&temp);
+  Population P(pop_size,proc_count,&temp);
   P.set_elites(num_elites);
 
   std::vector<Individual> local_elites(num_elites,temp);
   std::vector<Individual> global_elites;
 
   P.tournament(&local_elites,&space);
-
-  for(int i=0;i<max_gen;i++){
-    P.tournament(&local_elites,&space); 
-    all_gather(world,&local_elites[0],num_elites,global_elites); 
-    P.populate_next_gen(&global_elites,&space); 
-    printf("%d %f %f\n",i,local_elites[0].give_fitness(),local_elites[num_elites-1].give_fitness());
+  if(world.rank()<=16){
+    for(int i=0;i<max_gen;i++){
+      P.tournament(&local_elites,&space); 
+      all_gather(world,&local_elites[0],1,global_elites);
+      P.populate_next_gen(&global_elites,&space); 
+//    P.populate_next_gen(&local_elites,&space); 
+    }
   }
 
-  P.individuals[0].print_chromosome(&space);
-  std::cout << P.individuals[0].give_fitness();
 
-  return 0; 
+
+  if(world.rank()==0){
+    P.individuals[0].print_chromosome(&space,0);
+  }
+  return 0;
 }

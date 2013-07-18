@@ -1,5 +1,4 @@
 #include"population.h"
-#include<tr1/functional>
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -81,6 +80,6 @@ int main(int argc, char **argv)
   Individual best_map=P.get_best_map(&topo);
 
   printf("%d %f\n",pop_size,P.individuals[0].give_fitness());
-  P.individuals[0].print_chromosome(&space);
+  P.individuals[0].print_chromosome(&space,1);
   return 0;
 }

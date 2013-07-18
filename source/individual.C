@@ -190,26 +190,34 @@ void Individual::head_to_tail(bool mirr,Domain* space)
 }
 
 
-void Individual::print_chromosome(Domain* space)
+
+
+
+void Individual::print_chromosome(Domain* space, int format_flag)
 {
   int i,j,k;
 
   int max_i = space->get_max_i();
   int max_j = space->get_max_j();
   int max_k = space->get_max_k();
-  std::cout << std::endl;
-  if (max_k == 1){
-    for(i=0;i<max_i;i++){
-      for(j=0;j<=max_j;j++){
-        if(j==max_j){
-         std::cout << std::endl;
-        }else{ 
-          printf("%4d",chromosome.at(j*max_i+i));
+  if(format_flag){
+    std::cout << std::endl;
+    if (max_k == 1){
+      for(i=0;i<max_i;i++){
+        for(j=0;j<=max_j;j++){
+          if(j==max_j){
+           std::cout << std::endl;
+          }else{ 
+            printf("%4d",chromosome.at(j*max_i+i));
+          }
         }
       }
     }
+  }else{
+    for(int i=0;i<chromosome.size();i++){
+      std::cout << chromosome[i] << std::endl;
+    }
   }
-
 }
 
 

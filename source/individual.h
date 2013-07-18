@@ -1,5 +1,6 @@
 #include <vector>       // std::vector
-#include "node_info.h"  //nodeid
+//#include "node_info.h"  //nodeid
+#include "titan_node_info.h"  //nodeid
 #include "cart_space.h" //Domain
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/vector.hpp>
@@ -32,7 +33,7 @@ class Individual  {
     float give_fitness();
     size_t hash(); 
     void show_zcoors(Domain *space);
-    void print_chromosome(Domain* space);
+    void print_chromosome(Domain* space, int);
     int give_size() { return chromosome.size(); }
 };
 //namespace boost{
