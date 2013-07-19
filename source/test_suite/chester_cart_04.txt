@@ -1,4 +1,4 @@
-# The optimal cost should be sqrt( 8 * 1^2) = 13.857
+# The optimal cost should be sqrt( 96 * (1^2+ 1^2 + 0.01^2 + 0^2)) = 13.857
 96 6 16 1
 0
 0

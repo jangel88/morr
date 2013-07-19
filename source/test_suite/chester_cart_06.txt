@@ -1,4 +1,4 @@
-# The optimal cost should be sqrt( 48 * (1^2 + 1^2 + 1^2 + 1^2) ) = 9.7979
+# The optimal cost should be sqrt( 24 * (1^2 + 1^2 + 1^2 + 1^2) ) = 9.7979
 24 3 8 1
 0
 62
