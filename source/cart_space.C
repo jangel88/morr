@@ -1,7 +1,6 @@
 #include <iostream>
 #include <math.h>
 #include "cart_space.h"
-#include <stdio.h>
 
 /* ---------------------------------------------------------------------- */
 Domain::Domain(int max_i, int max_j, int max_k) {
