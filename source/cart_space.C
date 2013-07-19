@@ -65,9 +65,9 @@ int Domain::get_position(Subdomain element) {
 
 /* ---------------------------------------------------------------------- */
 float Domain::get_fitness(std::vector<nodeid> nodelist){
-  if(nodelist.size() != size) return(-1); 
+  if(nodelist.size() != this->size) return(-1); 
 
-  int N=size; 
+  int N=this->size; 
   std::vector<int> order; 
   order.resize(N); 
   for(int i=0;i<N;i++){
@@ -78,10 +78,10 @@ float Domain::get_fitness(std::vector<nodeid> nodelist){
 
 /* ---------------------------------------------------------------------- */
 float Domain::get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder){
-  if(nodelist.size() != size) return(-1); 
-  if(reorder.size()  != size) return(-1); 
+  if(nodelist.size() != this->size) return(-1); 
+  if(reorder.size()  != this->size) return(-1); 
   
-  int N=size; 
+  int N=this->size; 
   nodeid n1,n2;
   std::vector<float> cost(N*6);
 
