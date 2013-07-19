@@ -1,4 +1,5 @@
 #include <vector>
+#include "node_info.h"
 
 class Subdomain{
   private:
@@ -22,6 +23,8 @@ class Domain {
     int get_period() { return period; } 
     std::vector<Subdomain> find_neighbors(Subdomain element); 
     int get_position(Subdomain element); 
+    float get_fitness(std::vector<nodeid> nodelist); 
+    float get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder); 
 };
 
 

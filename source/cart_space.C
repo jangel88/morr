@@ -1,6 +1,9 @@
 #include <iostream>
+#include <math.h>
 #include "cart_space.h"
+#include <stdio.h>
 
+/* ---------------------------------------------------------------------- */
 Domain::Domain(int max_i, int max_j, int max_k) {
   this->max_i=max_i;
   this->max_j=max_j;
@@ -24,6 +27,7 @@ Domain::Domain(int max_i, int max_j, int max_k) {
   }  
 }
 
+/* ---------------------------------------------------------------------- */
 std::vector<Subdomain> Domain::find_neighbors(Subdomain element) {
   int i,j,k;
   int coors[3];
@@ -49,6 +53,7 @@ std::vector<Subdomain> Domain::find_neighbors(Subdomain element) {
   return neighbor;
 }
 
+/* ---------------------------------------------------------------------- */
 int Domain::get_position(Subdomain element) {
   int i,j,k;
   int coors[3];
@@ -58,6 +63,50 @@ int Domain::get_position(Subdomain element) {
   k=coors[2];
   return max_j*max_i*k+max_i*j+i; 
 }
+
+/* ---------------------------------------------------------------------- */
+float Domain::get_fitness(std::vector<nodeid> nodelist){
+  if(nodelist.size() != size) return(-1); 
+
+  int N=size; 
+  std::vector<int> order; 
+  order.resize(N); 
+  for(int i=0;i<N;i++){
+    order[i]=i; 
+  }
+  return get_fitness(nodelist, order); 
+}
+
+/* ---------------------------------------------------------------------- */
+float Domain::get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder){
+  if(nodelist.size() != size) return(-1); 
+  if(reorder.size()  != size) return(-1); 
+  
+  int N=size; 
+  nodeid n1,n2;
+  std::vector<float> cost(N*6);
+
+  for(int j=0;j<6;j++){
+    for(int i=0;i<N;i++){
+      n1=nodelist.at(reorder.at(topology.at(i+j*N)));
+      n2=nodelist.at(reorder.at(i));
+      cost[i+j*N]=distance_between_nodes(n1,n2); 
+    }
+  }
+
+  float fitness=0.0; 
+  for(int i=0;i<N*6;i++){ 
+    fitness+=cost[i]*cost[i];
+//  fitness+=cost[i];
+  } 
+  fitness=sqrt(fitness);
+//fitness=fitness/(N*6);
+  return fitness;
+}
+
+/* ---------------------------------------------------------------------- */
+// Begin Subdomain class
+/* ---------------------------------------------------------------------- */
 
 Subdomain::Subdomain(int i, int j, int k) {
   this->i=i;
