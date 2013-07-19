@@ -3,8 +3,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <mpi.h>
-//#include "node_info.h" 
-#include "titan_node_info.h" 
+#include "node_info.h" 
 int init_node_info(void){
   //Nothing to do here now. Node coords are initialized in the static variable
   return(0); 
