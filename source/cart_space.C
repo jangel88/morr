@@ -1,41 +1,30 @@
-#include"cart_space.h"
+#include <iostream>
+#include "cart_space.h"
 
-Domain::Domain(int max_i, int max_j, int max_k)
-{
+Domain::Domain(int max_i, int max_j, int max_k) {
   this->max_i=max_i;
   this->max_j=max_j;
   this->max_k=max_k;  
-  this->period=max_i*max_j;
-  int i,j; 
-  int N=max_i*max_j*max_k; 
-  topology.resize(N*6); 
-  for(i=0;i<N;i++){
+  if(max_k==1){
+    period=max_i;
+  } else {
+    period=max_i*max_j;
+  }
+  size=max_i*max_j*max_k; 
+  topology.resize(size*6); 
+  for(int i=0, N=size;i<N;i++){
     Subdomain q(i,max_i,max_j,max_k);
-    std::vector<Subdomain> neigh;
-    neigh=find_neighbors(q); 
+    std::vector<Subdomain> neigh=find_neighbors(q); 
     topology[i]=get_position(neigh[0]);
     topology[i+N]=get_position(neigh[1]);
     topology[i+2*N]=get_position(neigh[2]);
     topology[i+3*N]=get_position(neigh[3]);
     topology[i+4*N]=get_position(neigh[4]);
     topology[i+5*N]=get_position(neigh[5]);
-
-//  for(j=0;j<6;j++){
-//    topology.push_back(get_position(neigh[j])); 
-//  }
   }  
 }
 
-void Domain::show_topo()
-{
-  for(std::vector<int>::iterator it=topology.begin(); it!=topology.end();++it){
-    std::cout << *it << std::endl;
-  }
-}
-
-
-std::vector<Subdomain> Domain::find_neighbors(Subdomain element) 
-{
+std::vector<Subdomain> Domain::find_neighbors(Subdomain element) {
   int i,j,k;
   int coors[3];
   element.give_coors(coors);
@@ -60,8 +49,7 @@ std::vector<Subdomain> Domain::find_neighbors(Subdomain element)
   return neighbor;
 }
 
-int Domain::get_position(Subdomain element)
-{
+int Domain::get_position(Subdomain element) {
   int i,j,k;
   int coors[3];
   element.give_coors(coors);
@@ -71,23 +59,21 @@ int Domain::get_position(Subdomain element)
   return max_j*max_i*k+max_i*j+i; 
 }
 
-Subdomain::Subdomain(int i, int j, int k)
-{
+Subdomain::Subdomain(int i, int j, int k) {
   this->i=i;
   this->j=j;
   this->k=k;
 }
 
-Subdomain::Subdomain(int position,int max_i, int max_j,int max_k) 
-{
+Subdomain::Subdomain(int position,int max_i, int max_j,int max_k) {
   i=position%max_i;
   j=((position-i)/max_i)%max_j; 
   k=(position-i-max_i*j)/(max_j*max_i);
 }
 
-void Subdomain::give_coors(int* coors)
-{
+void Subdomain::give_coors(int* coors) {
   coors[0]=i;
   coors[1]=j;
   coors[2]=k;
 }
+
