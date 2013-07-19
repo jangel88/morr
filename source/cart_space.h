@@ -1,4 +1,4 @@
-#include<vector>
+#include <vector>
 
 class Subdomain{
   private:

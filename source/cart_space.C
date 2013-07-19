@@ -15,8 +15,8 @@ Domain::Domain(int max_i, int max_j, int max_k) {
   for(int i=0, N=size;i<N;i++){
     Subdomain q(i,max_i,max_j,max_k);
     std::vector<Subdomain> neigh=find_neighbors(q); 
-    topology[i]=get_position(neigh[0]);
-    topology[i+N]=get_position(neigh[1]);
+    topology[i    ]=get_position(neigh[0]);
+    topology[i+  N]=get_position(neigh[1]);
     topology[i+2*N]=get_position(neigh[2]);
     topology[i+3*N]=get_position(neigh[3]);
     topology[i+4*N]=get_position(neigh[4]);
