@@ -65,8 +65,8 @@ int main(int argc, char **argv)
 
   int pop_size=(int) atoi(argv[1]);
   int max_gen=(int) atoi(argv[2]);
-//int num_elites=0.1*pop_size;
-  int num_elites=5;
+  int num_elites=0.1*pop_size;
+//int num_elites=5;
 
 
 
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
   std::vector<Individual> global_elites;
 
   P.tournament(&local_elites,&space);
-  if(world.rank()<=16){
+  if(world.rank()<16){
     for(int i=0;i<max_gen;i++){
       P.tournament(&local_elites,&space); 
       all_gather(world,&local_elites[0],1,global_elites);

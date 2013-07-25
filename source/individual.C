@@ -98,7 +98,8 @@ void Individual::mutate(Domain* space)
 
 void Individual::swap_segment(bool mirror1, bool mirror2)
 {
-  int length_range[5]={1,2,4,8,16};
+ 
+  int length_range[10]={1,2,4,8,16,32,64,128,256,512};
   int length=length_range[rand()%5];
   int x=rand()%chromosome.size();
   int y=rand()%chromosome.size();
@@ -137,7 +138,7 @@ void Individual::swap_segment(bool mirror1, bool mirror2)
 void Individual::cut_n_paste_segment(bool mirr)
 {
   int N=chromosome.size();
-  int length_range[5]={1,2,4,8,16};
+  int length_range[10]={1,2,4,8,16,32,64,128,256,512};
   int length=length_range[rand()%5]; 
   int dst=rand()%chromosome.size();
   int src=rand()%chromosome.size();
