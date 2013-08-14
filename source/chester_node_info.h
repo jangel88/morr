@@ -2,9 +2,6 @@
 
 // These are the definitions that should be available across all node architectures
 typedef int nodeid; 
-typedef enum nodeid_validity{
-  VALID, INVALID 
-} nodeid_validity; 
 
 int init_node_info(void);
 nodeid query_nodeid();
