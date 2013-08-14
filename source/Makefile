@@ -15,13 +15,13 @@ LDFLAGS = -lboost_mpi -lboost_serialization $(BOOST_FLAGS)
 	$(CXX) $(CFLAGS) -c $< $(LDFLAGS)
  
 # ---------------------------------------------------------------------- 
-#DEFAULT: node_info_test.exe
-DEFAULT: node_info_test.exe individual_test.exe population_test.exe dist_test.exe query_nodes.exe
-
-titan_node_info_test.exe: titan_node_info_test.o torus_node_info.o
-	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+DEFAULT: node_info_test.exe cart_space_test.exe
+#DEFAULT: node_info_test.exe individual_test.exe population_test.exe dist_test.exe query_nodes.exe
 
 node_info_test.exe:	node_info_test.o node_info.o
+	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+cart_space_test.exe:	cart_space_test.o cart_space.o node_info.o
 	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 individual_test.exe:	individual_test.o individual.o cart_space.o node_info.o

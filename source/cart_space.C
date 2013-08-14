@@ -8,7 +8,11 @@ Domain::Domain(int max_i, int max_j, int max_k) {
   this->max_j=max_j;
   this->max_k=max_k;  
   if(max_k==1){
-    period=max_i;
+    if(max_j==1){
+      period=1; 
+    } else {
+      period=max_i;
+    }
   } else {
     period=max_i*max_j;
   }
@@ -30,7 +34,7 @@ Domain::Domain(int max_i, int max_j, int max_k) {
 std::vector<Subdomain> Domain::find_neighbors(Subdomain element) {
   int i,j,k;
   int coors[3];
-  element.give_coors(coors);
+  element.get_coors(coors);
   i=coors[0];
   j=coors[1];
   k=coors[2];
@@ -56,7 +60,7 @@ std::vector<Subdomain> Domain::find_neighbors(Subdomain element) {
 int Domain::get_position(Subdomain element) {
   int i,j,k;
   int coors[3];
-  element.give_coors(coors);
+  element.get_coors(coors);
   i=coors[0];  
   j=coors[1]; 
   k=coors[2];
@@ -119,7 +123,7 @@ Subdomain::Subdomain(int position,int max_i, int max_j,int max_k) {
   k=(position-i-max_i*j)/(max_j*max_i);
 }
 
-void Subdomain::give_coors(int* coors) {
+void Subdomain::get_coors(int* coors) {
   coors[0]=i;
   coors[1]=j;
   coors[2]=k;
