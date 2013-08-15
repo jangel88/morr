@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 #include <math.h>
 #include "cart_space.h"
 
@@ -69,7 +70,10 @@ int Domain::get_position(Subdomain element) {
 
 /* ---------------------------------------------------------------------- */
 float Domain::get_fitness(std::vector<nodeid> nodelist){
-  if(nodelist.size() != this->size) return(-1); 
+  if(nodelist.size() != this->size) {
+    std::cout<< "Error! nodelist size not same as domain size\n"; 
+    exit(1);
+  }
 
   int N=this->size; 
   std::vector<int> order; 
@@ -82,8 +86,14 @@ float Domain::get_fitness(std::vector<nodeid> nodelist){
 
 /* ---------------------------------------------------------------------- */
 float Domain::get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder){
-  if(nodelist.size() != this->size) return(-1); 
-  if(reorder.size()  != this->size) return(-1); 
+  if(nodelist.size() != this->size) {
+    std::cout<< "Error! nodelist size not same as domain size\n"; 
+    exit(1);
+  }
+  if(reorder.size() != this->size) {
+    std::cout<< "Error! reorder size not same as domain size\n"; 
+    exit(1);
+  }
   
   int N=this->size; 
   nodeid n1,n2;
