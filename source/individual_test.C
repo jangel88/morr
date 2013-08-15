@@ -1,24 +1,53 @@
-#include "individual.h" 
-#include <cstdlib>      // std::rand, std::srand
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
 
-int main(int argc, char*argv[]) {
+#include "individual.h"
 
-  const int count=27; 
-  std::vector<nodeid> nodes(count); 
-  
-  std::srand(24); 
-  
-  Domain space(3,3,3);  
-  
-  for (int i=0; i<count; i++) nodes[i]=i; 
-  
-  Individual* gold = new Individual(count, nodes, false); 
-  gold->show_Individual(); 
-  
-  for (int i=0; i<25; i++) {
-    Individual* indv1 = new Individual(*gold);
-    indv1->mutate(&space);
-    indv1->show_Individual(); 
-  }
+Domain gampi_domain(1,1,1); 
+std::vector<nodeid> gampi_nodelist;
 
+using namespace std; 
+
+int main(int argc, char **argv){
+
+cout << "usage:  ./individual_test.exe testfilename\n";
+
+FILE* nodefile = fopen(argv[1], "r"); 
+if (nodefile==NULL) {
+  cout << "error opening file "<<argv[1] << "\n"; 
+  return 1; 
 }
+
+int nodecount, max_i, max_j, max_k;
+char string[100];
+int line_count=0;
+while( fgets(string,100,nodefile)!=NULL){
+  if(string[0]=='#' || string[0]=='\n'){
+    cout << string; 
+    continue;
+  }else{
+    line_count+=1;
+    if(line_count==1){ 
+      sscanf(string,"%d%d%d%d",&nodecount,&max_i,&max_j,&max_k); 
+    }else{
+      gampi_nodelist.push_back((nodeid) atoi(string));
+    } 
+  }
+} 
+gampi_domain=Domain(max_i, max_j, max_k); 
+
+Individual a(gampi_domain.get_size()); 
+a.show(); 
+
+Individual b(gampi_domain.get_size(), true); 
+b.show(); 
+
+Individual c(a, true); 
+c.show(); 
+
+c.mutate(); 
+c.show(); 
+
+} // end main
+
