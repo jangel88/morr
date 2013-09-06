@@ -1,10 +1,14 @@
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 #include "cart_space.h"
 
 /* ---------------------------------------------------------------------- */
 Domain::Domain(int max_i, int max_j, int max_k) {
+  assert(max_i>0); 
+  assert(max_j>0); 
+  assert(max_k>0); 
   this->max_i=max_i;
   this->max_j=max_j;
   this->max_k=max_k;  
@@ -39,6 +43,9 @@ std::vector<Subdomain> Domain::find_neighbors(Subdomain element) {
   i=coors[0];
   j=coors[1];
   k=coors[2];
+  assert(i<max_i); 
+  assert(j<max_j);
+  assert(k<max_k);
   std::vector<Subdomain> neighbor;
 
   Subdomain n1(i==0 ? max_i-1 : i-1,j,k);
@@ -65,15 +72,15 @@ int Domain::get_position(Subdomain element) {
   i=coors[0];  
   j=coors[1]; 
   k=coors[2];
+  assert(i<max_i); 
+  assert(j<max_j);
+  assert(k<max_k);
   return max_j*max_i*k+max_i*j+i; 
 }
 
 /* ---------------------------------------------------------------------- */
 float Domain::get_fitness(std::vector<nodeid> nodelist){
-  if(nodelist.size() != this->size) {
-    std::cout<< "Error! nodelist size not same as domain size\n"; 
-    exit(1);
-  }
+  assert(nodelist.size()==this->size); 
 
   int N=this->size; 
   std::vector<int> order; 
@@ -86,14 +93,8 @@ float Domain::get_fitness(std::vector<nodeid> nodelist){
 
 /* ---------------------------------------------------------------------- */
 float Domain::get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder){
-  if(nodelist.size() != this->size) {
-    std::cout<< "Error! nodelist size not same as domain size\n"; 
-    exit(1);
-  }
-  if(reorder.size() != this->size) {
-    std::cout<< "Error! reorder size not same as domain size\n"; 
-    exit(1);
-  }
+  assert(nodelist.size()==this->size); 
+  assert( reorder.size()==this->size); 
   
   int N=this->size; 
   nodeid n1,n2;
@@ -128,6 +129,7 @@ Subdomain::Subdomain(int i, int j, int k) {
 }
 
 Subdomain::Subdomain(int position,int max_i, int max_j,int max_k) {
+  assert(position<max_i*max_j*max_k); 
   i=position%max_i;
   j=((position-i)/max_i)%max_j; 
   k=(position-i-max_i*j)/(max_j*max_i);
