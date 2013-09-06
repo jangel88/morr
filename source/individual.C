@@ -59,6 +59,16 @@ size_t Individual::hash() {
 }
 
 /* ---------------------------------------------------------------------- */
+int Individual::log2(int n){
+  int l=-1; 
+  while(n!=0){
+    l++; 
+    n>>=1; 
+  }
+  return l; 
+}
+
+/* ---------------------------------------------------------------------- */
 void Individual::mutate() {
   float roll=1;
   while((float) rand()/RAND_MAX < roll){
@@ -79,8 +89,10 @@ void Individual::mutate() {
 
 /* ---------------------------------------------------------------------- */
 void Individual::swap_segment(bool mirror1, bool mirror2) {
-  int length_range[10]={1,2,4,8,16,32,64,128,256,512};
-  int length=length_range[rand()%5];
+  int l=log2(chromosome.size()); 
+  assert(l>1); //Not programmed for trivial cases
+  int length= 1<<(rand()%l);  //length is a power of 2 in the range 1 to 2^(l-1)
+  
   int x=rand()%chromosome.size();
   int y=rand()%chromosome.size();
   while(x == y){ //unique segments
@@ -111,8 +123,10 @@ void Individual::swap_segment(bool mirror1, bool mirror2) {
 
 /* ---------------------------------------------------------------------- */
 void Individual::cut_n_paste_segment(bool mirr) {
-  int length_range[10]={1,2,4,8,16,32,64,128,256,512};
-  int length=length_range[rand()%5]; 
+  int l=log2(chromosome.size()); 
+  assert(l>1); //Not programmed for trivial cases
+  int length= 1<<(rand()%l);  //length is a power of 2 in the range 1 to 2^(l-1)
+
   int dst=rand()%chromosome.size();
   int src=rand()%chromosome.size();
 

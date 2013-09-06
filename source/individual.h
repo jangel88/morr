@@ -9,6 +9,7 @@ class Individual  {
     std::vector<gene> chromosome;
     double fitness;
 
+    int log2(int n); 
     void swap_segment(bool mirror1, bool mirror2); 
     void cut_n_paste_segment(bool mirror); 
     void head_to_tail(); 
