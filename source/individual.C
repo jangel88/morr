@@ -1,6 +1,7 @@
 #include "individual.h"
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 #include <algorithm>    // std::random_shuffle
  
 #define MIN(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
@@ -11,6 +12,7 @@ extern std::vector<nodeid> gampi_nodelist;
 
 /* ---------------------------------------------------------------------- */
 Individual::Individual(int size, bool shuffle) {
+  assert(gampi_domain.get_size()==size);
   chromosome.resize(size);
   for(int i=0; i<size; i++) chromosome[i]=i; 
   if(shuffle) std::random_shuffle(chromosome.begin(),chromosome.end()); 
