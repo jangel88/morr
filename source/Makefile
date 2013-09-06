@@ -1,18 +1,19 @@
 # ---------------------------------------------------------------------- 
 CC      = cc
 CXX     = CC
-CFLAGS	= -O2 
-LDFLAGS = -lboost_mpi -lboost_serialization $(BOOST_FLAGS)
+CFLAGS	= -O2 $(BOOST_FLAGS)
 
+LIBS = -lboost_mpi -lboost_serialization
+LDFLAGS = $(LIBS)
 
 # ---------------------------------------------------------------------- 
 .SUFFIXES:	.o .c
 
 .c.o:
-	$(CC) $(CFLAGS) -c $< $(LDFLAGS)
+	$(CC) $(CFLAGS) -c $<
  
 .C.o:
-	$(CXX) $(CFLAGS) -c $< $(LDFLAGS)
+	$(CXX) $(CFLAGS) -c $<
  
 # ---------------------------------------------------------------------- 
 DEFAULT: node_info_test.exe cart_space_test.exe individual_test.exe
