@@ -44,6 +44,12 @@ void Individual::show() {
 }
 
 /* ---------------------------------------------------------------------- */
+void Individual::show(char* s){
+  printf("%s :", s); 
+  this->show(); 
+}
+
+/* ---------------------------------------------------------------------- */
 size_t Individual::hash() {
   size_t results = 2166136261U; 
   for ( int i=0; i<chromosome.size(); i++) results = 127 * results + static_cast<size_t>(chromosome[i]);
@@ -128,7 +134,7 @@ void Individual::head_to_tail() {
   int period=gampi_domain.get_period(); 
   int num_periods=chromosome.size()/period; 
   if(num_periods==1) return; //nothing to do
-  int num_to_cut=(rand()%num_periods)*period;
+  int num_to_cut=( (rand()%(num_periods-1)) +1 )*period; //range (1 to num_periods-1)*period
 
   std::vector<gene> temp(num_to_cut); 
   std::copy(chromosome.begin(),chromosome.begin()+num_to_cut,temp.begin()); 

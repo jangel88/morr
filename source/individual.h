@@ -1,7 +1,7 @@
 #include <vector>       // std::vector
 #include "domain.h"
 #include <boost/serialization/access.hpp>
-#include <boost/serialization/vector.hpp>
+//#include <boost/serialization/vector.hpp>
 
 class Individual  {
   private: 
@@ -14,8 +14,7 @@ class Individual  {
     void head_to_tail(); 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
-    { 
+    void serialize(Archive & ar, const unsigned int version) { 
       ar & fitness;
       ar & chromosome;
     }
@@ -27,6 +26,7 @@ class Individual  {
     float get_fitness(){ return fitness;}
     int get_size() { return chromosome.size(); }
     void show(); 
+    void show(char* s); //Prepend with this optional string
     size_t hash(); 
     void mutate();
 };
