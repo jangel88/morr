@@ -20,15 +20,11 @@ Individual::Individual(int size, bool shuffle) {
 }
 
 /* ---------------------------------------------------------------------- */
-Individual::Individual(const Individual& parent, bool shuffle) {
+Individual::Individual(const Individual& parent, bool mutate) {
   chromosome.resize(parent.chromosome.size()); 
   for(int i=0; i<chromosome.size(); i++) chromosome[i]=parent.chromosome[i]; 
-  if(shuffle) {
-    std::random_shuffle(chromosome.begin(),chromosome.end());
-    fitness=gampi_domain.get_fitness(gampi_nodelist, chromosome); 
-  } else {
-    fitness=parent.fitness; 
-  }
+  fitness=parent.fitness; 
+  if(mutate) this->mutate(); 
 }
 
 /* ---------------------------------------------------------------------- */

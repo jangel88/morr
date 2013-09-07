@@ -22,7 +22,7 @@ class Individual  {
   protected:
   public: 
     Individual(int size, bool shuffle=false); 
-    Individual(const Individual& parent, bool shuffle=false); 
+    Individual(const Individual& parent, bool mutate=false); 
     Individual(const std::vector<gene>& parent_chromosome); 
     float get_fitness(){ return fitness;}
     int get_size() { return chromosome.size(); }
