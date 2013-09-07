@@ -63,8 +63,7 @@ char s[16];
 sprintf(s,"bcst %d",world.rank()); 
 b.show(s); 
 
-Individual c(b, false); 
-c.mutate(); 
+Individual c(b, true); 
 sprintf(s,"mutt %d",world.rank()); 
 c.show(s); 
 
