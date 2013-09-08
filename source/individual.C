@@ -21,8 +21,7 @@ Individual::Individual(int size, bool shuffle) {
 
 /* ---------------------------------------------------------------------- */
 Individual::Individual(const Individual& parent, bool mutate) {
-  chromosome.resize(parent.chromosome.size()); 
-  for(int i=0; i<chromosome.size(); i++) chromosome[i]=parent.chromosome[i]; 
+  chromosome=parent.chromosome;
   fitness=parent.fitness; 
   if(mutate) this->mutate(); 
 }
