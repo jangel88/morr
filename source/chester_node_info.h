@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
 // These are the definitions that should be available across all node architectures
-typedef unsigned int nodeid; 
+typedef int nodeid; 
 
 int init_node_info(void);
 nodeid query_nodeid();

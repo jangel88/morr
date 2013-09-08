@@ -12,7 +12,7 @@ int init_node_info(void){
 
 
 bool valid_nodeid(nodeid nid) {
-  if (nid<COMPUTE_NODE_COUNT){
+  if (nid>=0 && nid<COMPUTE_NODE_COUNT){
     return true;
   } else {
     return false;
@@ -36,7 +36,7 @@ nodeid query_nodeid(){
   if(flag != MPI_SUCCESS) return(-1);
   name_offset=&name[3];
   //printf("%s\n", name_offset);
-  return( (nodeid) atoi(name_offset));
+  return( atoi(name_offset));
 }
 
 float distance_between_nodes(nodeid n1, nodeid n2)
