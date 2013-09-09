@@ -1,4 +1,5 @@
 #include <vector>       // std::vector
+#include <stdint.h>
 #include "domain.h"
 #include <boost/serialization/access.hpp>
 //#include <boost/serialization/vector.hpp>
@@ -9,9 +10,11 @@ class Individual  {
     std::vector<gene> chromosome;
     double fitness;
 
+    bool is_valid(); 
     int log2(int n); 
-    void swap_segment(bool mirror1, bool mirror2); 
-    void cut_n_paste_segment(bool mirror); 
+    uint32_t fnv_1a(uint8_t *bp, uint8_t *be); //begin point and beyond end
+    void swap_segment(); 
+    void cut_n_paste_segment(); 
     void head_to_tail(); 
     friend class boost::serialization::access;
     template<class Archive>
@@ -28,8 +31,10 @@ class Individual  {
     int get_size() { return chromosome.size(); }
     void show(); 
     void show(char* s); //Prepend with this optional string
-    size_t hash(); 
+    uint32_t hash(); 
     void mutate();
+    float operator - (Individual a); //Computes euclidean distance between the two chromosomes
+    bool operator == (Individual a); //Compares if the two chromosomes are equal
 };
 //namespace boost{
 //  namespace serialization{ 

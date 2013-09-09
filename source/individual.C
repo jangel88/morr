@@ -4,9 +4,6 @@
 #include <assert.h>
 #include <algorithm>    // std::random_shuffle
  
-#define MIN(a, b) (((a) < (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
-#define MAX(a, b) (((a) > (b)) ? (a) : (b)) /* ONLY SAFE WITH NON-FUNCTION ARGUMENTS!!*/
-
 extern Domain gampi_domain;
 extern std::vector<nodeid> gampi_nodelist; 
 
@@ -34,6 +31,15 @@ Individual::Individual(const std::vector<gene>& parent_chromosome){
 }
 
 /* ---------------------------------------------------------------------- */
+bool Individual::is_valid() {
+  assert(gampi_domain.get_size()==chromosome.size()); 
+  Individual a(this->chromosome); 
+  std::sort(a.chromosome.begin(), a.chromosome.end()); 
+  Individual b(chromosome.size()); 
+  return a==b; 
+}
+
+/* ---------------------------------------------------------------------- */
 void Individual::show() {
   printf("%x : %8.5f : ",hash(), fitness); 
   for(int i=0; i<chromosome.size(); i++) printf("%3d ", chromosome[i]);
@@ -47,10 +53,46 @@ void Individual::show(char* s){
 }
 
 /* ---------------------------------------------------------------------- */
-size_t Individual::hash() {
-  size_t results = 2166136261U; 
-  for ( int i=0; i<chromosome.size(); i++) results = 127 * results + static_cast<size_t>(chromosome[i]);
-  return results; 
+uint32_t Individual::fnv_1a(uint8_t *bp, uint8_t *be){ //begin point and beyond end
+  const uint32_t fnv_prime = 16777619u;
+  const uint32_t fnv_offset_basis = 2166136261u;
+
+  uint32_t hval = fnv_offset_basis; 
+  while(bp<be) {
+    hval ^= (uint32_t)*bp++; 
+    hval *= fnv_prime; 
+  }
+  return hval; 
+}
+
+/* ---------------------------------------------------------------------- */
+uint32_t Individual::hash() {
+  int period=gampi_domain.get_period(); 
+  int num_periods=chromosome.size()/period; 
+  uint8_t *bp, *be; 
+
+  if(num_periods==1) {
+    bp = (uint8_t *) &chromosome[0]; //begin point
+    be = bp + chromosome.size()*sizeof(gene); //beyond end
+    return fnv_1a(bp, be); 
+  } else {
+    std::vector<uint32_t> hval; 
+    hval.resize(num_periods); 
+    for(int i=0; i<num_periods; i++){
+      bp = (uint8_t *) &chromosome[i*period]; //begin point
+      be = bp + period*sizeof(gene); //beyond end
+      hval[i]=fnv_1a(bp, be); 
+    }
+    std::vector<uint32_t>::iterator minloc=std::min_element(hval.begin(), hval.end()); 
+    std::vector<uint32_t> temp(hval.begin(), minloc);
+    hval.erase(hval.begin(),minloc); 
+    hval.insert(hval.end(),temp.begin(),temp.end()); 
+
+    assert(hval.size()==num_periods); 
+    bp = (uint8_t *) &hval[0]; //begin point
+    be = bp + num_periods*sizeof(uint32_t); //beyond end
+    return fnv_1a(bp, be); 
+  }
 }
 
 /* ---------------------------------------------------------------------- */
@@ -67,89 +109,101 @@ int Individual::log2(int n){
 void Individual::mutate() {
   float roll=1;
   while((float) rand()/RAND_MAX < roll){
-    int r=rand()%3;
-    int mirr1=rand()%2;
-    int mirr2=rand()%2;
-    if(r==0){
-      cut_n_paste_segment(mirr1); 
-    }else if(r==1){
-      swap_segment(mirr1,mirr2);
-    }else{
-      head_to_tail(); 
+    if(rand()%2){
+      cut_n_paste_segment();
+    } else {  
+      swap_segment(); 
     }
     roll *= (float) 4/5; 
   }
   fitness=gampi_domain.get_fitness(gampi_nodelist, chromosome); 
+  assert(this->is_valid()); 
 }
 
 /* ---------------------------------------------------------------------- */
-void Individual::swap_segment(bool mirror1, bool mirror2) {
-  int l=log2(chromosome.size()); 
+void Individual::swap_segment() {
+  int N=chromosome.size(); 
+  int l=log2(N); 
   assert(l>1); //Not programmed for trivial cases
-  int length= 1<<(rand()%l);  //length is a power of 2 in the range 1 to 2^(l-1)
   
-  int x=rand()%chromosome.size();
-  int y=rand()%chromosome.size();
-  while(x == y){ //unique segments
-    x=rand()%chromosome.size();
-  }
-  int start2=MAX(x,y); 
-  int start1=MIN(x,y); 
+  int x=rand()%N;
+  int y=rand()%N;
+  while(x == y) x=rand()%N; //two locations should not coincide
+  int pos1=std::min(x,y);
+  int pos2=std::max(x,y); 
 
-  while( (length > (chromosome.size()-start2-1)) || //make sure we arent overshooting 
-         (start1+length > start2)){   //or overlapping
-    length-=1;
-  }
-  std::vector<gene> temp(length); 
+  int len0= 1<<(rand()%l);  //length is a power of 2 in the range 1 to 2^(l-1)
+  int len1=   pos2-pos1;
+  int len2= N+pos1-pos2;
+  int length=std::min(len0, std::min(len1, len2)); 
 
-  if(mirror1){
-    std::reverse_copy(chromosome.begin()+start2,chromosome.begin()+start2+length,temp.begin());
-  }else{
-    std::copy        (chromosome.begin()+start2,chromosome.begin()+start2+length,temp.begin());
-  }
+  std::vector<gene> twice(2*N,-1); 
+  std::copy(chromosome.begin(), chromosome.end(), twice.begin()  ); 
+  std::copy(chromosome.begin(), chromosome.end(), twice.begin()+N); 
 
-  if(mirror2){
-    std::reverse_copy(chromosome.begin()+start1,chromosome.begin()+start1+length,chromosome.begin()+start2);
-  }else{
-    std::copy        (chromosome.begin()+start1,chromosome.begin()+start1+length,chromosome.begin()+start2);
-  } 
-  std::copy(temp.begin(),temp.end(),chromosome.begin()+start1);
+  std::vector<gene> segment1(twice.begin()+pos1, twice.begin()+pos1+length); 
+  std::vector<gene> segment2(twice.begin()+pos2, twice.begin()+pos2+length); 
+
+  // Reverse the segments half the time
+  if(rand()%2) std::reverse(segment1.begin(), segment1.end()); 
+  if(rand()%2) std::reverse(segment2.begin(), segment2.end()); 
+
+  std::copy(segment2.begin(), segment2.end(), chromosome.begin()+pos1); 
+  if(pos2+length<N) { // does not wrap around
+    std::copy(segment1.begin(), segment1.end(), chromosome.begin()+pos2); 
+  } else { 
+    int posw=N-pos2; 
+    std::copy(segment1.begin(), segment1.begin()+posw, chromosome.begin()+pos2); 
+    std::copy(segment1.begin()+posw, segment1.end(), chromosome.begin()); 
+  }
 }
 
 /* ---------------------------------------------------------------------- */
-void Individual::cut_n_paste_segment(bool mirr) {
-  int l=log2(chromosome.size()); 
+void Individual::cut_n_paste_segment() {
+  int N=chromosome.size(); 
+  int l=log2(N); 
   assert(l>1); //Not programmed for trivial cases
+  
+  int src=rand()%N;
   int length= 1<<(rand()%l);  //length is a power of 2 in the range 1 to 2^(l-1)
 
-  int dst=rand()%chromosome.size();
-  int src=rand()%chromosome.size();
+  std::vector<gene> twice(2*N,-1); 
+  std::copy(chromosome.begin(), chromosome.end(), twice.begin()  ); 
+  std::copy(chromosome.begin(), chromosome.end(), twice.begin()+N); 
 
-  while((src+length) > chromosome.size() || //dont overshoot the end
-        (dst+length) > chromosome.size()){
-    length-=1;
+  std::vector<gene> segment(twice.begin()+src, twice.begin()+src+length); 
+
+  // Reverse the segment half the time
+  if(rand()%2) std::reverse(segment.begin(), segment.end()); 
+
+  // Erase the segment from source
+  if(src+length<N){
+    chromosome.erase(chromosome.begin()+src, chromosome.begin()+src+length); 
+  } else { 
+    int posw=N-src;
+    chromosome.erase(chromosome.begin()+src, chromosome.end()); 
+    chromosome.erase(chromosome.begin(), chromosome.begin()+length-posw);
   }
+  assert(chromosome.size()==N-length); 
 
-  std::vector<gene> temp(length); 
-  if(mirr){
-    std::reverse_copy(chromosome.begin() + src , chromosome.begin() + src + length,temp.begin() ); 
-  }else{
-    std::copy(chromosome.begin() + src , chromosome.begin() + src + length,temp.begin() ); 
-  } 
-  chromosome.erase(chromosome.begin() + src, chromosome.begin() + src + length);
-  chromosome.insert(chromosome.begin() + dst, temp.begin(), temp.end()); 
+  int dst=rand()%(N-length); //Calculate destination based on new length
+  chromosome.insert(chromosome.begin()+dst, segment.begin(), segment.end()); 
 }
 
 /* ---------------------------------------------------------------------- */
-void Individual::head_to_tail() { 
-  int period=gampi_domain.get_period(); 
-  int num_periods=chromosome.size()/period; 
-  if(num_periods==1) return; //nothing to do
-  int num_to_cut=( (rand()%(num_periods-1)) +1 )*period; //range (1 to num_periods-1)*period
+float Individual::operator - (Individual a) {
+  assert(a.chromosome.size()==chromosome.size());  
+  float distance=0; 
+  for(int i=0; i<chromosome.size(); i++){
+    float d=a.chromosome[i]-chromosome[i]; 
+    distance+=d*d; //L2 euclidean norm
+  }
+  return distance; 
+}
 
-  std::vector<gene> temp(num_to_cut); 
-  std::copy(chromosome.begin(),chromosome.begin()+num_to_cut,temp.begin()); 
-  chromosome.erase(chromosome.begin(),chromosome.begin()+num_to_cut); 
-  chromosome.insert(chromosome.end(),temp.begin(),temp.end()); 
+/* ---------------------------------------------------------------------- */
+bool Individual::operator == (Individual a) {
+  assert(chromosome.size()==a.chromosome.size());  
+  return std::equal(chromosome.begin(), chromosome.end(), a.chromosome.begin()); 
 }
 
