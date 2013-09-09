@@ -50,7 +50,7 @@ broadcast(world, gampi_nodelist, 0);
 
 gampi_domain=Domain(max_i, max_j, max_k); 
 
-Individual a(); 
+Individual a;
 if(world.rank()==0) a.show(); 
 
 Individual b(true); 
