@@ -8,8 +8,8 @@ extern Domain gampi_domain;
 extern std::vector<nodeid> gampi_nodelist; 
 
 /* ---------------------------------------------------------------------- */
-Individual::Individual(int size, bool shuffle) {
-  assert(gampi_domain.get_size()==size);
+Individual::Individual(bool shuffle) {
+  int size=gampi_domain.get_size(); 
   chromosome.resize(size);
   for(int i=0; i<size; i++) chromosome[i]=i; 
   if(shuffle) std::random_shuffle(chromosome.begin(),chromosome.end()); 
@@ -27,6 +27,7 @@ Individual::Individual(const Individual& parent, bool mutate) {
 
 /* ---------------------------------------------------------------------- */
 Individual::Individual(const std::vector<gene>& parent_chromosome){
+  assert(parent_chromosome.size()==gampi_domain.get_size()); 
   chromosome.resize(parent_chromosome.size()); 
   for(int i=0; i<chromosome.size(); i++) chromosome[i]=parent_chromosome[i]; 
   fitness=gampi_domain.get_fitness(gampi_nodelist, chromosome); 
@@ -42,7 +43,7 @@ bool Individual::is_valid() {
 
   Individual a(this->chromosome); 
   std::sort(a.chromosome.begin(), a.chromosome.end()); 
-  Individual b(chromosome.size()); 
+  Individual b;//unshuffled
   return a==b; 
 }
 
