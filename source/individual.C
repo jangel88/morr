@@ -199,7 +199,7 @@ void Individual::cut_n_paste_segment() {
 }
 
 /* ---------------------------------------------------------------------- */
-float Individual::operator - (Individual a) {
+float Individual::operator - (const Individual& a) const {
   assert(a.chromosome.size()==chromosome.size());  
   float distance=0; 
   for(int i=0; i<chromosome.size(); i++){
@@ -210,7 +210,7 @@ float Individual::operator - (Individual a) {
 }
 
 /* ---------------------------------------------------------------------- */
-bool Individual::operator == (Individual a) {
+bool Individual::operator == (const Individual& a) const {
   assert(chromosome.size()==a.chromosome.size());  
   return std::equal(chromosome.begin(), chromosome.end(), a.chromosome.begin()); 
 }

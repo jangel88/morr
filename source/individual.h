@@ -33,6 +33,6 @@ class Individual  {
     void show(); 
     void show(char* s); //Prepend with this optional string
     void mutate();
-    float operator - (Individual a); //Computes euclidean distance between the two chromosomes
-    bool operator == (Individual a); //Compares if the two chromosomes are equal
+    float operator - (const Individual& a) const; //Computes euclidean distance between the two chromosomes
+    bool operator == (const Individual& a) const; //Compares if the two chromosomes are equal
 };
