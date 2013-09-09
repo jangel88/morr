@@ -8,10 +8,12 @@ class Individual  {
     typedef int gene; 
     std::vector<gene> chromosome;
     double fitness;
+    uint32_t hash; 
 
     bool is_valid(); 
     int log2(int n); 
     uint32_t fnv_1a(uint8_t *bp, uint8_t *be); //begin point and beyond end
+    uint32_t ring_fnv_1a(); //computes the hash of the vector treating it as a periodic ring using fnv_1a
     void swap_segment(); 
     void cut_n_paste_segment(); 
     friend class boost::serialization::access;
@@ -27,9 +29,9 @@ class Individual  {
     Individual(const std::vector<gene>& parent_chromosome); 
     float get_fitness(){ return fitness;}
     int get_size() { return chromosome.size(); }
+    uint32_t get_hash() { return hash; }
     void show(); 
     void show(char* s); //Prepend with this optional string
-    uint32_t hash(); 
     void mutate();
     float operator - (Individual a); //Computes euclidean distance between the two chromosomes
     bool operator == (Individual a); //Compares if the two chromosomes are equal

@@ -14,12 +14,14 @@ Individual::Individual(int size, bool shuffle) {
   for(int i=0; i<size; i++) chromosome[i]=i; 
   if(shuffle) std::random_shuffle(chromosome.begin(),chromosome.end()); 
   fitness=gampi_domain.get_fitness(gampi_nodelist, chromosome); 
+  hash=ring_fnv_1a(); 
 }
 
 /* ---------------------------------------------------------------------- */
 Individual::Individual(const Individual& parent, bool mutate) {
   chromosome=parent.chromosome;
   fitness=parent.fitness; 
+  hash=parent.hash; 
   if(mutate) this->mutate(); 
 }
 
@@ -28,11 +30,16 @@ Individual::Individual(const std::vector<gene>& parent_chromosome){
   chromosome.resize(parent_chromosome.size()); 
   for(int i=0; i<chromosome.size(); i++) chromosome[i]=parent_chromosome[i]; 
   fitness=gampi_domain.get_fitness(gampi_nodelist, chromosome); 
+  hash=ring_fnv_1a(); 
 }
 
 /* ---------------------------------------------------------------------- */
 bool Individual::is_valid() {
+
   assert(gampi_domain.get_size()==chromosome.size()); 
+  assert(fitness==gampi_domain.get_fitness(gampi_nodelist, chromosome)); 
+  assert(hash==ring_fnv_1a()); 
+
   Individual a(this->chromosome); 
   std::sort(a.chromosome.begin(), a.chromosome.end()); 
   Individual b(chromosome.size()); 
@@ -41,7 +48,7 @@ bool Individual::is_valid() {
 
 /* ---------------------------------------------------------------------- */
 void Individual::show() {
-  printf("%x : %8.5f : ",hash(), fitness); 
+  printf("%x : %8.5f : ",hash, fitness); 
   for(int i=0; i<chromosome.size(); i++) printf("%3d ", chromosome[i]);
   printf("\n");
 }
@@ -66,7 +73,7 @@ uint32_t Individual::fnv_1a(uint8_t *bp, uint8_t *be){ //begin point and beyond 
 }
 
 /* ---------------------------------------------------------------------- */
-uint32_t Individual::hash() {
+uint32_t Individual::ring_fnv_1a() {
   int period=gampi_domain.get_period(); 
   int num_periods=chromosome.size()/period; 
   uint8_t *bp, *be; 
@@ -107,16 +114,17 @@ int Individual::log2(int n){
 
 /* ---------------------------------------------------------------------- */
 void Individual::mutate() {
-  float roll=1;
-  while((float) rand()/RAND_MAX < roll){
+  //float roll=1;
+  //while((float) rand()/RAND_MAX < roll){
     if(rand()%2){
       cut_n_paste_segment();
     } else {  
       swap_segment(); 
     }
-    roll *= (float) 4/5; 
-  }
+  //  roll *= (float) 4/5; 
+  //}
   fitness=gampi_domain.get_fitness(gampi_nodelist, chromosome); 
+  hash=ring_fnv_1a(); 
   assert(this->is_valid()); 
 }
 
