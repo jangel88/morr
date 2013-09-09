@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include "domain.h"
 #include <boost/serialization/access.hpp>
-//#include <boost/serialization/vector.hpp>
 
 class Individual  {
   private: 
@@ -15,7 +14,6 @@ class Individual  {
     uint32_t fnv_1a(uint8_t *bp, uint8_t *be); //begin point and beyond end
     void swap_segment(); 
     void cut_n_paste_segment(); 
-    void head_to_tail(); 
     friend class boost::serialization::access;
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) { 
@@ -36,7 +34,3 @@ class Individual  {
     float operator - (Individual a); //Computes euclidean distance between the two chromosomes
     bool operator == (Individual a); //Compares if the two chromosomes are equal
 };
-//namespace boost{
-//  namespace serialization{ 
-//  }
-//}
