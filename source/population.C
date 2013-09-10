@@ -95,6 +95,25 @@ Population Population::get_unique_elites(int count){
 }
 
 /* ---------------------------------------------------------------------- */
+float Population::get_best_fitness() {
+  int size=this->get_size();
+
+  std::vector<indexfitness_pair> indfit(size);
+  for(int i=0; i<size; i++) 
+    indfit[i]=std::make_pair(i, flock[i].get_fitness());
+
+  indexfitness_pair best=*(std::min_element(indfit.begin(), indfit.end(), comparator));
+  return(best.second);
+}
+
+/* ---------------------------------------------------------------------- */
+Individual Population::get_individual(int i) {
+  assert(i>=0); 
+  assert(i<this->get_size()); 
+  return flock[i];
+}
+
+/* ---------------------------------------------------------------------- */
 void Population::show() {
   for(int i=0; i<this->get_size(); i++)
     printf("%x:%-8.3f ", flock[i].get_hash(),flock[i].get_fitness());
