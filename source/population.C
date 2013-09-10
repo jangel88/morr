@@ -79,9 +79,18 @@ Population Population::get_unique_elites(int count){
     indfit[i]=std::make_pair(i, flock[i].get_fitness());
   std::sort(indfit.begin(), indfit.end(), comparator);
 
-  Population e(count); 
-  for(int i=0; i<count; i++)
-    e.flock[i]=flock[indfit[i].first];
+  Population e(flock[indfit[0].first],1); 
+  for(int i=1; i<size; i++){
+    if(e.flock.size()>=count) break; //out of i loop
+    //Check if the next elite's hash is already in e
+    bool present=false; 
+    for(int j=0; j<e.flock.size(); j++){
+      if(e.flock[j].get_hash()==flock[indfit[i].first].get_hash()) present=true; 
+      if(present) break; //out of j loop
+    }
+    if(present) continue; // to next i loop
+    e.flock.insert(e.flock.end(), flock[indfit[i].first]); 
+  }
   return e;
 }
 
