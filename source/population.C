@@ -74,7 +74,7 @@ Population Population::get_unique_elites(int count){
   assert(count>0);
   int size=this->get_size();
 
-  std::vector<indexfitness_pair> indfit;
+  std::vector<indexfitness_pair> indfit(size);
   for(int i=0; i<size; i++) 
     indfit[i]=std::make_pair(i, flock[i].get_fitness());
   std::sort(indfit.begin(), indfit.end(), comparator);
@@ -93,7 +93,7 @@ void Population::show() {
 }
 
 /* ---------------------------------------------------------------------- */
-void Population::show() {
+void Population::show(char* s) {
   printf("%s :", s);
   this->show();
 }
