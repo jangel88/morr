@@ -1,7 +1,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
-#include<boost/mpi.hpp>
+#include <time.h>
+#include <boost/mpi.hpp>
 
 #include "population.h"
 
@@ -51,20 +52,31 @@ broadcast(world, gampi_nodelist, 0);
 gampi_domain=Domain(max_i, max_j, max_k); 
 
 Individual a;
-Individual b(true); 
+a.show((char*)"Ideal soln:"); 
+Individual b(true);
+Population e(b, 1); 
 
-Population p(a, 10); 
-if(world.rank()==0) p.show((char*)"ordrd1"); 
-Population q(a, 10); 
-if(world.rank()==0) q.show((char*)"ordrd2"); 
-Population r(b, 10); 
-if(world.rank()==0) r.show((char*)"shffld"); 
+time_t start=time(NULL); 
+int elapsed=0; 
 
-q=q+p; 
-r+=q; 
-if(world.rank()==0) r.show((char*)"additn"); 
+do {
+  Population p(e, 10000); 
+  e = p.get_unique_elites(0.01*p.get_size()); 
 
-Population s=r.get_unique_elites(5); 
-if(world.rank()==0) s.show((char*)"elites"); 
+  time_t current=time(NULL); 
+  elapsed=difftime(current, start); 
+  if(world.rank()==0) 
+    printf("%3d (secs): %8.4f %8x %8.4f %8x\n", elapsed, 
+      e.get_individual(0).get_fitness(), e.get_individual(0).get_hash(),
+      e.get_individual(e.get_size()-1).get_fitness(), e.get_individual(e.get_size()-1).get_hash()
+      ); 
+} while(elapsed<600.0);
+
+printf("RSA printing the elites\n"); 
+for(int i=0; i<e.get_size(); i++){
+  Individual p = e.get_individual(i); 
+  p.show(); 
+}
+
 
 } // end main
