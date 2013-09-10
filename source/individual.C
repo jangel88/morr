@@ -49,7 +49,7 @@ bool Individual::is_valid() {
 
 /* ---------------------------------------------------------------------- */
 void Individual::show() {
-  printf("%x : %8.5f : ",hash, fitness); 
+  printf("%8x : %8.5f : ",hash, fitness); 
   for(int i=0; i<chromosome.size(); i++) printf("%3d ", chromosome[i]);
   printf("\n");
 }
@@ -114,15 +114,15 @@ int Individual::log2(int n){
 
 /* ---------------------------------------------------------------------- */
 void Individual::mutate() {
-  //float roll=1;
-  //while((float) rand()/RAND_MAX < roll){
+  float roll=1;
+  while((float) rand()/RAND_MAX < roll){
     if(rand()%2){
       cut_n_paste_segment();
     } else {  
       swap_segment(); 
     }
-  //  roll *= (float) 4/5; 
-  //}
+    roll *= (float) 4/5; 
+  }
   fitness=gampi_domain.get_fitness(gampi_nodelist, chromosome); 
   hash=ring_fnv_1a(); 
   assert(this->is_valid()); 
