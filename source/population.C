@@ -1,111 +1,99 @@
-#include"population.h"
-#include<float.h>
-#include<cstdlib>
-#include<algorithm>
+#include "population.h"
+#include <stdio.h>
+#include <assert.h>
+#include <algorithm>
 
-bool comparator (const fit_pair& i, const fit_pair& j)
-{ 
-  return i.first < j.first; 
+/* ---------------------------------------------------------------------- */
+Population::Population(int size) {
+  assert(size>0);
+  flock.resize(size);
 }
 
-Population::Population(int max_psize, int individual_size, Individual* ancestor)
-{
-  this->p_size=0;
-  this->max_psize=max_psize; 
-  while(p_size<max_psize){
-    Individual temp(ancestor,true);
-    individuals.push_back(temp);
-    p_size+=1;  
-  }
+/* ---------------------------------------------------------------------- */
+Population::Population(const Individual& ancestor, int size) {
+  assert(size>0);
+  flock.resize(size); 
+  flock[0]=ancestor;
+  for(int i=1; i<size; i++)
+    flock[i]=Individual(ancestor, true);
 }
 
-void Population::show_population()
-{
-  for(int i=0;i<p_size;++i){
-    individuals[i].show_Individual(); 
-  }
+/* ---------------------------------------------------------------------- */
+Population::Population(const Population& ancestors, int size) {
+  int ansize=ancestors.get_size();
+  assert(size>=ansize);
+  flock.resize(size); 
+  for(int i=0; i<ansize; i++)
+    flock[i]=ancestors.flock[i];
+  for(int i=ansize; i<size; i++)
+    flock[i]=Individual(ancestors.flock[rand()%ansize], true);
 }
 
-void Population::tournament(std::vector<Individual>* elites, Domain* space)
-{
-  std::vector<fit_pair> ind_fit;
-  float tmp_fit; 
-  std::vector<int> topo=space->give_topo();
-
-  int i;
-  int elite_count=0;
-  // Create pairs of fitness and indices
-  for(int i=0; i<p_size;i++){
-    tmp_fit=(float)individuals[i].get_fitness(&topo);
-    ind_fit.push_back(std::make_pair(tmp_fit,i));
-  }
-  // Sort based on fitness
-  std::sort(ind_fit.begin(),ind_fit.end(),comparator);
-
-  for(int i=0, k=0; i<p_size; i++){
-    if(k==elites->size()) break; 
-    size_t this_hash = individuals[ind_fit[i].second].hash();
-    bool repeat=false; 
-    for(int j=0; j<k; j++){
-      if(this_hash == elites->at(j).hash()) repeat=true; 
-    }
-    if(repeat == false){
-      elites->at(k)=individuals[ind_fit[i].second];
-      k++; 
-    }
-  } 
+/* ---------------------------------------------------------------------- */
+Population& Population::operator += (const Population& a){
+  flock.insert(flock.end(), a.flock.begin(), a.flock.end());
+  return *this;
 }
 
-void Population::populate_next_gen(std::vector<Individual>* elites, Domain* space)
-{
-  std::vector<fit_pair> elite_fit;  
-  for(int j=0;j<elites->size();j++){
-    elite_fit.push_back(std::make_pair(elites->at(j).give_fitness(),j));
-  }
-  std::sort(elite_fit.begin(),elite_fit.end(),comparator);
-
-  for(int i=0;i<p_size;i++){
-  // Copy elites into next gen 
-    if(i<num_elites){
-      individuals[i]=elites->at(elite_fit.at(i).second); 
-    }else{ 
-  // Fill remaining individuals with mutants
-      int elite_n = rand() % elites->size(); 
-      Individual mutant(elites->at(elite_n));
-      mutant.mutate(space);
-      individuals[i]=mutant;
-    }
-  } 
+/* ---------------------------------------------------------------------- */
+const Population  Population::operator +  (const Population& a) const {
+  return Population(*this) += a;
 }
 
-
-Population Population::find_elites(int elite_size)
-{
-
+/* ---------------------------------------------------------------------- */
+Population& Population::operator += (const Individual& a){
+  flock.insert(flock.end(), a);
+  return *this;
 }
 
-Individual Population::get_best_map(std::vector<int>* topology)
-{
-  float tmp,best=FLT_MAX;
-
-  Individual *best_map = (Individual*) ::operator new (sizeof(Individual));
-  for(int i = 0; i < p_size; i++){ 
-    tmp=individuals[i].get_fitness(topology); 
-    if(tmp < best){
-      best=tmp; 
-      best_map = &individuals[i]; 
-    }
-  }
-  return *best_map; 
+/* ---------------------------------------------------------------------- */
+const Population  Population::operator +  (const Individual& a) const {
+  return Population(*this) += a;
 }
 
-float Population::get_best_fitness()
-{
-  float best=FLT_MAX;
-  for(int i=0;i<p_size;i++){
-    if (individuals[i].give_fitness() < best)
-      best=individuals[i].give_fitness();
-  }
-  std::cout << best << std::endl; 
-  return best;
+/* ---------------------------------------------------------------------- */
+Population Population::get_random_subset(int count) {
+  assert(count>0);
+  Population p(count);
+  for(int i=0; i<count; i++)
+    p.flock[i]=this->flock[rand()%this->get_size()];
+  return p;
+}
+
+/* ---------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------- */
+typedef std::pair<int,float> indexfitness_pair; //index and fitness pair for efficient sorting
+static bool comparator (const indexfitness_pair& a, const indexfitness_pair& b){
+  return a.second < b.second;
+}
+/* ---------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------- */
+Population Population::get_unique_elites(int count){
+  assert(count>0);
+  int size=this->get_size();
+
+  std::vector<indexfitness_pair> indfit;
+  for(int i=0; i<size; i++) 
+    indfit[i]=std::make_pair(i, flock[i].get_fitness());
+  std::sort(indfit.begin(), indfit.end(), comparator);
+
+  Population e(count); 
+  for(int i=0; i<count; i++)
+    e.flock[i]=flock[indfit[i].first];
+  return e;
+}
+
+/* ---------------------------------------------------------------------- */
+void Population::show() {
+  for(int i=0; i<this->get_size(); i++)
+    printf("%x:%-8.3f ", flock[i].get_hash(),flock[i].get_fitness());
+  printf("\n");
+}
+
+/* ---------------------------------------------------------------------- */
+void Population::show() {
+  printf("%s :", s);
+  this->show();
 }

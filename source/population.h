@@ -1,32 +1,28 @@
-#include<vector> // std::vector
-#include"individual.h" // Individual class
-
-// ---------------------------------------------------------------------- 
-
-typedef std::pair<float,int> fit_pair;
-bool comparator (const fit_pair& i, const fit_pair& j);
-
+#include <vector> 
+#include "individual.h"
 
 class Population {
   private:
-    int p_size;
-    int max_psize;
-    int num_elites;
-//  Individual* individuals;
+    std::vector<Individual> flock; 
 
   protected:
   public: 
-    void set_elites(int num_elites) { this->num_elites=num_elites; }
-    std::vector<Individual> individuals;
-    Population(int max_psize,int individual_size, Individual* ancestors);
-    Population(Population elite_population, int progeny_size);
-    Population find_elites(int elite_size); 
-    void populate_next_gen(std::vector<Individual>*,Domain*);
-    float get_best_fitness(); 
-    void show_population(); 
-    void show_fitness_of_population();  
-    void tournament(std::vector<Individual>*,Domain*);    
-    Individual get_best_map(std::vector<int>*);
+    Population(int size); 
+    Population(const Individual& ancestor, int size); 
+    Population(const Population& ancestors, int size); 
+
+          Population& operator += (const Population& a);
+    const Population  operator +  (const Population& a) const; 
+
+          Population& operator += (const Individual& a);
+    const Population  operator +  (const Individual& a) const; 
+
+    int get_size()const { return flock.size(); } 
+    void show(); 
+    void show(char* s); 
+
+    Population get_random_subset(int count); 
+    Population get_unique_elites(int count); 
 };
 
 
