@@ -84,8 +84,7 @@ uint32_t Individual::ring_fnv_1a() {
     be = bp + chromosome.size()*sizeof(gene); //beyond end
     return fnv_1a(bp, be); 
   } else {
-    std::vector<uint32_t> hval; 
-    hval.resize(num_periods); 
+    std::vector<uint32_t> hval(num_periods); 
     for(int i=0; i<num_periods; i++){
       bp = (uint8_t *) &chromosome[i*period]; //begin point
       be = bp + period*sizeof(gene); //beyond end

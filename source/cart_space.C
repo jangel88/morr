@@ -83,8 +83,7 @@ float Domain::get_fitness(std::vector<nodeid> nodelist){
   assert(nodelist.size()==this->size); 
 
   int N=this->size; 
-  std::vector<int> order; 
-  order.resize(N); 
+  std::vector<int> order(N); 
   for(int i=0;i<N;i++){
     order[i]=i; 
   }
