@@ -99,12 +99,9 @@ Population Population::get_unique_elites(int count){
 float Population::get_best_fitness() {
   int size=this->get_size();
 
-  std::vector<indexfitness_pair> indfit(size);
-  for(int i=0; i<size; i++) 
-    indfit[i]=std::make_pair(i, flock[i].get_fitness());
-
-  indexfitness_pair best=*(std::min_element(indfit.begin(), indfit.end(), comparator));
-  return(best.second);
+  std::vector<float> fit(size);
+  for(int i=0; i<size; i++) { fit[i]=flock[i].get_fitness(); }
+  return *(std::min_element(fit.begin(), fit.end())); 
 }
 
 /* ---------------------------------------------------------------------- */
