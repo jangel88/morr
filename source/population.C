@@ -31,7 +31,9 @@ Population::Population(const Population& ancestors, int size) {
 
 /* ---------------------------------------------------------------------- */
 Population& Population::operator += (const Population& a){
-  flock.insert(flock.end(), a.flock.begin(), a.flock.end());
+  for(int i=0; i<a.get_size(); i++){
+    (*this)+=a.flock[i];
+  }
   return *this;
 }
 
@@ -42,7 +44,13 @@ const Population  Population::operator +  (const Population& a) const {
 
 /* ---------------------------------------------------------------------- */
 Population& Population::operator += (const Individual& a){
-  flock.insert(flock.end(), a);
+  bool present=false; 
+  for(int i=0; i<get_size(); i++){
+    //Check if this individual's hash is already in flock
+    if(flock[i].get_hash()==a.get_hash()) present=true; 
+    if(present) break; //out of i loop
+  }
+  if(!present) flock.insert(flock.end(), a);
   return *this;
 }
 
@@ -81,15 +89,8 @@ Population Population::get_unique_elites(int count){
 
   Population e(flock[indfit[0].first],1); 
   for(int i=1; i<size; i++){
-    if(e.flock.size()>=count) break; //out of i loop
-    //Check if the next elite's hash is already in e
-    bool present=false; 
-    for(int j=0; j<e.flock.size(); j++){
-      if(e.flock[j].get_hash()==flock[indfit[i].first].get_hash()) present=true; 
-      if(present) break; //out of j loop
-    }
-    if(present) continue; // to next i loop
-    e.flock.insert(e.flock.end(), flock[indfit[i].first]); 
+    if(e.get_size()>=count) break; //out of i loop
+    e+=flock[indfit[i].first]; 
   }
   return e;
 }

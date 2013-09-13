@@ -29,7 +29,7 @@ class Individual  {
     Individual(const std::vector<gene>& parent_chromosome); 
     float get_fitness(){ return fitness;}
     int get_size() { return chromosome.size(); }
-    uint32_t get_hash() { return hash; }
+    uint32_t get_hash() const { return hash; }
     void show(); 
     void show(char* s); //Prepend with this optional string
     void mutate();
