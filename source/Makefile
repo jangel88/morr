@@ -1,8 +1,8 @@
 # ---------------------------------------------------------------------- 
 CC      = cc
 CXX     = CC
-#CFLAGS	= -O2 $(BOOST_FLAGS)
-CFLAGS	= -g $(BOOST_FLAGS)
+CFLAGS	= -O2 $(BOOST_FLAGS) -DNDEBUG
+#CFLAGS	= -g $(BOOST_FLAGS)
 
 LIBS = -lboost_mpi -lboost_serialization
 LDFLAGS = $(LIBS)
