@@ -51,32 +51,59 @@ broadcast(world, gampi_nodelist, 0);
 
 gampi_domain=Domain(max_i, max_j, max_k); 
 
-Individual a;
-a.show((char*)"Ideal soln:"); 
+if(world.rank()==0){
+  Individual a;
+  a.show((char*)"Ideal soln:"); 
+}
+
 Individual b(true);
 Population e(b, 1); 
 
 time_t start=time(NULL); 
+time_t lastprint=time(NULL);
 int elapsed=0; 
 
 do {
-  Population p(e, 10000); 
-  e = p.get_unique_elites(0.01*p.get_size()); 
+  Population p(e, 50000); 
+  e = p.get_unique_elites(p.get_size()*2/100); 
+
+  float my_best=e.get_best_fitness(); 
+  if(world.size()>1){
+    int comm_offset;
+    if(world.rank()==0) comm_offset=1+(rand()%(world.size()-1)); // goes from 1 to N-1
+    broadcast(world, comm_offset, 0); 
+    int src_rank=(world.size()+world.rank()+comm_offset)%world.size(); // I received from
+    int dst_rank=(world.size()+world.rank()-comm_offset)%world.size(); // I send to 
+
+    mpi::request reqs[2];
+    Population r(b, 1); 
+    reqs[0]=world.isend(dst_rank, 307, e); 
+    reqs[1]=world.irecv(src_rank, 307, r); 
+    mpi::wait_all(reqs, reqs+2);  
+
+    e+=r; 
+  }
+
+  float world_best;
+  reduce(world, my_best, world_best, mpi::minimum<float>(), 0);
 
   time_t current=time(NULL); 
   elapsed=difftime(current, start); 
-  if(world.rank()==0) 
-    printf("%3d (secs): %8.4f %8x %8.4f %8x\n", elapsed, 
-      e.get_individual(0).get_fitness(), e.get_individual(0).get_hash(),
-      e.get_individual(e.get_size()-1).get_fitness(), e.get_individual(e.get_size()-1).get_hash()
-      ); 
+  int sinceprint=difftime(current, lastprint); 
+
+  if(world.rank()==0) {
+    if(sinceprint>=1){
+      printf("%3d (secs): %8.4f\n", elapsed, world_best);
+      lastprint=time(NULL); 
+    }
+  }
 } while(elapsed<600.0);
 
-printf("RSA printing the elites\n"); 
-for(int i=0; i<e.get_size(); i++){
-  Individual p = e.get_individual(i); 
-  p.show(); 
-}
+//printf("RSA printing the elites\n"); 
+//for(int i=0; i<e.get_size(); i++){
+//  Individual p = e.get_individual(i); 
+//  p.show(); 
+//}
 
 
 } // end main
