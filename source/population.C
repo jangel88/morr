@@ -12,6 +12,7 @@ Population::Population(int size) {
 /* ---------------------------------------------------------------------- */
 Population::Population(const Individual& ancestor, int size) {
   assert(size>0);
+  assert(ancestor.is_valid()); 
   flock.resize(size); 
   flock[0]=ancestor;
   for(int i=1; i<size; i++)
@@ -22,11 +23,27 @@ Population::Population(const Individual& ancestor, int size) {
 Population::Population(const Population& ancestors, int size) {
   int ansize=ancestors.get_size();
   assert(size>=ansize);
+  assert(ancestors.is_valid()); 
   flock.resize(size); 
   for(int i=0; i<ansize; i++)
     flock[i]=ancestors.flock[i];
-  for(int i=ansize; i<size; i++)
-    flock[i]=Individual(ancestors.flock[rand()%ansize], true);
+  for(int i=ansize; i<size; ) {
+    //Obtain 1/4th of the Individuals through crossover
+    if(rand()%4==0 && ansize>1 && i<size-1) {
+      int p1=rand()%ansize; 
+      int p2;
+      do {
+        p2=rand()%ansize; 
+      } while (p1==p2); //p1 and p2 cannot be the same for crossover
+      Individual::crossover(ancestors.flock[p1], ancestors.flock[p2], flock[i], flock[i+1]); 
+      //flock[i]=Individual(ancestors.flock[p1], true);
+      //flock[i+1]=Individual(ancestors.flock[p2], true);
+      i+=2; 
+    } else {
+      flock[i]=Individual(ancestors.flock[rand()%ansize], true);
+      i++; 
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------- */
@@ -109,6 +126,16 @@ Individual Population::get_individual(int i) {
   assert(i>=0); 
   assert(i<this->get_size()); 
   return flock[i];
+}
+
+/* ---------------------------------------------------------------------- */
+bool Population::is_valid() const {
+  int size=get_size();
+  assert(size>=0);
+  for(int i=0; i<size; i++) {
+    if(!flock[i].is_valid()) return false; 
+  }
+  return true; 
 }
 
 /* ---------------------------------------------------------------------- */

@@ -23,6 +23,7 @@ class Population {
     const Population  operator +  (const Individual& a) const; 
 
     int get_size()const { return flock.size(); } 
+    bool is_valid() const;
     float get_best_fitness();
     Individual get_individual(int i);
     void show(); 
