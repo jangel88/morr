@@ -35,7 +35,7 @@ Individual::Individual(const std::vector<gene>& parent_chromosome){
 }
 
 /* ---------------------------------------------------------------------- */
-bool Individual::is_valid() {
+bool Individual::is_valid() const {
   assert(gampi_domain.get_size()==chromosome.size()); 
   float f=gampi_domain.get_fitness(gampi_nodelist, chromosome);
   assert(abs(f-fitness)<f*1e-6); //Allow for roundoff errors
@@ -61,7 +61,7 @@ void Individual::show(char* s){
 }
 
 /* ---------------------------------------------------------------------- */
-uint32_t Individual::fnv_1a(uint8_t *bp, uint8_t *be){ //begin point and beyond end
+uint32_t Individual::fnv_1a(uint8_t *bp, uint8_t *be) const{ //begin point and beyond end
   const uint32_t fnv_prime = 16777619u;
   const uint32_t fnv_offset_basis = 2166136261u;
 
@@ -74,7 +74,7 @@ uint32_t Individual::fnv_1a(uint8_t *bp, uint8_t *be){ //begin point and beyond 
 }
 
 /* ---------------------------------------------------------------------- */
-uint32_t Individual::ring_fnv_1a() {
+uint32_t Individual::ring_fnv_1a() const {
   int period=gampi_domain.get_period(); 
   int num_periods=chromosome.size()/period; 
   uint8_t *bp, *be; 
@@ -273,6 +273,8 @@ void Individual::mindiff(const Individual& a) {
 /* ---------------------------------------------------------------------- */
 void Individual::crossover
         (const Individual& parent1, const Individual& pt2, Individual& child1, Individual& child2) {
+  assert(parent1.is_valid()); 
+  assert(pt2.is_valid());
   assert(parent1.hash!=pt2.hash); 
   Individual parent2(pt2); 
   parent2.mindiff(parent1); 

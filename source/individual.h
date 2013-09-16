@@ -10,10 +10,9 @@ class Individual  {
     double fitness;
     uint32_t hash; 
 
-    bool is_valid(); 
     int log2(int n); 
-    uint32_t fnv_1a(uint8_t *bp, uint8_t *be); //begin point and beyond end
-    uint32_t ring_fnv_1a(); //computes the hash of the vector treating it as a periodic ring using fnv_1a
+    uint32_t fnv_1a(uint8_t *bp, uint8_t *be) const; //begin point and beyond end
+    uint32_t ring_fnv_1a() const; //returns the hash of the vector treating it as a periodic ring using fnv_1a
     void swap_segment(); 
     void cut_n_paste_segment(); 
     static void cyclic_crossover
@@ -23,6 +22,7 @@ class Individual  {
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version) { 
       ar & fitness;
+      ar & hash;
       ar & chromosome;
     }
   protected:
@@ -33,6 +33,7 @@ class Individual  {
     float get_fitness(){ return fitness;}
     int get_size() { return chromosome.size(); }
     uint32_t get_hash() const { return hash; }
+    bool is_valid() const; 
     void show(); 
     void show(char* s); //Prepend with this optional string
     void mutate();
