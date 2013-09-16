@@ -36,9 +36,9 @@ Individual::Individual(const std::vector<gene>& parent_chromosome){
 
 /* ---------------------------------------------------------------------- */
 bool Individual::is_valid() {
-
   assert(gampi_domain.get_size()==chromosome.size()); 
-  assert(fitness==gampi_domain.get_fitness(gampi_nodelist, chromosome)); 
+  float f=gampi_domain.get_fitness(gampi_nodelist, chromosome);
+  assert(abs(f-fitness)<f*1e-6); //Allow for roundoff errors
   assert(hash==ring_fnv_1a()); 
 
   Individual a(this->chromosome); 
