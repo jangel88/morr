@@ -206,12 +206,111 @@ float Individual::operator - (const Individual& a) const {
     float d=a.chromosome[i]-chromosome[i]; 
     distance+=d*d; //L2 euclidean norm
   }
-  return distance; 
+  return abs(distance); 
 }
 
 /* ---------------------------------------------------------------------- */
 bool Individual::operator == (const Individual& a) const {
   assert(chromosome.size()==a.chromosome.size());  
   return std::equal(chromosome.begin(), chromosome.end(), a.chromosome.begin()); 
+}
+
+/* ---------------------------------------------------------------------- */
+Individual& Individual::operator <<= (int n) {
+  assert(n>=0); 
+  n=n%chromosome.size(); 
+  std::vector<gene> segment(n); 
+  std::copy(chromosome.begin(),chromosome.begin()+n,segment.begin());
+  chromosome.erase(chromosome.begin(),chromosome.begin()+n);
+  chromosome.insert(chromosome.end(),segment.begin(),segment.end());
+  return *this;
+}
+
+/* ---------------------------------------------------------------------- */
+const Individual  Individual::operator <<  (int n) const {
+  return Individual(*this) <<= n;
+}
+
+/* ---------------------------------------------------------------------- */
+Individual& Individual::operator >>= (int n) {
+  assert(n>=0); 
+  n=n%chromosome.size(); 
+  std::vector<gene> segment(n); 
+  std::copy(chromosome.end()-n,chromosome.end(),segment.begin());
+  chromosome.erase(chromosome.end()-n,chromosome.end());
+  chromosome.insert(chromosome.begin(),segment.begin(),segment.end());
+  return *this;
+}
+
+/* ---------------------------------------------------------------------- */
+const Individual  Individual::operator >>  (int n) const {
+  return Individual(*this) >>= n;
+}
+
+/* ---------------------------------------------------------------------- */
+void Individual::mindist(const Individual& a) { 
+  int period=gampi_domain.get_period(); 
+  int num_periods=chromosome.size()/period; 
+  if(num_periods==1) return;
+
+  Individual b(*this); 
+  float mindist=a-b; 
+  int minoffset=0; 
+  for(int i=1; i<num_periods; i++) {
+    b<<=period; 
+    float dist=a-b; 
+    if(dist<mindist) {
+      mindist = dist; 
+      minoffset=i; 
+    }
+  }
+  (*this)<<=minoffset*period; 
+  //hash and fitness do not need to be recomputed since we are shifting by n*period.
+  assert(this->is_valid()); 
+}
+
+
+/* ---------------------------------------------------------------------- */
+void Individual::crossover
+        (const Individual& parent1, const Individual& pt2, Individual& child1, Individual& child2) {
+  assert(parent1.hash!=pt2.hash); 
+  Individual parent2(pt2); 
+  parent2.mindist(parent1); 
+  Individual::cyclic_crossover(parent1, parent2, child1, child2); 
+}
+
+/* ---------------------------------------------------------------------- */
+void Individual::cyclic_crossover
+        (const Individual& parent1, const Individual& parent2, Individual& child1, Individual& child2) {
+  assert(parent1.hash!=parent2.hash); 
+  int N=parent1.chromosome.size(); 
+  int indexstart;
+  do { //Obtain a random starting index, but it cannot be a singleton
+    indexstart=rand()%N; 
+  } while (parent1.chromosome[indexstart] == parent2.chromosome[indexstart]);
+
+  std::vector<int> cycleindex; 
+  int index1=indexstart; 
+  do { //Find the cycle starting from that index
+    cycleindex.push_back(index1);  
+    int val2=parent2.chromosome[index1]; 
+    index1=std::find (parent1.chromosome.begin(),parent1.chromosome.end(),val2) - parent1.chromosome.begin(); 
+  } while (index1!=indexstart); 
+
+  child1=Individual(parent1); 
+  child2=Individual(parent2); 
+  for(int i=0; i<cycleindex.size(); i++){ //Swap the selected cycle
+    int j=cycleindex[i];
+    child1.chromosome[j]=parent2.chromosome[j];
+    child2.chromosome[j]=parent1.chromosome[j];
+  }
+  //hash and fitness need to be recomputed; 
+  child1.fitness=gampi_domain.get_fitness(gampi_nodelist, child1.chromosome); 
+  child1.hash=child1.ring_fnv_1a(); 
+  child2.fitness=gampi_domain.get_fitness(gampi_nodelist, child2.chromosome); 
+  child2.hash=child2.ring_fnv_1a(); 
+
+  assert(child1.is_valid());
+  assert(child2.is_valid());
 }
 
