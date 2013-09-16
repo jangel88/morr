@@ -38,8 +38,8 @@ class Individual  {
     void mutate();
     static void crossover
            (const Individual& parent1, const Individual& parent2, Individual& child1, Individual& child2); 
-    void mindist(const Individual& a); //Period transformation to minimize distance with Individual a
-    float operator - (const Individual& a) const; //Computes euclidean distance between the two chromosomes
+    void mindiff(const Individual& a); //Period transformation to minimize difference with Individual a
+    int operator - (const Individual& a) const; //Counts the number of chromosome elements unequal
     bool operator == (const Individual& a) const; //Compares if the two chromosomes are equal
           Individual& operator <<= (int n);
     const Individual  operator <<  (int n) const;

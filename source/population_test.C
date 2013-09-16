@@ -64,10 +64,8 @@ time_t lastprint=time(NULL);
 int elapsed=0; 
 
 do {
-  Population p(e, 50000); 
-  e = p.get_unique_elites(p.get_size()*2/100); 
 
-  float my_best=e.get_best_fitness(); 
+  //Add someone else's elites to mine
   if(world.size()>1){
     int comm_offset;
     if(world.rank()==0) comm_offset=1+(rand()%(world.size()-1)); // goes from 1 to N-1
@@ -84,6 +82,10 @@ do {
     e+=r; 
   }
 
+  Population p(e, 100000); 
+  e = p.get_unique_elites(p.get_size()*2/100); 
+
+  float my_best=e.get_best_fitness(); 
   float world_best;
   reduce(world, my_best, world_best, mpi::minimum<float>(), 0);
 
@@ -97,13 +99,16 @@ do {
       lastprint=time(NULL); 
     }
   }
-} while(elapsed<600.0);
+} while(elapsed<120.0);
 
-//printf("RSA printing the elites\n"); 
-//for(int i=0; i<e.get_size(); i++){
-//  Individual p = e.get_individual(i); 
-//  p.show(); 
-//}
 
+
+printf("RSA printing the elites\n"); 
+if(world.rank()==0) {
+  for(int i=0; i<e.get_size(); i++){
+    Individual p = e.get_individual(i); 
+    p.show(); 
+  }
+}
 
 } // end main

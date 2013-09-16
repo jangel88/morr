@@ -199,14 +199,14 @@ void Individual::cut_n_paste_segment() {
 }
 
 /* ---------------------------------------------------------------------- */
-float Individual::operator - (const Individual& a) const {
+int Individual::operator - (const Individual& a) const {
   assert(a.chromosome.size()==chromosome.size());  
-  float distance=0; 
+  int different=0; 
   for(int i=0; i<chromosome.size(); i++){
-    float d=a.chromosome[i]-chromosome[i]; 
-    distance+=d*d; //L2 euclidean norm
+    int d=(a.chromosome[i]!=chromosome[i]); //1 if unequal
+    different+=d;
   }
-  return abs(distance); 
+  return different;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -248,19 +248,19 @@ const Individual  Individual::operator >>  (int n) const {
 }
 
 /* ---------------------------------------------------------------------- */
-void Individual::mindist(const Individual& a) { 
+void Individual::mindiff(const Individual& a) { 
   int period=gampi_domain.get_period(); 
   int num_periods=chromosome.size()/period; 
   if(num_periods==1) return;
 
   Individual b(*this); 
-  float mindist=a-b; 
+  float mindiff=a-b; 
   int minoffset=0; 
   for(int i=1; i<num_periods; i++) {
     b<<=period; 
-    float dist=a-b; 
-    if(dist<mindist) {
-      mindist = dist; 
+    int diff=a-b; 
+    if(diff<mindiff) {
+      mindiff = diff; 
       minoffset=i; 
     }
   }
@@ -275,7 +275,7 @@ void Individual::crossover
         (const Individual& parent1, const Individual& pt2, Individual& child1, Individual& child2) {
   assert(parent1.hash!=pt2.hash); 
   Individual parent2(pt2); 
-  parent2.mindist(parent1); 
+  parent2.mindiff(parent1); 
   Individual::cyclic_crossover(parent1, parent2, child1, child2); 
 }
 

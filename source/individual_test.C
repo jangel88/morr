@@ -67,5 +67,24 @@ Individual c(b, true);
 sprintf(s,"mutt %d",world.rank()); 
 c.show(s); 
 
+if(world.rank()==0) {
+cout << "Begin crossover test \n"; 
+
+Individual parent1(true); 
+parent1.show((char*) "parent1"); 
+
+Individual parent2(true); 
+parent2.show((char*) "parent2"); 
+
+Individual pt2mind=parent2; 
+pt2mind.mindiff(parent1); 
+pt2mind.show((char*) "pt2mind"); 
+
+Individual child1, child2;
+Individual::crossover(parent1, parent2, child1, child2); 
+child1.show((char*) "child1 "); 
+child2.show((char*) "child2 "); 
+}
+
 } // end main
 
