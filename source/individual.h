@@ -15,6 +15,8 @@ class Individual  {
     uint32_t ring_fnv_1a() const; //returns the hash of the vector treating it as a periodic ring using fnv_1a
     void swap_segment(); 
     void cut_n_paste_segment(); 
+    static void ordered_crossover
+           (const Individual& parent1, const Individual& parent2, Individual& child1, Individual& child2); 
     static void cyclic_crossover
            (const Individual& parent1, const Individual& parent2, Individual& child1, Individual& child2); 
 

@@ -278,7 +278,55 @@ void Individual::crossover
   assert(parent1.hash!=pt2.hash); 
   Individual parent2(pt2); 
   parent2.mindiff(parent1); 
-  Individual::cyclic_crossover(parent1, parent2, child1, child2); 
+  Individual::ordered_crossover(parent1, parent2, child1, child2); 
+  //Individual::cyclic_crossover(parent1, parent2, child1, child2); 
+}
+
+/* ---------------------------------------------------------------------- */
+void Individual::ordered_crossover
+        (const Individual& parent1, const Individual& parent2, Individual& child1, Individual& child2) {
+  assert(parent1.hash!=parent2.hash); 
+  int N=parent1.chromosome.size(); 
+  int x=rand()%N;
+  int y=rand()%N;
+  while(x == y) x=rand()%N; //two locations should not coincide
+  int begin=std::min(x,y);
+  int end=std::max(x,y); 
+  int len=end-begin; 
+  if(len<0) len+=N; 
+
+  std::vector<gene> segment1(len), segment2(len); //For searching
+  //Copy the selected section
+  for (int i=0; i<len; i++){
+    int j=(begin+i)%N; 
+    segment1[i]=child1.chromosome[j]=parent2.chromosome[j]; 
+    segment2[i]=child2.chromosome[j]=parent1.chromosome[j]; 
+  }
+
+  int fs=-1;
+  if(end<begin) fs+=end; 
+  //Add the remaining elements in order
+  for (int i=0, j=fs, k=fs; i<N; i++){
+    std::vector<gene>::iterator ind1=std::find(segment1.begin(), segment1.end(), parent1.chromosome[i]); 
+    std::vector<gene>::iterator ind2=std::find(segment2.begin(), segment2.end(), parent2.chromosome[i]); 
+    if(ind1>=segment1.end()) {
+      ++j%=N; 
+      if(j==begin) j=end; 
+      child1.chromosome[j]=parent1.chromosome[i]; 
+    }
+    if(ind2>=segment2.end()) {
+      ++k%=N;
+      if(k==begin) k=end; 
+      child2.chromosome[k]=parent2.chromosome[i]; 
+    }
+  }
+  //hash and fitness need to be recomputed; 
+  child1.fitness=gampi_domain.get_fitness(gampi_nodelist, child1.chromosome); 
+  child1.hash=child1.ring_fnv_1a(); 
+  child2.fitness=gampi_domain.get_fitness(gampi_nodelist, child2.chromosome); 
+  child2.hash=child2.ring_fnv_1a(); 
+  assert(child1.is_valid());
+  assert(child2.is_valid());
 }
 
 /* ---------------------------------------------------------------------- */
