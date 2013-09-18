@@ -28,7 +28,7 @@ Population::Population(const Population& ancestors, int size) {
   for(int i=0; i<ansize; i++)
     flock[i]=ancestors.flock[i];
   for(int i=ansize; i<size; ) {
-    if(rand()%2==0 && ansize>1 && i<size-1) {//crossover or mutate if-block
+    if(rand()%10<9 && ansize>1 && i<size-1) {//crossover or mutate if-block
       int p1=rand()%ansize; 
       int p2;
       do {
@@ -83,7 +83,7 @@ static bool comparator (const indexfitness_pair& a, const indexfitness_pair& b){
 /* ---------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------- */
-Population Population::random_selection(int count) {//Entirely random
+Population Population::random_selection(int count) {//random without considering fitness
   assert(count>0);
   Population p(count);
   for(int i=0; i<count; i++)
