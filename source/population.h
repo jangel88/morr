@@ -29,7 +29,8 @@ class Population {
     void show(); 
     void show(char* s); 
 
-    Population get_random_subset(int count); 
-    Population get_unique_elites(int count); 
+    Population random_selection(int count); 
+    Population elitist_selection(int count); 
+    Population rank_selection(int count); 
 };
 
