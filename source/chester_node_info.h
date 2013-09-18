@@ -11,9 +11,9 @@ bool valid_nodeid_list(int, nodeid*);
 float distance_between_nodes(nodeid, nodeid); 
 
 
-// These are the definitions and data that are unique to Titan and should not be used directly elsewhere
+// These are the definitions and data that are unique to chester and should not be used directly elsewhere
 #define COMPUTE_NODE_COUNT 96
-#define XDIM  3 // Dimensions for Titan's interconnect
+#define XDIM  3 // Dimensions for chester's interconnect
 #define YDIM  2
 #define ZDIM  8
 
