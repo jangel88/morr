@@ -96,13 +96,12 @@ float Domain::get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder
   assert( reorder.size()==this->size); 
   
   int N=this->size; 
-  nodeid n1,n2;
   std::vector<float> cost(N*6);
 
-  for(int j=0;j<6;j++){
-    for(int i=0;i<N;i++){
-      n1=nodelist.at(reorder.at(topology.at(i+j*N)));
-      n2=nodelist.at(reorder.at(i));
+  for(int i=0;i<N;i++){
+    nodeid n2=nodelist[reorder[i]];
+    for(int j=0;j<6;j++){
+      nodeid n1=nodelist[reorder[topology[i+j*N]]];
       cost[i+j*N]=distance_between_nodes(n1,n2); 
     }
   }

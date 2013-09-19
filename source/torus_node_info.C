@@ -48,6 +48,9 @@ float distance_between_nodes(nodeid n1, nodeid n2)
   int y1,y2;
   int z1,z2;
   float dx,dy,dz,distance;
+
+  if(n1==n2) return(C_same_node); 
+
   x1=compute_node_coords[n1][0];
   y1=compute_node_coords[n1][1];
   z1=compute_node_coords[n1][2];
@@ -55,11 +58,9 @@ float distance_between_nodes(nodeid n1, nodeid n2)
   y2=compute_node_coords[n2][1];
   z2=compute_node_coords[n2][2];
 
-  if (n1==n2) {
-    distance=(C_same_node);
-  } else if (x1==x2 && 
-             y1==y2 && 
-             z1==z2){
+  if(x1==x2 && 
+     y1==y2 && 
+     z1==z2){
     distance=(C_same_router);
   } else {
     dx=fabs(x2-x1); dx=(dx>(float)XDIM/2.0) ? fabs(dx-XDIM) : dx;
