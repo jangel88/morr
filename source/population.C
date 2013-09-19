@@ -158,7 +158,7 @@ bool Population::is_valid() const {
 /* ---------------------------------------------------------------------- */
 void Population::show() {
   for(int i=0; i<this->get_size(); i++)
-    printf("%x:%-8.3f ", flock[i].get_hash(),flock[i].get_fitness());
+    printf("%08x:%-8.3f ", flock[i].get_hash(),flock[i].get_fitness());
   printf("\n");
 }
 

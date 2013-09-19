@@ -49,7 +49,7 @@ bool Individual::is_valid() const {
 
 /* ---------------------------------------------------------------------- */
 void Individual::show() {
-  printf("%8x : %8.5f : ",hash, fitness); 
+  printf("%08x : %8.5f : ",hash, fitness); 
   for(int i=0; i<chromosome.size(); i++) printf("%3d ", chromosome[i]);
   printf("\n");
 }
@@ -279,7 +279,7 @@ void Individual::crossover
   Individual parent2(pt2); 
   parent2.mindiff(parent1); 
   Individual::ordered_crossover(parent1, parent2, child1, child2); 
-  //Individual::cyclic_crossover(parent1, parent2, child1, child2); 
+  //Individual::cyclic_crossover(parent1, parent2, child1, child2); //poor results from cyclic
 }
 
 /* ---------------------------------------------------------------------- */
