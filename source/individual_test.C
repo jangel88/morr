@@ -8,7 +8,6 @@
 Domain gampi_domain(1,1,1); 
 std::vector<nodeid> gampi_nodelist;
 
-using namespace std; 
 namespace mpi = boost::mpi;
 
 int main(int argc, char **argv){
@@ -19,10 +18,10 @@ std::srand(135+2*world.rank());
 
 int nodecount, max_i, max_j, max_k;
 if(world.rank()==0) {
-  cout << "usage:  ./individual_test.exe testfilename\n";
+  std::cout << "usage:  ./individual_test.exe testfilename\n";
   FILE* nodefile = fopen(argv[1], "r"); 
   if (nodefile==NULL) {
-    cout << "error opening file "<<argv[1] << "\n"; 
+    std::cout << "error opening file "<<argv[1] << "\n"; 
     return 1; 
   }
 
@@ -30,7 +29,7 @@ if(world.rank()==0) {
   int line_count=0;
   while( fgets(oneline,100,nodefile)!=NULL){
     if(oneline[0]=='#' || oneline[0]=='\n'){
-      cout << oneline; 
+      std::cout << oneline; 
       continue;
     }else{
       line_count+=1;
@@ -68,7 +67,7 @@ sprintf(s,"mutt %d",world.rank());
 c.show(s); 
 
 if(world.rank()==0) {
-cout << "Begin crossover test \n"; 
+std::cout << "Begin crossover test \n"; 
 
 Individual parent1(true); 
 parent1.show((char*) "parent1"); 
