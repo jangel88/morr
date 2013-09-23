@@ -155,6 +155,15 @@ if(world.rank()==0) {
   }
   printf("\n");
   fclose(nodefile);
+  /* ---------------------------------------------------------------------- */
+  FILE* lammpsfile = fopen("nodelist_lammps.txt", "w"); 
+  for(int i=0; i<gampi_nodelist.size(); i++) {
+    Subdomain sd=gampi_domain.get_subdomain(i); 
+    int coors[3]; 
+    sd.get_coors(coors);
+    fprintf(lammpsfile, "%d %d %d %d\n",best.reordered_nodeid_at(i),coors[0], coors[1], coors[2]);
+  }
+  fclose(lammpsfile);
 }
 
 world.barrier(); 
