@@ -61,6 +61,13 @@ void Individual::show(char* s){
 }
 
 /* ---------------------------------------------------------------------- */
+nodeid Individual::reordered_nodeid_at(int n) const {
+  assert(n>=0 && n<chromosome.size); 
+  assert(gampi_domain.get_size()==chromosome.size()); 
+  return gampi_nodelist.at(chromosome.at(n)); 
+}
+
+/* ---------------------------------------------------------------------- */
 uint32_t Individual::fnv_1a(uint8_t *bp, uint8_t *be) const{ //begin point and beyond end
   const uint32_t fnv_prime = 16777619u;
   const uint32_t fnv_offset_basis = 2166136261u;

@@ -38,6 +38,8 @@ class Individual  {
     bool is_valid() const; 
     void show(); 
     void show(char* s); //Prepend with this optional string
+    nodeid reordered_nodeid_at(int n) const; 
+
     void mutate();
     static void crossover
            (const Individual& parent1, const Individual& parent2, Individual& child1, Individual& child2); 
@@ -48,4 +50,5 @@ class Individual  {
     const Individual  operator <<  (int n) const;
           Individual& operator >>= (int n);
     const Individual  operator >>  (int n) const;
+
 };
