@@ -78,6 +78,14 @@ gampi_domain=Domain(max_i, max_j, max_k);
 if(world.rank()==0){
   Individual a;
   a.show((char*)"Start soln"); 
+  FILE* nodefile = fopen("startnodelist.txt", "w"); 
+  printf("Start Nodelist: "); 
+  for(int i=0; i<gampi_nodelist.size(); i++) {
+    fprintf(nodefile, "%5d\n",gampi_nodelist.at(i));
+    printf("%d,",gampi_nodelist.at(i));
+  }
+  printf("\n");
+  fclose(nodefile);
 }
 
 Individual v(false); //Dont shuffle
@@ -147,8 +155,8 @@ if(bestfitrank.second==0 && world.rank()==0) {
 
 if(world.rank()==0) {
   best.show((char*) "Best soln"); 
-  FILE* nodefile = fopen("nodelist.txt", "w"); 
-  printf("Nodelist: -L "); 
+  FILE* nodefile = fopen("bestnodelist.txt", "w"); 
+  printf("Best Nodelist: "); 
   for(int i=0; i<gampi_nodelist.size(); i++) {
     fprintf(nodefile, "%5d\n",best.reordered_nodeid_at(i));
     printf("%d,",best.reordered_nodeid_at(i));
