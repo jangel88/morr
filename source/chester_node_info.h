@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdint.h>
 
 // These are the definitions that should be available across all node architectures
 typedef int nodeid; 
@@ -19,7 +20,7 @@ float distance_between_nodes(nodeid, nodeid);
 
 // start chester compute_node_coords declaration
 static const int compute_node_count=COMPUTE_NODE_COUNT; 
-static const int compute_node_coords[COMPUTE_NODE_COUNT][3]= 
+static const uint8_t compute_node_coords[COMPUTE_NODE_COUNT][3]= 
 {
 {0,  0,  0,},//      0
 {0,  0,  0,},//      1
