@@ -62,7 +62,7 @@ void Individual::show(char* s){
 
 /* ---------------------------------------------------------------------- */
 nodeid Individual::reordered_nodeid_at(int n) const {
-  assert(n>=0 && n<chromosome.size); 
+  assert(n>=0 && n<chromosome.size()); 
   assert(gampi_domain.get_size()==chromosome.size()); 
   return gampi_nodelist.at(chromosome.at(n)); 
 }
