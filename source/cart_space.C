@@ -26,12 +26,12 @@ Domain::Domain(int max_i, int max_j, int max_k) {
   for(int i=0, N=size;i<N;i++){
     Subdomain q(i,max_i,max_j,max_k);
     std::vector<Subdomain> neigh=find_neighbors(q); 
-    topology[i    ]=get_position(neigh[0]);
-    topology[i+  N]=get_position(neigh[1]);
-    topology[i+2*N]=get_position(neigh[2]);
-    topology[i+3*N]=get_position(neigh[3]);
-    topology[i+4*N]=get_position(neigh[4]);
-    topology[i+5*N]=get_position(neigh[5]);
+    topology[i*6+0]=get_position(neigh[0]);
+    topology[i*6+1]=get_position(neigh[1]);
+    topology[i*6+2]=get_position(neigh[2]);
+    topology[i*6+3]=get_position(neigh[3]);
+    topology[i*6+4]=get_position(neigh[4]);
+    topology[i*6+5]=get_position(neigh[5]);
   }  
 }
 
@@ -94,25 +94,25 @@ float Domain::get_fitness(std::vector<nodeid> nodelist){
 float Domain::get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder){
   assert(nodelist.size()==this->size); 
   assert( reorder.size()==this->size); 
-  
-  int N=this->size; 
-  std::vector<float> cost(N*6);
 
+  int N=this->size; 
+
+  std::vector<nodeid> reorlist(N); 
+  for(int i=0; i<N; i++){
+    reorlist[i]=nodelist[reorder[i]]; 
+  }
+  
+  float fitness=0.0; 
   for(int i=0;i<N;i++){
-    nodeid n2=nodelist[reorder[i]];
+    nodeid n1=reorlist[i];
     for(int j=0;j<6;j++){
-      nodeid n1=nodelist[reorder[topology[i+j*N]]];
-      cost[i+j*N]=distance_between_nodes(n1,n2); 
+      nodeid n2=reorlist[topology[i*6+j]];
+      float cost=distance_between_nodes(n1,n2); 
+      fitness+=cost*cost; // L2 norm
+      //fitness+=cost; //L1 norm
     }
   }
-
-  float fitness=0.0; 
-  for(int i=0;i<N*6;i++){ 
-    fitness+=cost[i]*cost[i];
-//  fitness+=cost[i];
-  } 
   fitness=sqrt(fitness);
-//fitness=fitness/(N*6);
   return fitness;
 }
 
