@@ -297,8 +297,8 @@ void Individual::ordered_crossover
   int x=rand()%N;
   int y=rand()%N;
   while(x == y) x=rand()%N; //two locations should not coincide
-  int begin=std::min(x,y);
-  int end=std::max(x,y); 
+  int begin=x;
+  int end=y;
   int len=end-begin; 
   if(len<0) len+=N; 
 
