@@ -5,11 +5,11 @@
 #include <math.h>
 #include <mpi.h>
 #include "node_info.h" 
+
 int init_node_info(void){
   //Nothing to do here now. Node coords are initialized in the static variable
   return(0); 
 }
-
 
 bool valid_nodeid(nodeid nid) {
   if (nid>=0 && nid<COMPUTE_NODE_COUNT){
@@ -39,15 +39,16 @@ nodeid query_nodeid(){
   return( atoi(name_offset));
 }
 
-float distance_between_nodes(nodeid n1, nodeid n2)
-{
+float distance_between_nodes(nodeid n1, nodeid n2) {
   assert(valid_nodeid(n1)); 
   assert(valid_nodeid(n2)); 
-  const float C_same_node=0, C_same_router=0.01, C_x=1.0, C_y=2.0, C_z=1.0; 
+  const float C_same_node=0, C_same_router=0.01; 
+  const int C_x=1, C_y=2, C_z=1; 
   int x1,x2;
   int y1,y2;
   int z1,z2;
-  float dx,dy,dz,distance;
+  int dx,dy,dz;
+  float distance;
 
   if(n1==n2) return(C_same_node); 
 
@@ -57,17 +58,18 @@ float distance_between_nodes(nodeid n1, nodeid n2)
   x2=compute_node_coords[n2][0];
   y2=compute_node_coords[n2][1];
   z2=compute_node_coords[n2][2];
-
   if(x1==x2 && 
      y1==y2 && 
      z1==z2){
     distance=(C_same_router);
   } else {
-    dx=fabs(x2-x1); dx=(dx>(float)XDIM/2.0) ? fabs(dx-XDIM) : dx;
-    dy=fabs(y2-y1); dy=(dy>(float)YDIM/2.0) ? fabs(dy-YDIM) : dy;
-    dz=fabs(z2-z1); dz=(dz>(float)ZDIM/2.0) ? fabs(dz-ZDIM) : dz;
+    dx=abs(x2-x1); dx=(dx>XDIM/2) ? (XDIM-dx) : dx;
+    dy=abs(y2-y1); dy=(dy>YDIM/2) ? (YDIM-dy) : dy;
+    dz=abs(z2-z1); dz=(dz>ZDIM/2) ? (ZDIM-dz) : dz;
     distance=(C_x*dx+C_y*dy+C_z*dz);
+    assert(distance>0); 
   }
   //printf("%d (%d,%d,%d) - %d (%d,%d,%d) = %.3f\n", n1, x1, y1, z1, n2, x2, y2, z2, distance);
   return(distance); 
 }
+
