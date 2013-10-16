@@ -11,7 +11,7 @@ Population::Population(int size) {
 }
 
 /* ---------------------------------------------------------------------- */
-Population::Population(const Individual& ancestor, int size, int timeout) {
+Population::Population(const Individual& ancestor, int size, float timeout) {
   assert(size>0);
   assert(ancestor.is_valid()); 
   time_t start=time(NULL);
@@ -23,7 +23,7 @@ Population::Population(const Individual& ancestor, int size, int timeout) {
 }
 
 /* ---------------------------------------------------------------------- */
-Population::Population(const Population& ancestors, int size, int timeout) {
+Population::Population(const Population& ancestors, int size, float timeout) {
   int ansize=ancestors.get_size();
   assert(size>=ansize);
   assert(ancestors.is_valid()); 
