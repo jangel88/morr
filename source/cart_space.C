@@ -79,7 +79,7 @@ int Domain::get_position(Subdomain element) {
 }
 
 /* ---------------------------------------------------------------------- */
-float Domain::get_fitness(std::vector<nodeid> nodelist){
+float Domain::get_fitness(const std::vector<nodeid>& nodelist){
   assert(nodelist.size()==this->size); 
 
   int N=this->size; 
@@ -91,7 +91,7 @@ float Domain::get_fitness(std::vector<nodeid> nodelist){
 }
 
 /* ---------------------------------------------------------------------- */
-float Domain::get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder){
+float Domain::get_fitness(const std::vector<nodeid>& nodelist, const std::vector<int>& reorder){
   assert(nodelist.size()==this->size); 
   assert( reorder.size()==this->size); 
 

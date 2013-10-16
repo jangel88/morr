@@ -25,7 +25,7 @@ class Domain {
     int get_size() { return size; }
     int get_period() { return period; } 
     Subdomain get_subdomain(int position){ return Subdomain(position, max_i, max_j, max_k); }
-    float get_fitness(std::vector<nodeid> nodelist); 
-    float get_fitness(std::vector<nodeid> nodelist, std::vector<int> reorder); 
+    float get_fitness(const std::vector<nodeid>& nodelist); 
+    float get_fitness(const std::vector<nodeid>& nodelist, const std::vector<int>& reorder); 
 };
 
