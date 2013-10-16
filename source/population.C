@@ -1,6 +1,7 @@
 #include "population.h"
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
 #include <algorithm>
 
 /* ---------------------------------------------------------------------- */
@@ -10,34 +11,38 @@ Population::Population(int size) {
 }
 
 /* ---------------------------------------------------------------------- */
-Population::Population(const Individual& ancestor, int size) {
+Population::Population(const Individual& ancestor, int size, int timeout) {
   assert(size>0);
   assert(ancestor.is_valid()); 
-  flock.resize(size); 
-  flock[0]=ancestor;
-  for(int i=1; i<size; i++)
-    flock[i]=Individual(ancestor, true);
+  time_t start=time(NULL);
+  flock.clear(); 
+  flock.reserve(size); 
+  flock.push_back(ancestor); 
+  for(int i=1; i<size && difftime(time(NULL), start)<timeout; i++)
+    flock.push_back(Individual(ancestor, true));
 }
 
 /* ---------------------------------------------------------------------- */
-Population::Population(const Population& ancestors, int size) {
+Population::Population(const Population& ancestors, int size, int timeout) {
   int ansize=ancestors.get_size();
   assert(size>=ansize);
   assert(ancestors.is_valid()); 
-  flock.resize(size); 
-  for(int i=0; i<ansize; i++)
-    flock[i]=ancestors.flock[i];
-  for(int i=ansize; i<size; ) {
+  time_t start=time(NULL);
+  flock.clear(); 
+  flock.reserve(size); 
+  (*this)=ancestors; 
+  for(int i=ansize; i<size && difftime(time(NULL), start)<timeout; ) {
     if(rand()%10<9 && ansize>1 && i<size-1) {//crossover or mutate if-block
       int p1=rand()%ansize; 
       int p2;
       do {
         p2=rand()%ansize; 
       } while (p1==p2); //p1 and p2 cannot be the same for crossover
+      flock.push_back(Individual()); flock.push_back(Individual()); //Make space for i and i+1
       Individual::crossover(ancestors.flock[p1], ancestors.flock[p2], flock[i], flock[i+1]); 
       i+=2; 
     } else { //crossover or mutate if-block
-      flock[i]=Individual(ancestors.flock[rand()%ansize], true);
+      flock.push_back(Individual(ancestors.flock[rand()%ansize], true));
       i++; 
     } //crossover or mutate if-block
   }
