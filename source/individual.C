@@ -302,26 +302,24 @@ void Individual::ordered_crossover
   int len=end-begin; 
   if(len<0) len+=N; 
 
-  std::vector<gene> segment1(len), segment2(len); //For searching
+  std::vector<bool> ispresent1(N,false), ispresent2(N,false); 
   //Copy the selected section
   for (int i=0; i<len; i++){
     int j=(begin+i)%N; 
-    segment1[i]=child1.chromosome[j]=parent2.chromosome[j]; 
-    segment2[i]=child2.chromosome[j]=parent1.chromosome[j]; 
+    ispresent1[ (child1.chromosome[j]=parent2.chromosome[j]) ]=true; 
+    ispresent2[ (child2.chromosome[j]=parent1.chromosome[j]) ]=true; 
   }
 
   int fs=-1;
   if(end<begin) fs+=end; 
   //Add the remaining elements in order
   for (int i=0, j=fs, k=fs; i<N; i++){
-    std::vector<gene>::iterator ind1=std::find(segment1.begin(), segment1.end(), parent1.chromosome[i]); 
-    std::vector<gene>::iterator ind2=std::find(segment2.begin(), segment2.end(), parent2.chromosome[i]); 
-    if(ind1>=segment1.end()) {
+    if(!ispresent1[parent1.chromosome[i]]){
       ++j%=N; 
       if(j==begin) j=end; 
       child1.chromosome[j]=parent1.chromosome[i]; 
     }
-    if(ind2>=segment2.end()) {
+    if(!ispresent2[parent2.chromosome[i]]){
       ++k%=N;
       if(k==begin) k=end; 
       child2.chromosome[k]=parent2.chromosome[i]; 
