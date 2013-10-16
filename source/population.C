@@ -50,6 +50,7 @@ Population::Population(const Population& ancestors, int size, float timeout) {
 
 /* ---------------------------------------------------------------------- */
 Population& Population::operator += (const Population& a){
+  this->flock.reserve(this->get_size()+a.get_size());
   for(int i=0; i<a.get_size(); i++){
     (*this)+=a.flock[i];
   }
@@ -107,6 +108,7 @@ Population Population::elitist_selection(int count){ //Strictly by fitness rank
   std::sort(indfit.begin(), indfit.end(), comparator);
 
   Population e(flock[indfit[0].first],1); 
+  e.flock.reserve(count); 
   for(int i=1; i<size; i++){
     if(e.get_size()>=count) break; //out of i loop
     e+=flock[indfit[i].first]; 
@@ -125,13 +127,14 @@ Population Population::rank_selection(int count){//somewhat random but p is high
   std::sort(indfit.begin(), indfit.end(), comparator);
 
   Population e(flock[indfit[0].first],1); //Keep the best in; 
+  e.flock.reserve(count); 
   for(int i=1; i<size; i++){//have to stop somewhere since the hash is checked before adding
     if(e.get_size()>=count) break; //out of i loop
     int r1=1+rand()%(size-1);
     int r2=rand()%r1; //fitter individuals have a higher probability
     e+=flock[indfit[r2].first]; 
   }
-  return e;
+return e;
 }
 
 /* ---------------------------------------------------------------------- */
