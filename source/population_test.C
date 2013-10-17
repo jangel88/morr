@@ -65,11 +65,11 @@ std::pair<float,int> fitrank, bestfitrank;
 int elapsed=0; 
 
 const int pop_size=100000; 
+const int subset_percent=5; //percentage of population that makes the subset for next gen
 const float maxruntime=300.0; // seconds
 const float maxgentime=maxruntime/30.0; // seconds, max time for creating one generation
 
 do {
-  const int subset_percent=5; //percentage of population that makes the subset for next gen
   float lastbest=currbest;
 
   Population p(a, pop_size, maxgentime); //population expanded from ancestors

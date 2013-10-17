@@ -17,7 +17,7 @@ namespace mpi = boost::mpi;
 int main(int argc, char *argv[]) { //MAIN MAIN MAIN
 mpi::environment env(argc, argv);
 mpi::communicator world;
-std::srand(135+2*world.rank());
+std::srand(135+world.rank());
 
 bool err=true, werr=true; 
 int max_i, max_j, max_k;
@@ -98,11 +98,15 @@ float currbest=v.get_fitness();
 std::pair<float,int> fitrank, bestfitrank; 
 int elapsed=0; 
 
+const int pop_size=100000; 
+const int subset_percent=5; //percentage of population that makes the subset for next gen
+const float maxruntime=300.0; // seconds
+const float maxgentime=maxruntime/30.0; // seconds, max time for creating one generation
+
 do {
-  const int subset_percent=5; //percentage of population that makes the subset for next gen
   float lastbest=currbest;
 
-  Population p(a, 100000); //population expanded from ancestors
+  Population p(a, pop_size, maxgentime); //population expanded from ancestors
 
   //Select a subset to be used for creating next generation
   e=p.elitist_selection(std::max(1, p.get_size()*subset_percent/100/10)); 
@@ -141,7 +145,7 @@ do {
       printf("%3d (secs): %8.5f\n", elapsed, bestfitrank.first);
       lastprint=time(NULL); 
   }
-} while(elapsed<300); 
+} while(elapsed<maxruntime); 
 
 Individual best; 
 if(bestfitrank.second==0 && world.rank()==0) {
