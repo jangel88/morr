@@ -13,8 +13,8 @@ class Population {
   protected:
   public: 
     Population(int size); 
-    Population(const Individual& ancestor, int size, float timeout=5); 
-    Population(const Population& ancestors, int size, float timeout=5); 
+    Population(const Individual& ancestor, int size, float timeout=1e5); 
+    Population(const Population& ancestors, int size, float timeout=1e5); 
 
           Population& operator += (const Population& a);
     const Population  operator +  (const Population& a) const; 
