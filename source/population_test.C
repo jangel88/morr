@@ -14,7 +14,7 @@ namespace mpi = boost::mpi;
 int main(int argc, char **argv){//MAIN MAIN MAIN
 mpi::environment env(argc, argv);
 mpi::communicator world;
-std::srand(135+2*world.rank()); 
+std::srand(135+world.rank()); 
 
 int nodecount, max_i, max_j, max_k;
 if(world.rank()==0) {
