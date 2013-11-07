@@ -41,6 +41,9 @@ individual_test.exe: individual_test.o individual.o domain.o node_info.o
 population_test.exe: population_test.o population.o individual.o domain.o node_info.o
 	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
+fitness_norm_test.exe: fitness_norm_test.o domain.o node_info.o
+	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
 node_reorder.exe: node_reorder_3D.o population.o individual.o domain.o node_info.o
 	$(CXX) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
