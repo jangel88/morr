@@ -48,13 +48,13 @@ if (optind < argc) {
 
 nodeid myid=query_nodeid(); 
 std::vector<nodeid> allid; 
-all_gather(world, myid, allid);
+mpi::communicator onenodecomm=world.split(myid);
+mpi::communicator offnodecomm=world.split(onenodecomm.rank(),world.rank());
 
-std::vector<nodeid>::iterator it; 
-std::sort(allid.begin(), allid.end()); 
-it=std::unique(allid.begin(), allid.end()); 
-gampi_nodelist.resize(std::distance(allid.begin(), it)); 
-std::copy(allid.begin(), it, gampi_nodelist.begin()); 
+if(onenodecomm.rank()==0) all_gather(offnodecomm, myid, allid);
+broadcast(onenodecomm, allid, 0);
+gampi_nodelist.resize(allid.size());
+std::copy(allid.begin(), allid.end(), gampi_nodelist.begin());
 
 err=true; 
 if(gampi_nodelist.size()==max_i*max_j*max_k) err=false;
