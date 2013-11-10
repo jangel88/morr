@@ -100,8 +100,8 @@ int elapsed=0;
 
 const int pop_size=100000; 
 const int subset_percent=5; //percentage of population that makes the subset for next gen
-const float maxruntime=300.0; // seconds
-const float maxgentime=maxruntime/30.0; // seconds, max time for creating one generation
+const float maxruntime=900.0; // seconds
+const float maxgentime=maxruntime/90.0; // seconds, max time for creating one generation
 
 do {
   float lastbest=currbest;
