@@ -1,10 +1,11 @@
-GAMPI: GA for MPI task placement 
-or
-MORR: Mutation Optimization for Rank Re-ordering
-========
+============================================================
+          GAMPI: GA for MPI task placement 
+============================================================
+This code is part of a project to optimize task placement on compute nodes of Titan at Oak Ridge Leadership Computing Facility. It implements a genetic algorithm on a distributed cluster using MPI communication. 
 
-This code is part of a project to optimize task placement on compute nodes of Titan at
-Oak Ridge Leadership Computing Facility. It implements a 
-genetic algorithm on a distributed cluster using MPI communication. 
+
+PLEASE ACKNOWLEDGE ANY USE OF THIS SOFTWARE AND CITE THE FOLLOWING REFERENCE:
+
+Ramanan Sankaran, Jordan Angel and Mike Brown (2013) "Genetic Algorithm based Task Reordering to Improve the Performance of Batch Scheduled Massively Parallel Scientific Applications", to be submitted. 
 
 
