@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <boost/mpi.hpp>
-
+#include <string.h>
 #include "population.h"
 
 /* ---------------------------------------------------------------------- */
@@ -27,7 +27,7 @@ float maxgentime;
 FILE* inputfile;
 
 if(world.rank()==0) 
-  std::cout << "Usage: node_reorder_3D.exe filename -X max_i -Y max_j -Z max_k -T maxgentime\n"; 
+  std::cout << "Usage: node_reorder_3D.exe -X max_i -Y max_j -Z max_k -T maxgentime -F filename\n"; 
 while ((opt = getopt(argc, argv, "X:Y:Z:T:F:")) != -1) {
   switch (opt) {
   case 'X':
@@ -38,31 +38,31 @@ while ((opt = getopt(argc, argv, "X:Y:Z:T:F:")) != -1) {
     break;
   case 'Z':
     max_k = atoi(optarg);
+    break;
   case 'T':
     maxgentime = atof(optarg);
-    break; 
+    break;
+  case 'F':
+    if(!world.rank()){
+      std::cout << optarg << "\n";
+      inputfile = fopen(optarg,"r");
+      std::cout << inputfile << "\n";
+      if (inputfile==NULL) {
+        std::cout << "error opening file \n"; 
+        exit(1); 
+      }
+      while(fgets(oneline,100,inputfile)!=NULL){
+        gampi_nodelist.push_back((nodeid) atoi(oneline));
+      }
+    }
+    break;
   default: /* '?' */
-//    fprintf(stderr, "Usage: %s [-X max_i -Y max_j -Z max_k ]\n", argv[0]);
-//    exit(EXIT_FAILURE);
-     continue;
+      fprintf(stderr, "Usage: %s [-X max_i -Y max_j -Z max_k ]\n", argv[0]);
+      exit(EXIT_FAILURE); 
   }
 }
 
-if(world.rank() == 0){
-  // argv[9]... ugh
-  // getopt permutes arugment list
-  // gotta be a cleaner way to do this
-  std::cout << argv[9] << "\n";
-  inputfile = fopen(argv[9],"r");
-  if (inputfile==NULL) {
-    std::cout << "error opening file \n"; 
-    exit(1); 
-  }
-  while(fgets(oneline,100,inputfile)!=NULL){
-    gampi_nodelist.push_back((nodeid) atoi(oneline));
-  }
 
-}
 
 world.barrier();
 broadcast(world,gampi_nodelist,0);
